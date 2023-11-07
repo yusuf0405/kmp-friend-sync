@@ -19,7 +19,6 @@ kotlin {
     }
 
     jvm()
-
     js {
         browser()
         binaries.executable()
@@ -38,6 +37,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":shared"))
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
@@ -86,11 +86,11 @@ kotlin {
 
 android {
     namespace = "org.joseph.friendsync"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 
         applicationId = "org.joseph.friendsync.androidApp"
         versionCode = 1
