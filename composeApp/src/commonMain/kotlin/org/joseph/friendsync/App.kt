@@ -43,6 +43,8 @@ internal fun App() = FriendSyncTheme {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
+    Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
+
 
     Column(
         modifier = Modifier
@@ -88,7 +90,6 @@ internal fun App() = FriendSyncTheme {
             singleLine = true,
             modifier = Modifier.fillMaxWidth().padding(16.dp)
         )
-
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
