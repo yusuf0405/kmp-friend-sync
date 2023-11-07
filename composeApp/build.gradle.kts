@@ -96,6 +96,15 @@ android {
         versionCode = 1
         versionName = "1.0.0"
     }
+
+    packaging.resources {
+        pickFirsts += "/META-INF/LICENSE.md"
+        pickFirsts += "/META-INF/LICENSE-notice.md"
+        pickFirsts += "/META-INF/AL2.0"
+        pickFirsts += "/META-INF/LGPL2.1"
+        pickFirsts += "META-INF/versions/9/previous-compilation-data.bin"
+    }
+
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         res.srcDirs("src/androidMain/resources")
