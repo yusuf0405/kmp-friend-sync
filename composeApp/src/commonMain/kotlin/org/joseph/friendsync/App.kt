@@ -1,5 +1,6 @@
 package org.joseph.friendsync
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,9 +19,9 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,76 +35,112 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import org.joseph.friendsync.theme.AppTheme
+import org.joseph.friendsync.theme.FriendSyncTheme
 import org.joseph.friendsync.theme.LocalThemeIsDark
 
 @Composable
-internal fun App() = AppTheme {
+internal fun App() = FriendSyncTheme {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
 
-        Row(
-            horizontalArrangement = Arrangement.Center
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .background(FriendSyncTheme.colors.backgroundPrimary)
         ) {
-            Text(
-                text = "Login",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(16.dp)
-            )
-
-            Spacer(modifier = Modifier.weight(1.0f))
-
-            var isDark by LocalThemeIsDark.current
-            IconButton(
-                onClick = { isDark = !isDark }
+            Row(
+                horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    modifier = Modifier.padding(8.dp).size(20.dp),
-                    imageVector = if (isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
-                    contentDescription = null
+                Text(
+                    text = "Login",
+                    style = FriendSyncTheme.typography.titleMedium.medium,
+                    modifier = Modifier.padding(16.dp),
+                    color = FriendSyncTheme.colors.textPrimary
                 )
-            }
-        }
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        )
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            singleLine = true,
-            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            ),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    val imageVector = if (passwordVisibility) Icons.Default.Close else Icons.Default.Edit
-                    Icon(imageVector, contentDescription = if (passwordVisibility) "Hide password" else "Show password")
+                Spacer(modifier = Modifier.weight(1.0f))
+
+                var isDark by LocalThemeIsDark.current
+                IconButton(
+                    onClick = { isDark = !isDark },
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(8.dp).size(20.dp),
+                        imageVector = if (isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        contentDescription = null,
+                        tint = FriendSyncTheme.colors.iconsPrimary
+                    )
                 }
             }
-        )
 
-        Button(
-            onClick = { /* Handle login logic here */ },
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            Text("Login")
-        }
+            OutlinedTextField(
+                value = email,
+                textStyle = FriendSyncTheme.typography.bodyMedium.regular,
+                onValueChange = { email = it },
+                label = {
+                    Text(
+                        text = "Email",
+                        style = FriendSyncTheme.typography.bodyMedium.regular
+                    )
+                },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            )
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                textStyle = FriendSyncTheme.typography.bodyMedium.regular,
+                label = {
+                    Text(
+                        text = "Password",
+                        style = FriendSyncTheme.typography.bodyMedium.regular
+                    )
+                },
+                singleLine = true,
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        val imageVector =
+                            if (passwordVisibility) Icons.Default.Close else Icons.Default.Edit
+                        Icon(
+                            imageVector,
+                            contentDescription = if (passwordVisibility) "Hide password" else "Show password"
+                        )
+                    }
+                }
+            )
 
-        TextButton(
-            onClick = { openUrl("https://github.com/terrakok") },
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            Text("Open github")
+            Button(
+                onClick = { /* Handle login logic here */ },
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = FriendSyncTheme.colors.primary,
+                    contentColor = FriendSyncTheme.colors.onTextPrimary
+                )
+            ) {
+                Text(
+                    text = "Login",
+                    style = FriendSyncTheme.typography.bodyMedium.regular
+                )
+            }
+
+            TextButton(
+                onClick = { openUrl("https://github.com/terrakok") },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Text(
+                    text = "Open github",
+                    style = FriendSyncTheme.typography.bodyMedium.regular
+                )
+            }
         }
     }
 }
