@@ -42,7 +42,6 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.libres)
-            implementation(libs.voyager.navigator)
             implementation(libs.composeImageLoader)
             implementation(libs.napier)
             implementation(libs.kotlinx.coroutines.core)
@@ -52,7 +51,15 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatformSettings)
+
+            // Voyager
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.tab.navigator)
+            implementation(libs.voyager.transitions)
+
+            // Koin
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
 
         commonTest.dependencies {
@@ -138,8 +145,12 @@ compose.experimental {
 }
 
 libres {
-    // https://github.com/Skeptick/libres#setup
+    generatedClassName = "MainRes"
+    generateNamedArguments = true
+    baseLocaleLanguageCode = "en"
+    camelCaseNamesForAppleFramework = false
 }
+
 tasks.getByPath("jvmProcessResources").dependsOn("libresGenerateResources")
 tasks.getByPath("jvmSourcesJar").dependsOn("libresGenerateResources")
 tasks.getByPath("jsProcessResources").dependsOn("libresGenerateResources")
