@@ -85,4 +85,13 @@ val NormalPlum = Color(0xFF883888)
 val LightPlum = Color(0xFFA86EA7)
 val LightestPlum = Color(0xFFF0E7F0)
 
+val Blue = Color(0xFF1E80F8)
+val MediumBlue = Color(0xFF63C5DA)
+val LargeBlue = Color(0xFF2E8AF6)
+
+val LightGray = Color(0xFF727477)
+
+val DarkPlaceHolderColor = Color(0xFF373B3F)
+val LightPlaceHolderColor = Color(0xFFE5E5E5)
+
 val Primary = Color(0xFF1E80F8)

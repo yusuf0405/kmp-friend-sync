@@ -9,12 +9,14 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import org.joseph.friendsync.common.theme.colors.FriendSyncColors
 import org.joseph.friendsync.common.theme.colors.LocalFriendSyncColors
 import org.joseph.friendsync.common.theme.colors.ProvideFriendSyncColors
 import org.joseph.friendsync.common.theme.colors.darkPalette
 import org.joseph.friendsync.common.theme.colors.debugColors
 import org.joseph.friendsync.common.theme.colors.lightPalette
+import org.joseph.friendsync.common.theme.dimens.FriendSyncDimens
 import org.joseph.friendsync.common.theme.shapes.Shapes
 import org.joseph.friendsync.common.theme.typography.FriendSyncTypography
 import org.joseph.friendsync.common.theme.typography.LocalFriendSyncTypography
@@ -23,11 +25,17 @@ import org.joseph.friendsync.common.theme.typography.debugTypography
 
 internal val LocalThemeIsDark = compositionLocalOf { mutableStateOf(true) }
 
+private val defaultFriendSyncDimens = FriendSyncDimens()
+
+private val LocalFriendSyncDimens = staticCompositionLocalOf {
+    defaultFriendSyncDimens
+}
+
 @Composable
 fun FriendSyncTheme(
     content: @Composable () -> Unit
 ) {
-   val typography = FriendSyncTypography()
+    val typography = FriendSyncTypography()
     val systemIsDark = isSystemInDarkTheme()
     val isDarkState = remember { mutableStateOf(systemIsDark) }
 
@@ -36,16 +44,21 @@ fun FriendSyncTheme(
     ) {
         val isDark by isDarkState
         val colors = if (isDark) darkPalette else lightPalette
+        val dimensionSet = remember { defaultFriendSyncDimens }
 
-        ProvideFriendSyncTypography(typography) {
-            ProvideFriendSyncColors(colors) {
-                SystemAppearance(!isDark)
-                MaterialTheme(
-                    colorScheme = debugColors(isDark, darkPalette, lightPalette),
-                    typography = debugTypography(),
-                    shapes = Shapes,
-                    content = content
-                )
+        CompositionLocalProvider(
+            staticCompositionLocalOf { dimensionSet } provides dimensionSet,
+        ) {
+            ProvideFriendSyncTypography(typography) {
+                ProvideFriendSyncColors(colors) {
+                    SystemAppearance(!isDark)
+                    MaterialTheme(
+                        colorScheme = debugColors(isDark, darkPalette, lightPalette),
+                        typography = debugTypography(),
+                        shapes = Shapes,
+                        content = content
+                    )
+                }
             }
         }
     }
@@ -63,6 +76,10 @@ object FriendSyncTheme {
     val shapes: Shapes
         @Composable
         get() = MaterialTheme.shapes
+
+    val dimens: FriendSyncDimens
+        @Composable
+        get() = LocalFriendSyncDimens.current
 
 }
 

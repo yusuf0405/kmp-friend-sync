@@ -1,8 +1,6 @@
-package org.joseph.friendsync.auth.sign
+package org.joseph.friendsync.screens.auth.login
 
-data class SignUpUiState(
-    var name: String = String(),
-    var lastName: String = String(),
+data class LoginScreenUiState(
     var email: String = String(),
     var password: String = String(),
     var isAuthenticating: Boolean = false,

@@ -1,4 +1,4 @@
-package org.joseph.friendsync.common.components
+package org.joseph.friendsync.screens.auth.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
@@ -75,7 +75,6 @@ fun PasswordEyeIcon(
     isPasswordVisible: Boolean,
     onPasswordVisibilityToggle: () -> Unit,
 ) {
-
     val iconId = if (isPasswordVisible) MainResImages.show_eye_icon_filled
     else MainResImages.hide_eye_icon_filled
     val image = painterResource(iconId)

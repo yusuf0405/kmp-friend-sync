@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.login
+package org.joseph.friendsync.screens.auth.login
 
 sealed class LoginEvent {
 

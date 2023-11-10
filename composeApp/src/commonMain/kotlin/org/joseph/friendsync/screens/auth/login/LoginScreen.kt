@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.login
+package org.joseph.friendsync.screens.auth.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import org.joseph.friendsync.common.components.LoginTextField
+import org.joseph.friendsync.screens.auth.components.LoginTextField
 import org.joseph.friendsync.common.components.PrimaryButton
 import org.joseph.friendsync.common.extensions.SpacerHeight
 import org.joseph.friendsync.common.extensions.SpacerWidth

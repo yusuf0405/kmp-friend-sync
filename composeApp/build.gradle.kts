@@ -41,6 +41,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
+
             implementation(libs.libres)
             implementation(libs.composeImageLoader)
             implementation(libs.napier)
@@ -50,7 +51,10 @@ kotlin {
             implementation(libs.composeIcons.featherIcons)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.multiplatformSettings)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.coroutines)
+            implementation(libs.multiplatform.settings.serialization)
+            implementation(libs.multiplatform.settings.no.arg)
 
             // Voyager
             implementation(libs.voyager.navigator)

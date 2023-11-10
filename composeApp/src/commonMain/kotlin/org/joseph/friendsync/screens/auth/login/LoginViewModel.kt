@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.login
+package org.joseph.friendsync.screens.auth.login
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,9 +11,11 @@ import org.joseph.friendsync.domain.usecases.signin.SignInUseCase
 import org.koin.core.component.KoinComponent
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.domain.models.AuthResultData
+import org.joseph.friendsync.managers.UserDataStore
 
 class LoginViewModel(
     private val signInUseCase: SignInUseCase,
+    private val userDataStore: UserDataStore
 ) : ViewModel(), KoinComponent {
 
     private val _state = MutableStateFlow(LoginScreenUiState())
@@ -54,7 +56,7 @@ class LoginViewModel(
     }
 
     private fun handleSuccessSignIn(authResultData: AuthResultData) {
-        // TODO:  Handle success sign in
+        userDataStore.saveCurrentUser(authResultData)
         setStateToAuthenticatingEnd()
     }
 
@@ -65,7 +67,7 @@ class LoginViewModel(
     private fun setStateToAuthenticatingEnd(message: String? = null) {
         _state.update { currentState ->
             currentState.copy(
-                isAuthenticating = true,
+                isAuthenticating = false,
                 authErrorMessage = message,
                 authenticationSucceed = message == null
             )
