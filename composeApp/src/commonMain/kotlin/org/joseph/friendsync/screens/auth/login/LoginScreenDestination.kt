@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.login
+package org.joseph.friendsync.screens.auth.login
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -7,7 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import org.joseph.friendsync.auth.sign.SignUpScreenDestination
+import org.joseph.friendsync.screens.auth.sign.SignUpScreenDestination
 import org.joseph.friendsync.common.components.AppTopBar
 import org.joseph.friendsync.strings.MainResStrings
 import org.koin.compose.koinInject

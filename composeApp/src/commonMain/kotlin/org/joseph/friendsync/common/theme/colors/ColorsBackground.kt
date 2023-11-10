@@ -17,7 +17,7 @@ val BackgroundNavbarIos = Color(0xEBFFFFFF)
 /** Background Dark **/
 val BackgroundPrimaryDark = Color(0xFF19191B)
 val BackgroundPrimaryElevatedDark = Color(0xFF1D2023)
-val BackgroundModalDark =  Color(0xFF18191A)
+val BackgroundModalDark =  Color(0xFF242526)
 val BackgroundStrokeDark = Color(0x597F8C99)
 val BackgroundSecondaryDark = Color(0x40626C77)
 val BackgroundSecondaryElevatedDark = Color(0x40626C77)

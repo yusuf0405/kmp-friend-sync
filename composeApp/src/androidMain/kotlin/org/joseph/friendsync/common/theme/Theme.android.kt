@@ -10,7 +10,7 @@ import androidx.core.view.WindowCompat
 @Composable
 internal actual fun SystemAppearance(isDark: Boolean) {
     val view = LocalView.current
-    val systemBarColor = FriendSyncTheme.colors.backgroundPrimary.toArgb()
+    val systemBarColor = FriendSyncTheme.colors.backgroundModal.toArgb()
 
     if (!view.isInEditMode) {
         SideEffect {

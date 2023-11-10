@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.sign
+package org.joseph.friendsync.screens.auth.sign
 
 sealed class SignUpEvent {
 

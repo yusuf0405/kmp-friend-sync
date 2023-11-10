@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.sign
+package org.joseph.friendsync.screens.auth.sign
 
 import org.joseph.friendsync.common.util.Result
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
@@ -7,14 +7,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import org.joseph.friendsync.auth.login.LoginEvent
+import org.joseph.friendsync.screens.auth.login.LoginEvent
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.domain.models.AuthResultData
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
+import org.joseph.friendsync.managers.UserDataStore
 import org.koin.core.component.KoinComponent
 
 class SignUpViewModel(
     private var signUpUseCase: SignUpUseCase,
+    private val userDataStore: UserDataStore
 ) : ViewModel(), KoinComponent {
 
     private val _state = MutableStateFlow(SignUpUiState())
@@ -74,7 +76,7 @@ class SignUpViewModel(
     }
 
     private fun handleSignUpSuccessResult(authResultData: AuthResultData) {
-        // TODO: Handle sign up success result
+        userDataStore.saveCurrentUser(authResultData)
         _state.update { currentState ->
             currentState.copy(
                 isAuthenticating = false,
