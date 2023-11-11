@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +22,9 @@ import org.joseph.friendsync.common.components.CommentsListItem
 import org.joseph.friendsync.common.components.PhotoPostItem
 import org.joseph.friendsync.common.components.TextPostItem
 import org.joseph.friendsync.common.theme.FriendSyncTheme
+import org.joseph.friendsync.common.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.common.theme.dimens.LargeSpacing
+import org.joseph.friendsync.common.theme.dimens.MediumSpacing
 import org.joseph.friendsync.models.Post
 import org.joseph.friendsync.screens.common.ErrorScreen
 import org.joseph.friendsync.screens.common.LoadingScreen
@@ -33,6 +36,7 @@ fun PostDetailScreen(
     uiState: PostDetailUiState,
     commentsUiState: CommentsUiState,
     onEvent: (PostDetailEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
 
     when (uiState) {
@@ -48,7 +52,8 @@ fun PostDetailScreen(
         is PostDetailUiState.Content -> LoadedPostDetailScreen(
             uiState = uiState,
             commentsUiState = commentsUiState,
-            onEvent = onEvent
+            onEvent = onEvent,
+            modifier = modifier,
         )
     }
 }
@@ -61,7 +66,7 @@ fun LoadedPostDetailScreen(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = modifier.systemBarsPadding()
+        modifier = modifier
             .fillMaxSize()
             .background(FriendSyncTheme.colors.backgroundPrimary),
     ) {
@@ -118,6 +123,9 @@ fun LoadedPostDetailScreen(
                             onEvent(PostDetailEvent.OnCommentMoreIconClick(comment))
                         }
                     )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(FriendSyncTheme.dimens.dp32))
                 }
             }
         }

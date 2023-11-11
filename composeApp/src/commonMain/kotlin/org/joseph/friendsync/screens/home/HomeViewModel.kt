@@ -52,7 +52,9 @@ class HomeViewModel(
     }
 
     private fun startLoadAllData() = screenModelScope.launchSafe(
-        onError = { handleError() }
+        onError = {
+            mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
+        }
     ) {
         mutableState.tryEmit(HomeUiState.Loading)
         awaitAll(
@@ -76,10 +78,6 @@ class HomeViewModel(
             is HomeScreenEvent.FetchMorePosts -> fetchMorePosts()
             is HomeScreenEvent.RefreshAllData -> refreshAll()
         }
-    }
-
-    private fun handleError() {
-        mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
     }
 
     private fun refreshAll() {
@@ -125,6 +123,7 @@ class HomeViewModel(
 
         val allPosts = if (currentPage == DEFAULT_PAGE) remotePosts
         else currentPosts + remotePosts
+
         mutex.withLock { currentPage++ }
         state.copy(
             isPaging = false,
