@@ -37,8 +37,10 @@ fun AppTopBar(
     title: String,
     modifier: Modifier = Modifier,
     endIcon: Painter? = null,
+    startIcon: Painter? = null,
     contentAlignment: Alignment = Alignment.Center,
     onEndClick: () -> Unit = {},
+    onStartClick: () -> Unit = {},
 ) {
     Surface(
         tonalElevation = MediumElevation,
@@ -53,18 +55,21 @@ fun AppTopBar(
                 .fillMaxWidth(),
             contentAlignment = contentAlignment
         ) {
+            if (startIcon != null) AppBarIcon(
+                modifier = Modifier.align(Alignment.CenterStart),
+                painter = startIcon,
+                onClick = onStartClick
+            )
             Text(
                 text = title,
                 style = FriendSyncTheme.typography.titleExtraMedium.medium,
                 textAlign = TextAlign.Center
             )
-            if (endIcon != null) {
-                AppBarIcon(
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                    painter = endIcon,
-                    onClick = onEndClick
-                )
-            }
+            if (endIcon != null) AppBarIcon(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                painter = endIcon,
+                onClick = onEndClick
+            )
         }
     }
 }

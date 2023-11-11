@@ -132,7 +132,8 @@ fun LoadedHomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(MediumSpacing),
+                        .padding(MediumSpacing)
+                        .padding(bottom = LargeSpacing),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     CircularProgressIndicator()
