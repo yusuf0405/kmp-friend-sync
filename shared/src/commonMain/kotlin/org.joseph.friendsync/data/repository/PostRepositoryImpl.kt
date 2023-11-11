@@ -35,6 +35,21 @@ internal class PostRepositoryImpl(
         }
     }
 
+    override suspend fun fetchPostById(
+        postId: Int
+    ): Result<PostDomain> = withContext(dispatcherProvider.io) {
+        callSafe(Result.Error(message = defaultErrorMessage)) {
+            val response = postService.fetchPostById(postId)
+            if (response.data == null) {
+                Result.Error(
+                    message = response.errorMessage ?: defaultErrorMessage
+                )
+            } else {
+                Result.Success(data = postCloudToPostDomainMapper.map(response.data))
+            }
+        }
+    }
+
     override suspend fun fetchUserPosts(
         userId: Int
     ): Result<List<PostDomain>> = withContext(dispatcherProvider.io) {

@@ -32,109 +32,110 @@ import org.joseph.friendsync.common.theme.dimens.LargeSpacing
 import org.joseph.friendsync.common.theme.dimens.MediumSpacing
 import org.joseph.friendsync.models.Post
 import org.joseph.friendsync.models.fakeStories
+import org.joseph.friendsync.screens.common.ErrorScreen
+import org.joseph.friendsync.screens.common.LoadingScreen
 import org.joseph.friendsync.screens.home.onboarding.OnBoardingSelection
 import org.joseph.friendsync.strings.MainResStrings
 
 @Composable
 fun HomeScreen(
-    onEvent: (HomeScreenEvent) -> Unit,
     uiState: HomeUiState,
     onBoardingUiState: OnBoardingUiState,
+    onEvent: (HomeScreenEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    when (uiState) {
+        is HomeUiState.Initial -> LoadingScreen()
+
+        is HomeUiState.Loading -> LoadingScreen()
+
+        is HomeUiState.Error -> ErrorScreen(
+            errorMessage = uiState.message,
+            onClick = { onEvent(HomeScreenEvent.RefreshAllData) }
+        )
+
+        is HomeUiState.Content -> LoadedHomeScreen(
+            uiState = uiState,
+            onBoardingUiState = onBoardingUiState,
+            onEvent = onEvent,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun LoadedHomeScreen(
+    uiState: HomeUiState.Content,
+    onBoardingUiState: OnBoardingUiState,
+    onEvent: (HomeScreenEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(FriendSyncTheme.colors.backgroundPrimary)
+            .background(FriendSyncTheme.colors.backgroundPrimary),
+        contentPadding = PaddingValues(vertical = ExtraLargeSpacing)
     ) {
-        if (uiState.isLoading) Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+        item {
+            StoriesList(
+                storiesList = fakeStories,
+                onStoriesClick = { onEvent(HomeScreenEvent.OnStoriesClick) }
+            )
+            Spacer(modifier = Modifier.height(ExtraLargeSpacing))
         }
-        else if (uiState.errorMessage != null) Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = uiState.errorMessage,
-                    style = FriendSyncTheme.typography.bodyExtraMedium.medium,
-                )
-                SpacerHeight(LargeSpacing)
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(0.5f),
-                    text = MainResStrings.refresh,
-                    onClick = { onEvent(HomeScreenEvent.RefreshAllData) },
-                )
-            }
-        } else LazyColumn(
-            contentPadding = PaddingValues(vertical = ExtraLargeSpacing)
-        ) {
-            item {
-                StoriesList(
-                    storiesList = fakeStories,
-                    onStoriesClick = { onEvent(HomeScreenEvent.OnStoriesClick) }
-                )
-                Spacer(modifier = Modifier.height(ExtraLargeSpacing))
-            }
 
-            item {
-                AnimateFade(isVisible = onBoardingUiState.shouldShowOnBoarding) {
-                    OnBoardingSelection(
-                        users = onBoardingUiState.users,
-                        onUserClick = { user -> onEvent(HomeScreenEvent.OnUserClick(user)) },
-                        onBoardingFinish = { onEvent(HomeScreenEvent.OnBoardingFinish) },
-                        onFollowButtonClick = { isFollow, user ->
-                            onEvent(HomeScreenEvent.OnFollowButtonClick(isFollow, user))
-                        },
+        item {
+            AnimateFade(isVisible = onBoardingUiState.shouldShowOnBoarding) {
+                OnBoardingSelection(
+                    users = onBoardingUiState.users,
+                    onUserClick = { user -> onEvent(HomeScreenEvent.OnUserClick(user)) },
+                    onBoardingFinish = { onEvent(HomeScreenEvent.OnBoardingFinish) },
+                    onFollowButtonClick = { isFollow, user ->
+                        onEvent(HomeScreenEvent.OnFollowButtonClick(isFollow, user))
+                    },
+                )
+            }
+        }
+        itemsIndexed(
+            items = uiState.posts,
+            key = { _, item -> item.postId }
+        ) { index, post ->
+            when (post) {
+                is Post.PhotoPost -> {
+                    PhotoPostItem(
+                        post = post,
+                        onPostClick = { onEvent(HomeScreenEvent.OnPostClick(it)) },
+                        onProfileClick = { onEvent(HomeScreenEvent.OnProfileClick(it)) },
+                        onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick) },
+                        onCommentClick = { onEvent(HomeScreenEvent.OnCommentClick) }
+                    )
+                }
+
+                is Post.TextPost -> {
+                    TextPostItem(
+                        post = post,
+                        onPostClick = { onEvent(HomeScreenEvent.OnPostClick(it)) },
+                        onProfileClick = { onEvent(HomeScreenEvent.OnProfileClick(it)) },
+                        onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick) },
+                        onCommentClick = { onEvent(HomeScreenEvent.OnCommentClick) }
                     )
                 }
             }
-            itemsIndexed(
-                items = uiState.posts,
-                key = { _, item -> item.storiesId }
-            ) { index, post ->
-                when (post) {
-                    is Post.PhotoPost -> {
-                        PhotoPostItem(
-                            post = post,
-                            onPostClick = { onEvent(HomeScreenEvent.OnPostClick(it)) },
-                            onProfileClick = { onEvent(HomeScreenEvent.OnProfileClick(it)) },
-                            onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick) },
-                            onCommentClick = { onEvent(HomeScreenEvent.OnCommentClick) }
-                        )
-                    }
-
-                    is Post.TextPost -> {
-                        TextPostItem(
-                            post = post,
-                            onPostClick = { onEvent(HomeScreenEvent.OnPostClick(it)) },
-                            onProfileClick = { onEvent(HomeScreenEvent.OnProfileClick(it)) },
-                            onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick) },
-                            onCommentClick = { onEvent(HomeScreenEvent.OnCommentClick) }
-                        )
-                    }
-                }
-                if (index >= uiState.posts.size - 1
-                    && !uiState.isPaging
-                ) {
-                    LaunchedEffect(key1 = Unit, block = { onEvent(HomeScreenEvent.FetchMorePosts) })
-                }
+            if (index >= uiState.posts.size - 1
+                && !uiState.isPaging
+            ) {
+                LaunchedEffect(key1 = Unit, block = { onEvent(HomeScreenEvent.FetchMorePosts) })
             }
-            if (uiState.isPaging && uiState.posts.isNotEmpty()) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(MediumSpacing),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+        }
+        if (uiState.isPaging && uiState.posts.isNotEmpty()) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(MediumSpacing),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }

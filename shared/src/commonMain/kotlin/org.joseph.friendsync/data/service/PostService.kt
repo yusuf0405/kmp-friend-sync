@@ -10,7 +10,7 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import org.joseph.friendsync.common.data.BASE_URL
 import org.joseph.friendsync.common.data.KtorApi
-import org.joseph.friendsync.data.models.post.AddPostResponse
+import org.joseph.friendsync.data.models.post.PostResponse
 import org.joseph.friendsync.data.models.post.PostListResponse
 import org.joseph.friendsync.data.models.post.RecommendedPostsParam
 
@@ -21,7 +21,7 @@ internal class PostService : KtorApi() {
         byteArrays: List<ByteArray?>,
         message: String?,
         userId: Int
-    ): AddPostResponse = client.submitFormWithBinaryData(
+    ): PostResponse = client.submitFormWithBinaryData(
         url = "$BASE_URL/post/add",
         formData = formData {
             append("user_id", userId.toString())
@@ -41,6 +41,10 @@ internal class PostService : KtorApi() {
 
     suspend fun fetchUserPosts(userId: Int): PostListResponse = client.get {
         endPoint(path = "/post/list/${userId}")
+    }.body()
+
+    suspend fun fetchPostById(postId: Int): PostResponse = client.get {
+        endPoint(path = "/post/${postId}")
     }.body()
 
     suspend fun fetchRecommendedPosts(

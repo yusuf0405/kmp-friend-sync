@@ -51,7 +51,7 @@ import org.joseph.friendsync.models.Post
 fun PhotoPostItem(
     modifier: Modifier = Modifier,
     post: Post.PhotoPost,
-    onPostClick: (String) -> Unit,
+    onPostClick: (Int) -> Unit,
     onProfileClick: (Int) -> Unit = {},
     onLikeClick: () -> Unit = {},
     onCommentClick: () -> Unit = {},
@@ -66,7 +66,7 @@ fun PhotoPostItem(
             .fillMaxWidth()
             .clickableNoRipple { onPostClick(post.id) },
     ) {
-        Divider()
+        if (!isDetailScreen) Divider()
         SpacerHeight(SmallSpacing)
         PostItemHeader(
             name = post.authorName,
@@ -118,7 +118,6 @@ fun PhotoPostItem(
             overflow = TextOverflow.Ellipsis,
             color = FriendSyncTheme.colors.textSecondary
         )
-        SpacerHeight(ExtraLargeSpacing)
     }
 }
 
@@ -126,7 +125,7 @@ fun PhotoPostItem(
 fun TextPostItem(
     modifier: Modifier = Modifier,
     post: Post.TextPost,
-    onPostClick: (String) -> Unit,
+    onPostClick: (Int) -> Unit,
     onProfileClick: (Int) -> Unit = {},
     onLikeClick: () -> Unit = {},
     onCommentClick: () -> Unit = {},
@@ -137,7 +136,7 @@ fun TextPostItem(
             .fillMaxWidth()
             .clickableNoRipple { onPostClick(post.id) },
     ) {
-        Divider()
+        if (!isDetailScreen) Divider()
         SpacerHeight(SmallSpacing)
         PostItemHeader(
             name = post.authorName,
@@ -162,7 +161,6 @@ fun TextPostItem(
             onLikeClick = onLikeClick,
             onCommentClick = onCommentClick
         )
-        SpacerHeight(MediumSpacing)
     }
 }
 

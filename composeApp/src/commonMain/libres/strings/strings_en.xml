@@ -43,4 +43,5 @@
     <string name="refresh">Refresh</string>
     <string name="dont_have_anaccount">Don't have an account?</string>
     <string name="already_have_an_account">Already have an account?</string>
+    <string name="post_detail">Post detail</string>
 </resources>

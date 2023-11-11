@@ -15,7 +15,7 @@ class PostDomainToPostMapperImpl(
     override fun map(from: PostDomain, currentUserId: Int): Post = from.run {
         when {
             imageUrls.isEmpty() -> Post.TextPost(
-                id = id.toString(),
+                id = id,
                 text = message ?: "",
                 createdAt = releaseDate.toLocalDate().toString(),
                 likesCount = 0,
@@ -29,7 +29,7 @@ class PostDomainToPostMapperImpl(
             )
 
             else -> Post.PhotoPost(
-                id = id.toString(),
+                id = id,
                 text = message ?: "",
                 createdAt = releaseDate.toLocalDate().toString(),
                 likesCount = 0,
