@@ -21,6 +21,7 @@ import org.joseph.friendsync.domain.repository.UserRepository
 import org.joseph.friendsync.domain.usecases.categories.FetchAllCategoriesUseCase
 import org.joseph.friendsync.domain.usecases.onboarding.FetchOnboardingUsersUseCase
 import org.joseph.friendsync.domain.usecases.post.AddPostUseCase
+import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
 import org.joseph.friendsync.domain.usecases.signin.SignInUseCase
@@ -44,6 +45,7 @@ private val postModule = module {
     factory { AddPostUseCase() }
     factory { FetchUserPostsUseCase() }
     factory { FetchRecommendedPostsUseCase() }
+    factory { FetchPostByIdUseCase() }
 }
 
 private val usersModule = module {

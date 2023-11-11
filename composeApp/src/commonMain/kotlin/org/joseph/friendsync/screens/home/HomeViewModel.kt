@@ -1,10 +1,13 @@
 package org.joseph.friendsync.screens.home
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import cafe.adriel.voyager.core.model.StateScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
+import cafe.adriel.voyager.navigator.Navigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.joseph.friendsync.common.util.Result
@@ -21,6 +24,7 @@ import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
 import org.joseph.friendsync.screens.home.onboarding.OnBoardingUiState
 import org.joseph.friendsync.screens.home.onboarding.OnboardingStateCommunication
+import org.joseph.friendsync.screens.post_detils.PostScreenDestination
 import org.koin.core.component.KoinComponent
 
 private const val DEFAULT_PAGE = 1
@@ -32,9 +36,8 @@ class HomeViewModel(
     private val fetchRecommendedPostsUseCase: FetchRecommendedPostsUseCase,
     private val userInfoDomainToUserInfoMapper: UserInfoDomainToUserInfoMapper,
     private val postDomainToPostMapper: PostDomainToPostMapper,
-    private val uiStateCommunication: HomeUiStateCommunication,
     private val onboardingCommunication: OnboardingStateCommunication
-) : ViewModel(), KoinComponent {
+) : StateScreenModel<HomeUiState>(HomeUiState.Initial), KoinComponent {
 
     private var currentPage = DEFAULT_PAGE
     private var currentUser: UserPreferences = UserPreferences.unknown
@@ -42,32 +45,29 @@ class HomeViewModel(
     private val mutex = Mutex()
     private var allDataJob: Job? = null
 
-    val homeUiState: StateFlow<HomeUiState> = uiStateCommunication.observe()
-
     val onBoardingUiState: StateFlow<OnBoardingUiState> = onboardingCommunication.observe()
 
     init {
         allDataJob = startLoadAllData()
     }
 
-    private fun startLoadAllData() = viewModelScope.launchSafe(
+    private fun startLoadAllData() = screenModelScope.launchSafe(
         onError = { handleError() }
     ) {
-        startLoading()
+        mutableState.tryEmit(HomeUiState.Loading)
         awaitAll(
             asyncFetchCurrentUser(),
             asyncFetchPosts(),
             asyncFetchOnboardingUsers(),
         )
-        loadingFinished()
     }
 
-    fun onEvent(event: HomeScreenEvent) {
+    fun onEvent(event: HomeScreenEvent, navigator: Navigator) {
         when (event) {
             is HomeScreenEvent.OnCommentClick -> {}
             is HomeScreenEvent.OnLikeClick -> {}
             is HomeScreenEvent.OnProfileClick -> {}
-            is HomeScreenEvent.OnPostClick -> {}
+            is HomeScreenEvent.OnPostClick -> navigator.push(PostScreenDestination(event.postId))
             is HomeScreenEvent.OnStoriesClick -> {}
             is HomeScreenEvent.OnFollowItemClick -> {}
             is HomeScreenEvent.OnFollowButtonClick -> {}
@@ -79,12 +79,7 @@ class HomeViewModel(
     }
 
     private fun handleError() {
-        uiStateCommunication.update { state ->
-            state.copy(
-                isLoading = false,
-                errorMessage = defaultErrorMessage
-            )
-        }
+        mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
     }
 
     private fun refreshAll() {
@@ -94,7 +89,7 @@ class HomeViewModel(
     }
 
     private fun fetchMorePosts() {
-        viewModelScope.launchSafe { asyncFetchPosts().await() }
+        screenModelScope.launchSafe { asyncFetchPosts().await() }
     }
 
     private suspend fun asyncFetchCurrentUser() = asyncWithDefault(Unit) {
@@ -102,8 +97,10 @@ class HomeViewModel(
     }
 
     private suspend fun asyncFetchPosts() = asyncWithDefault(Unit) {
-        if (uiStateCommunication.value().isPaging) return@asyncWithDefault
-        uiStateCommunication.update { state -> state.copy(isPaging = true) }
+        val state = mutableState.value as? HomeUiState.Content ?: HomeUiState.Content.unknown
+        if (state.isPaging) return@asyncWithDefault
+        if (state != HomeUiState.Content.unknown) mutableState.tryEmit(state.copy(isPaging = true))
+
         delay(3000)
         val response = fetchRecommendedPostsUseCase(
             page = currentPage,
@@ -112,35 +109,28 @@ class HomeViewModel(
         )
 
         val uiState = when (response) {
-            is Result.Success -> fetchStateForSuccessfulPostsRequest(response)
-            is Result.Error -> fetchStateForErrorPostsRequest(response.message)
+            is Result.Success -> fetchStateForSuccessfulPostsRequest(state, response)
+            is Result.Error -> HomeUiState.Error(response.message ?: defaultErrorMessage)
         }
-        uiStateCommunication.emit(uiState)
+        mutableState.emit(uiState)
     }
 
 
     private suspend fun fetchStateForSuccessfulPostsRequest(
+        state: HomeUiState.Content,
         response: Result<List<PostDomain>>
     ): HomeUiState = response.data?.let { postsDomain ->
-        Mutex()
         val remotePosts = postsDomain.map { postDomainToPostMapper.map(it, currentUser.id) }
-        val currentPosts = uiStateCommunication.value().posts
+        val currentPosts = state.posts
 
         val allPosts = if (currentPage == DEFAULT_PAGE) remotePosts
         else currentPosts + remotePosts
         mutex.withLock { currentPage++ }
-        uiStateCommunication.value().copy(
+        state.copy(
             isPaging = false,
             posts = allPosts
         )
-    } ?: uiStateCommunication.value()
-
-    private fun fetchStateForErrorPostsRequest(
-        message: String?
-    ): HomeUiState = uiStateCommunication.value().copy(
-        isPaging = false,
-        errorMessage = message ?: defaultErrorMessage
-    )
+    } ?: mutableState.value
 
     private suspend fun asyncFetchOnboardingUsers() = asyncWithDefault(Unit) {
         val onBoardingState = when (val result = fetchOnboardingUsersUseCase(currentUser.id)) {
@@ -172,11 +162,8 @@ class HomeViewModel(
         }
     }
 
-    private fun startLoading() {
-        uiStateCommunication.update { state -> state.copy(isLoading = true) }
-    }
-
-    private fun loadingFinished() {
-        uiStateCommunication.update { state -> state.copy(isLoading = false) }
+    override fun onDispose() {
+        allDataJob?.cancel()
+        super.onDispose()
     }
 }

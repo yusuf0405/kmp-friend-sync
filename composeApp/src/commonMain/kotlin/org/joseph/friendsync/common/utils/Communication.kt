@@ -1,4 +1,4 @@
-package org.joseph.friendsync.utils
+package org.joseph.friendsync.common.utils
 
 import kotlinx.coroutines.flow.StateFlow
 

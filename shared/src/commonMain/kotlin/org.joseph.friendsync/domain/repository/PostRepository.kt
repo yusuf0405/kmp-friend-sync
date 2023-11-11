@@ -11,6 +11,9 @@ internal interface PostRepository {
         userId: Int,
     ): Result<PostDomain>
 
+
+    suspend fun fetchPostById(postId: Int): Result<PostDomain>
+
     suspend fun fetchUserPosts(userId: Int): Result<List<PostDomain>>
 
     suspend fun fetchRecommendedPosts(

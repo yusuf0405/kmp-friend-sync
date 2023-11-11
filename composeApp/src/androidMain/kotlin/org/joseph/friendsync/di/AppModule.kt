@@ -9,9 +9,10 @@ import org.joseph.friendsync.mappers.PostDomainToPostMapperImpl
 import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
 import org.joseph.friendsync.screens.auth.login.LoginViewModel
 import org.joseph.friendsync.screens.auth.sign.SignUpViewModel
-import org.joseph.friendsync.screens.home.HomeUiStateCommunication
 import org.joseph.friendsync.screens.home.HomeViewModel
 import org.joseph.friendsync.screens.home.onboarding.OnboardingStateCommunication
+import org.joseph.friendsync.screens.post_detils.PostDetailViewModel
+import org.joseph.friendsync.screens.post_detils.comment.CommentsStateCommunication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -23,8 +24,13 @@ private val appModule = module {
 }
 private val viewModelsModule = module {
     viewModel { LoginViewModel(get(), get()) }
+    factory { params ->
+        PostDetailViewModel(
+            postId = params.get(), get(), get(), get(), get(),
+        )
+    }
     viewModel { SignUpViewModel(get(), get()) }
-    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    factory { HomeViewModel(get(), get(), get(), get(), get(), get()) }
 }
 
 private val mappersModule = module {
@@ -38,6 +44,6 @@ private val managersModule = module {
 }
 
 private val communicationModule = module {
-    factory<HomeUiStateCommunication> { HomeUiStateCommunication.Default() }
     factory<OnboardingStateCommunication> { OnboardingStateCommunication.Default() }
+    factory<CommentsStateCommunication> { CommentsStateCommunication.Default() }
 }

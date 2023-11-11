@@ -25,7 +25,7 @@ sealed class HomeScreenEvent {
 
     data object OnCommentClick : HomeScreenEvent()
 
-    data class OnPostClick(val postId: String) : HomeScreenEvent()
+    data class OnPostClick(val postId: Int) : HomeScreenEvent()
 
     data class OnProfileClick(val userId: Int) : HomeScreenEvent()
 }

@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AddPostResponse(
+data class PostResponse(
     val data: PostCloud? = null,
     val errorMessage: String? = null
 )
