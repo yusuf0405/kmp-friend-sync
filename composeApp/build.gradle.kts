@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
+    alias(libs.plugins.cocoapods)
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
@@ -19,7 +21,6 @@ kotlin {
     }
 
     jvm()
-
     js {
         browser()
         binaries.executable()
@@ -36,13 +37,33 @@ kotlin {
         }
     }
 
+    cocoapods {
+        version = "1.0"
+        name = "kmp-friend-sync"
+        summary = "CocoaPods test library"
+        homepage = "https://github.com/yusuf0405/kmp-friend-sync"
+//        extraSpecAttributes["vendored_frameworks"] = 'CustomFramework.xcframework'
+
+        license = "{ :type => 'MIT', :file => 'LICENSE'}"
+        source = "{ :git => 'git@github.com:yusuf0405/kmp-friend-sync.git', :tag => '$version' }"
+        authors = "Joseph"
+
+        specRepos {
+            url("https://github.com/Kotlin/kotlin-cocoapods-spec.git")
+        }
+        pod("example")
+
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+    }
+
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":shared"))
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
+
             implementation(libs.libres)
-            implementation(libs.voyager.navigator)
             implementation(libs.composeImageLoader)
             implementation(libs.napier)
             implementation(libs.kotlinx.coroutines.core)
@@ -51,8 +72,20 @@ kotlin {
             implementation(libs.composeIcons.featherIcons)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.multiplatformSettings)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.coroutines)
+            implementation(libs.multiplatform.settings.serialization)
+            implementation(libs.multiplatform.settings.no.arg)
+
+            // Voyager
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.tab.navigator)
+            implementation(libs.voyager.transitions)
+            implementation(libs.voyager.koin)
+
+            // Koin
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
 
         commonTest.dependencies {
@@ -86,16 +119,25 @@ kotlin {
 
 android {
     namespace = "org.joseph.friendsync"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 
         applicationId = "org.joseph.friendsync.androidApp"
         versionCode = 1
         versionName = "1.0.0"
     }
+
+    packaging.resources {
+        pickFirsts += "/META-INF/LICENSE.md"
+        pickFirsts += "/META-INF/LICENSE-notice.md"
+        pickFirsts += "/META-INF/AL2.0"
+        pickFirsts += "/META-INF/LGPL2.1"
+        pickFirsts += "META-INF/versions/9/previous-compilation-data.bin"
+    }
+
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         res.srcDirs("src/androidMain/resources")
@@ -129,8 +171,12 @@ compose.experimental {
 }
 
 libres {
-    // https://github.com/Skeptick/libres#setup
+    generatedClassName = "MainRes"
+    generateNamedArguments = true
+    baseLocaleLanguageCode = "en"
+    camelCaseNamesForAppleFramework = false
 }
+
 tasks.getByPath("jvmProcessResources").dependsOn("libresGenerateResources")
 tasks.getByPath("jvmSourcesJar").dependsOn("libresGenerateResources")
 tasks.getByPath("jsProcessResources").dependsOn("libresGenerateResources")

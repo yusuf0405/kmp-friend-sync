@@ -6,6 +6,10 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import org.joseph.friendsync.di.appModules
+import org.joseph.friendsync.di.getSharedModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class AndroidApp : Application() {
     companion object {
@@ -15,6 +19,10 @@ class AndroidApp : Application() {
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
+        startKoin {
+            androidContext(this@AndroidApp)
+            modules(appModules() + getSharedModule())
+        }
     }
 }
 
