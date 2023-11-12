@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
+    alias(libs.plugins.cocoapods)
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
@@ -33,6 +35,25 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
+    }
+
+    cocoapods {
+        version = "1.0"
+        name = "kmp-friend-sync"
+        summary = "CocoaPods test library"
+        homepage = "https://github.com/yusuf0405/kmp-friend-sync"
+//        extraSpecAttributes["vendored_frameworks"] = 'CustomFramework.xcframework'
+
+        license = "{ :type => 'MIT', :file => 'LICENSE'}"
+        source = "{ :git => 'git@github.com:yusuf0405/kmp-friend-sync.git', :tag => '$version' }"
+        authors = "Joseph"
+
+        specRepos {
+            url("https://github.com/Kotlin/kotlin-cocoapods-spec.git")
+        }
+        pod("example")
+
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
     }
 
     sourceSets {
