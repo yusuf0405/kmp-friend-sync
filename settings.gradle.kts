@@ -1,5 +1,6 @@
 rootProject.name = "kmp-friend-sync"
 include(":composeApp")
+include(":shared")
 
 pluginManagement {
     repositories {
