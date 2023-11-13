@@ -8,6 +8,9 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.ArrowLeft
+import compose.icons.feathericons.ArrowRight
 import io.github.skeptick.libres.compose.painterResource
 import org.joseph.friendsync.common.components.AppTopBar
 import org.joseph.friendsync.images.MainResImages
@@ -27,7 +30,7 @@ class PostScreenDestination(
             topBar = {
                 AppTopBar(
                     title = MainResStrings.post_detail_destination_title,
-                    startIcon = painterResource(MainResImages.back_icon),
+                    startIcon = FeatherIcons.ArrowLeft,
                     onStartClick = { navigator?.pop() }
                 )
             }

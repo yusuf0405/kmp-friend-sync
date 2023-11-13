@@ -12,13 +12,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.github.skeptick.libres.compose.painterResource
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.MoreHorizontal
 import org.joseph.friendsync.common.extensions.SpacerHeight
 import org.joseph.friendsync.common.theme.FriendSyncTheme
 import org.joseph.friendsync.common.theme.dimens.LargeSpacing
 import org.joseph.friendsync.common.theme.dimens.MediumSpacing
 import org.joseph.friendsync.common.theme.dimens.SmallSpacing
-import org.joseph.friendsync.images.MainResImages
 import org.joseph.friendsync.models.Comment
 
 @Composable
@@ -66,7 +66,7 @@ fun CommentsListItem(
                     color = FriendSyncTheme.colors.textSecondary
                 )
                 Icon(
-                    painter = painterResource(MainResImages.more_icon),
+                    imageVector = FeatherIcons.MoreHorizontal,
                     contentDescription = null,
                     tint = FriendSyncTheme.colors.iconsSecondary,
                     modifier = Modifier.clickable { onMoreIconClick() }
