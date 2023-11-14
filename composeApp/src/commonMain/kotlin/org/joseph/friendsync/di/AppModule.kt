@@ -13,7 +13,6 @@ import org.joseph.friendsync.screens.home.HomeViewModel
 import org.joseph.friendsync.screens.home.onboarding.OnboardingStateCommunication
 import org.joseph.friendsync.screens.post_detils.PostDetailViewModel
 import org.joseph.friendsync.screens.post_detils.comment.CommentsStateCommunication
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 fun appModules() =
@@ -23,13 +22,13 @@ private val appModule = module {
 
 }
 private val viewModelsModule = module {
-    viewModel { LoginViewModel(get(), get()) }
+    factory { LoginViewModel(get(), get()) }
     factory { params ->
         PostDetailViewModel(
             postId = params.get(), get(), get(), get(), get(),
         )
     }
-    viewModel { SignUpViewModel(get(), get()) }
+    factory { SignUpViewModel(get(), get()) }
     factory { HomeViewModel(get(), get(), get(), get(), get(), get()) }
 }
 

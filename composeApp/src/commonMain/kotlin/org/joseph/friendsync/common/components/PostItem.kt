@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +18,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Chat
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,17 +35,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
-import io.github.skeptick.libres.compose.painterResource
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.MoreVertical
 import org.joseph.friendsync.common.extensions.SpacerHeight
 import org.joseph.friendsync.common.extensions.clickableNoRipple
 import org.joseph.friendsync.common.theme.FriendSyncTheme
-import org.joseph.friendsync.common.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.common.theme.dimens.LargeSpacing
 import org.joseph.friendsync.common.theme.dimens.MediumSpacing
 import org.joseph.friendsync.common.theme.dimens.SmallSpacing
-import org.joseph.friendsync.images.MainResImages
 import org.joseph.friendsync.models.Post
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -209,8 +209,9 @@ fun PostItemHeader(
             color = FriendSyncTheme.colors.textSecondary,
             modifier = modifier.weight(1f)
         )
+
         Icon(
-            painter = painterResource(MainResImages.more_icon),
+            imageVector = FeatherIcons.MoreVertical,
             contentDescription = null,
             tint = FriendSyncTheme.colors.iconsSecondary
         )
@@ -233,7 +234,7 @@ fun PostLikesRow(
         IconButton(onClick = onLikeClick) {
             Icon(
                 modifier = Modifier.size(24.dp),
-                painter = painterResource(MainResImages.like_icon),
+                imageVector = Icons.Outlined.FavoriteBorder,
                 contentDescription = null,
                 tint = FriendSyncTheme.colors.iconsSecondary
             )
@@ -248,7 +249,7 @@ fun PostLikesRow(
         IconButton(onClick = onCommentClick) {
             Icon(
                 modifier = Modifier.size(24.dp),
-                painter = painterResource(MainResImages.chat_icon),
+                imageVector = Icons.Outlined.Chat,
                 contentDescription = null,
                 tint = FriendSyncTheme.colors.iconsSecondary
             )

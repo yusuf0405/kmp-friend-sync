@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Clock
+import compose.icons.feathericons.PlusCircle
 import org.joseph.friendsync.common.components.CommentsListItem
 import org.joseph.friendsync.common.components.PhotoPostItem
 import org.joseph.friendsync.common.components.TextPostItem

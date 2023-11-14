@@ -91,7 +91,7 @@ class HomeViewModel(
     }
 
     private suspend fun asyncFetchCurrentUser() = asyncWithDefault(Unit) {
-        currentUser = userDataStore.fetchCurrentUser()
+        currentUser = UserPreferences.unknown.copy(id = 1)
     }
 
     private suspend fun asyncFetchPosts() = asyncWithDefault(Unit) {

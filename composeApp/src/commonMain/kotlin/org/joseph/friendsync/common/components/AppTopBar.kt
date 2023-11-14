@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.skeptick.libres.compose.painterResource
@@ -36,8 +37,8 @@ import org.joseph.friendsync.images.MainResImages
 fun AppTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    endIcon: Painter? = null,
-    startIcon: Painter? = null,
+    endIcon: ImageVector? = null,
+    startIcon: ImageVector? = null,
     contentAlignment: Alignment = Alignment.Center,
     onEndClick: () -> Unit = {},
     onStartClick: () -> Unit = {},
@@ -57,7 +58,7 @@ fun AppTopBar(
         ) {
             if (startIcon != null) AppBarIcon(
                 modifier = Modifier.align(Alignment.CenterStart),
-                painter = startIcon,
+                imageVector = startIcon,
                 onClick = onStartClick
             )
             Text(
@@ -67,7 +68,7 @@ fun AppTopBar(
             )
             if (endIcon != null) AppBarIcon(
                 modifier = Modifier.align(Alignment.CenterEnd),
-                painter = endIcon,
+                imageVector = endIcon,
                 onClick = onEndClick
             )
         }
@@ -76,7 +77,7 @@ fun AppTopBar(
 
 @Composable
 private fun AppBarIcon(
-    painter: Painter,
+    imageVector: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isVisibility: Boolean = true
@@ -100,7 +101,7 @@ private fun AppBarIcon(
         ) {
             Icon(
                 modifier = Modifier.size(18.dp),
-                painter = painter,
+                imageVector = imageVector,
                 contentDescription = null,
             )
         }
