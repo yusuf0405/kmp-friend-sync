@@ -4,9 +4,10 @@ import org.joseph.friendsync.common.data.BASE_URL
 import org.joseph.friendsync.common.mapper.Mapper
 import org.joseph.friendsync.data.models.post.PostCloud
 import org.joseph.friendsync.domain.models.PostDomain
-import org.joseph.friendsync.domain.models.PostUserDomain
 
-class PostCloudToPostDomainMapper : Mapper<PostCloud, PostDomain> {
+internal class PostCloudToPostDomainMapper(
+    private val userInfoCloudToUserInfoDomainMapper: UserInfoCloudToUserInfoDomainMapper
+) : Mapper<PostCloud, PostDomain> {
 
     override fun map(from: PostCloud): PostDomain = from.run {
         PostDomain(
@@ -20,13 +21,7 @@ class PostCloudToPostDomainMapper : Mapper<PostCloud, PostDomain> {
             message = message,
             releaseDate = releaseDate,
             savedCount = savedCount,
-            user = PostUserDomain(
-                id = user.id,
-                userImage = if (user.userImage == null) null
-                else BASE_URL + user.userImage,
-                name = user.name,
-                lastName = user.lastName
-            )
+            user = userInfoCloudToUserInfoDomainMapper.map(user)
         )
     }
 }

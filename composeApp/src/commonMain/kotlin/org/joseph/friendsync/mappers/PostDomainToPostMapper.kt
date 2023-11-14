@@ -22,7 +22,7 @@ class PostDomainToPostMapperImpl(
                 commentCount = 0,
                 authorId = user.id ?: 0,
                 authorName = user.name ?: "",
-                authorImage = user.userImage ?: "",
+                authorImage = user.avatar ?: "",
                 authorLastName = user.lastName ?: "",
                 isLiked = false,
                 isOwnPost = user.id == currentUserId
@@ -36,7 +36,7 @@ class PostDomainToPostMapperImpl(
                 commentCount = 0,
                 authorId = user.id ?: 0,
                 authorName = user.name ?: "",
-                authorImage = user.userImage ?: "",
+                authorImage = user.avatar ?: "",
                 authorLastName = user.lastName ?: "",
                 isLiked = false,
                 isOwnPost = user.id == currentUserId,

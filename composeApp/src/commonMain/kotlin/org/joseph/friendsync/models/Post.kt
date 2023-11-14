@@ -1,8 +1,10 @@
 package org.joseph.friendsync.models
 
+import androidx.compose.runtime.Immutable
 import org.joseph.friendsync.models.Post.PhotoPost
 import org.joseph.friendsync.models.Post.TextPost
 
+@Immutable
 sealed class Post(
     val postId: Int
 ) {
