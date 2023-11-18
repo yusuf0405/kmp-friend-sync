@@ -87,6 +87,7 @@ private val commentsModule = module {
     factory { AddCommentToPostUseCase() }
     factory { DeleteCommentByIdUseCase() }
     factory { FetchPostCommentsUseCase() }
+    factory { EditCommentUseCase() }
 }
 
 

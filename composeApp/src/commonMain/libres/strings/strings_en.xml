@@ -17,7 +17,9 @@
     <string name="home_destination_title">Home</string>
     <string name="follow_button_text">Follow</string>
     <string name="onboarding_title">Who to follow</string>
-    <string name="onboarding_description">Post from people you follow will appear here.\nHere are some suggested people you can follow</string>
+    <string name="onboarding_description">Post from people you follow will appear here.\nHere are
+        some suggested people you can follow
+    </string>
     <string name="onboarding_done_button">Done</string>
     <string name="post_detail_destination_title">Post detail</string>
     <string name="commnts_header_label">Comments</string>
@@ -38,10 +40,15 @@
     <string name="followers">Followers</string>
     <string name="following">Following</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
     <string name="sarch_screen_placeholder">Search for people, posts, tags...</string>
     <string name="popular">Popular</string>
     <string name="refresh">Refresh</string>
     <string name="dont_have_anaccount">Don't have an account?</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="post_detail">Post detail</string>
+    <string name="add_new_string">New Comment</string>
+    <string name="enter_something">Enter something...</string>
+    <string name="edit_comment">Edit comment</string>
 </resources>

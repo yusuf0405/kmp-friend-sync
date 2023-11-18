@@ -20,6 +20,7 @@ import org.joseph.friendsync.strings.MainResStrings
 import org.koin.compose.koinInject
 
 class HomeScreenDestination : Screen {
+
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current

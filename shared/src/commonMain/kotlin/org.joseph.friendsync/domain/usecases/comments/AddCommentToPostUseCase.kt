@@ -13,9 +13,11 @@ class AddCommentToPostUseCase : KoinComponent {
     suspend operator fun invoke(
         userId: Int,
         postId: Int,
-        commentText: String
+        commentText: String,
     ): Result<CommentDomain?> {
+        if (commentText.isBlank()) {
+            return Result.Error(message = "You cannot create a comment empty")
+        }
         return repository.addCommentToPost(userId, postId, commentText)
     }
-
 }

@@ -3,6 +3,7 @@ package org.joseph.friendsync.data.service
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import org.joseph.friendsync.common.data.KtorApi
 import org.joseph.friendsync.data.models.category.CategoriesResponse
@@ -20,18 +21,18 @@ internal class CommentsService : KtorApi() {
         userId: Int,
         postId: Int,
         commentText: String
-    ): CommentResponse = client.get {
+    ): CommentResponse = client.post {
         endPoint(path = "$COMMENTS_REQUEST_PATH/add")
         setBody(AddCommentParams(userId, postId, commentText))
     }.body()
 
 
-    suspend fun deleteCommentById(commentId: Int): Int = client.get {
+    suspend fun deleteCommentById(commentId: Int): Int = client.post {
         endPoint(path = "$COMMENTS_REQUEST_PATH/delete/$commentId")
     }.body()
 
 
-    suspend fun editCommentById(commentId: Int, editedText: String): Int = client.get {
+    suspend fun editCommentById(commentId: Int, editedText: String): Int = client.post {
         endPoint(path = "$COMMENTS_REQUEST_PATH/edit")
         setBody(EditCommentParams(commentId, editedText))
     }.body()

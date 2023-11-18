@@ -11,12 +11,9 @@ interface CommentsRepository {
         commentText: String
     ): Result<CommentDomain?>
 
-
     suspend fun deleteCommentById(commentId: Int): Result<Int>
 
-
     suspend fun editCommentById(commentId: Int, editedText: String): Result<Int>
-
 
     suspend fun fetchAllPostComments(postId: Int): Result<List<CommentDomain>>
 }

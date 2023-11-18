@@ -27,7 +27,8 @@ fun PrimaryButton(
     textStyle: TextStyle = FriendSyncTheme.typography.bodyLarge.medium,
     textColor: Color = FriendSyncTheme.colors.onTextPrimary,
     elevation: ButtonElevation = ButtonDefaults.buttonElevation(),
-    shape: Shape = FriendSyncTheme.shapes.medium
+    shape: Shape = FriendSyncTheme.shapes.medium,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
@@ -38,8 +39,10 @@ fun PrimaryButton(
         shape = shape,
         colors = ButtonDefaults.buttonColors(
             containerColor = color,
-            contentColor = textColor
-        )
+            contentColor = textColor,
+            disabledContainerColor = Color.LightGray
+        ),
+        enabled = enabled
     ) {
         Text(
             modifier = textModifier,
