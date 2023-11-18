@@ -1,9 +1,13 @@
 package org.joseph.friendsync.navigation.tabs
 
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.PlusCircle
 import io.github.skeptick.libres.compose.painterResource
 import org.joseph.friendsync.images.MainResImages
 import org.joseph.friendsync.navigation.TabContent
@@ -15,12 +19,13 @@ object AddPostTab : Tab {
         @Composable
         get() {
             val title = MainResStrings.home_destination_title
-            val icon = painterResource(MainResImages.add_tab_icon)
+            val imageVector = rememberVectorPainter(FeatherIcons.PlusCircle)
+
             return remember {
                 TabOptions(
                     index = 2u,
                     title = title,
-                    icon = icon
+                    icon = imageVector
                 )
             }
         }

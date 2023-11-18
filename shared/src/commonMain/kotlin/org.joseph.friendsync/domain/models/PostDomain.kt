@@ -9,12 +9,5 @@ data class PostDomain(
     val message: String?,
     val releaseDate: Long,
     val savedCount: Int,
-    val user: PostUserDomain
-)
-
-data class PostUserDomain(
-    val id: Int?,
-    val name: String?,
-    val lastName: String?,
-    val userImage: String?,
+    val user: UserInfoDomain
 )

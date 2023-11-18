@@ -11,6 +11,8 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.MessageCircle
 import io.github.skeptick.libres.compose.painterResource
 import org.joseph.friendsync.common.components.AppTopBar
 import org.joseph.friendsync.images.MainResImages
@@ -18,6 +20,7 @@ import org.joseph.friendsync.strings.MainResStrings
 import org.koin.compose.koinInject
 
 class HomeScreenDestination : Screen {
+
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
@@ -27,7 +30,7 @@ class HomeScreenDestination : Screen {
             topBar = {
                 AppTopBar(
                     title = MainResStrings.home_destination_title,
-                    endIcon = painterResource(MainResImages.mesage_icon)
+                    endIcon = FeatherIcons.MessageCircle
                 )
             }
         ) { paddings ->

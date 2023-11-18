@@ -99,7 +99,7 @@ class HomeViewModel(
         if (state.isPaging) return@asyncWithDefault
         if (state != HomeUiState.Content.unknown) mutableState.tryEmit(state.copy(isPaging = true))
 
-        delay(3000)
+        delay(1500)
         val response = fetchRecommendedPostsUseCase(
             page = currentPage,
             pageSize = DEFAULT_PAGE_SIZE,

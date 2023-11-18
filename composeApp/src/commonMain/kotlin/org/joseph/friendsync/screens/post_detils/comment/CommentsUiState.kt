@@ -8,5 +8,12 @@ sealed class CommentsUiState {
 
     data class Error(val message: String) : CommentsUiState()
 
-    data class Content(val comments: List<Comment>) : CommentsUiState()
+    data class Content(
+        val comments: List<Comment>,
+        val newCommentValue: String = String(),
+        val editCommentValue: String = String(),
+        val shouldShowAddCommentDialog: Boolean = false,
+        val shouldShowEditCommentDialog: Boolean = false,
+        val editComment: Comment? = null
+    ) : CommentsUiState()
 }

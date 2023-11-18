@@ -10,6 +10,8 @@ sealed class PostDetailUiState {
 
     data class Error(val message: String) : PostDetailUiState()
 
-    data class Content(val post: Post) : PostDetailUiState()
+    data class Content(
+        val post: Post,
+    ) : PostDetailUiState()
 
 }

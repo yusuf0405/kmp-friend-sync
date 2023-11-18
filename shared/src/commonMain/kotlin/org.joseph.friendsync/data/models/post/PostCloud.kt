@@ -3,6 +3,7 @@ package org.joseph.friendsync.data.models.post
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.joseph.friendsync.data.models.user.UserInfoCloud
 
 @Serializable
 data class PostResponse(
@@ -33,13 +34,5 @@ data class PostCloud(
     @SerialName("savedCount")
     val savedCount: Int,
     @SerialName("user")
-    val user: PostUserCloud
-)
-
-@Serializable
-data class PostUserCloud(
-    val id: Int?,
-    val name: String?,
-    val lastName: String?,
-    val userImage: String?,
+    val user: UserInfoCloud
 )

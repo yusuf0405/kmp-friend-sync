@@ -1,11 +1,20 @@
 package org.joseph.friendsync.models
 
+import androidx.compose.runtime.Immutable
 import org.joseph.friendsync.models.Post.PhotoPost
 import org.joseph.friendsync.models.Post.TextPost
 
+@Immutable
 sealed class Post(
     val postId: Int
 ) {
+    fun updateCommentCount(commentCount: Int): Post {
+        return when (this) {
+            is PhotoPost -> this.copy(commentCount = commentCount)
+            is TextPost -> this.copy(commentCount = commentCount)
+        }
+    }
+
     data class PhotoPost(
         val id: Int,
         val text: String,
