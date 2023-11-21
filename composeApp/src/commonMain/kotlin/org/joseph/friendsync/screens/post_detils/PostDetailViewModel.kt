@@ -21,7 +21,7 @@ import org.joseph.friendsync.managers.UserDataStore
 import org.joseph.friendsync.managers.UserPreferences
 import org.joseph.friendsync.mappers.CommentDomainToCommentMapper
 import org.joseph.friendsync.mappers.PostDomainToPostMapper
-import org.joseph.friendsync.screens.post_detils.comment.CommentsStateCommunication
+import org.joseph.friendsync.screens.post_detils.comment.CommentsStateStateFlowCommunication
 import org.joseph.friendsync.screens.post_detils.comment.CommentsUiState
 import org.koin.core.component.KoinComponent
 
@@ -35,7 +35,7 @@ class PostDetailViewModel(
     private val deleteCommentByIdUseCase: DeleteCommentByIdUseCase,
     private val postDomainToPostMapper: PostDomainToPostMapper,
     private val commentDomainToCommentMapper: CommentDomainToCommentMapper,
-    private val commentsStateCommunication: CommentsStateCommunication
+    private val commentsStateCommunication: CommentsStateStateFlowCommunication
 ) : StateScreenModel<PostDetailUiState>(PostDetailUiState.Initial), KoinComponent {
 
     val commentsUiState: StateFlow<CommentsUiState> = commentsStateCommunication.observe()

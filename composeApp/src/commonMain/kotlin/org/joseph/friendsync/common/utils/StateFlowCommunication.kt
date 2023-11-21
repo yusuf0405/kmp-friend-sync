@@ -2,7 +2,7 @@ package org.joseph.friendsync.common.utils
 
 import kotlinx.coroutines.flow.StateFlow
 
-interface Communication<T> {
+interface StateFlowCommunication<T> {
 
     fun observe(): StateFlow<T>
 

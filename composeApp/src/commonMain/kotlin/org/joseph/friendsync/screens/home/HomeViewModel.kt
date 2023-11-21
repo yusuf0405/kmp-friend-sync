@@ -7,7 +7,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.joseph.friendsync.common.util.Result
@@ -23,7 +22,7 @@ import org.joseph.friendsync.managers.UserPreferences
 import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
 import org.joseph.friendsync.screens.home.onboarding.OnBoardingUiState
-import org.joseph.friendsync.screens.home.onboarding.OnboardingStateCommunication
+import org.joseph.friendsync.screens.home.onboarding.OnboardingStateStateFlowCommunication
 import org.joseph.friendsync.screens.post_detils.PostScreenDestination
 import org.koin.core.component.KoinComponent
 
@@ -36,7 +35,7 @@ class HomeViewModel(
     private val fetchRecommendedPostsUseCase: FetchRecommendedPostsUseCase,
     private val userInfoDomainToUserInfoMapper: UserInfoDomainToUserInfoMapper,
     private val postDomainToPostMapper: PostDomainToPostMapper,
-    private val onboardingCommunication: OnboardingStateCommunication
+    private val onboardingCommunication: OnboardingStateStateFlowCommunication
 ) : StateScreenModel<HomeUiState>(HomeUiState.Initial), KoinComponent {
 
     private var currentPage = DEFAULT_PAGE
