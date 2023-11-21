@@ -11,9 +11,9 @@ import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
 import org.joseph.friendsync.screens.auth.login.LoginViewModel
 import org.joseph.friendsync.screens.auth.sign.SignUpViewModel
 import org.joseph.friendsync.screens.home.HomeViewModel
-import org.joseph.friendsync.screens.home.onboarding.OnboardingStateCommunication
+import org.joseph.friendsync.screens.home.onboarding.OnboardingStateStateFlowCommunication
 import org.joseph.friendsync.screens.post_detils.PostDetailViewModel
-import org.joseph.friendsync.screens.post_detils.comment.CommentsStateCommunication
+import org.joseph.friendsync.screens.post_detils.comment.CommentsStateStateFlowCommunication
 import org.koin.dsl.module
 
 fun appModules() =
@@ -45,6 +45,6 @@ private val managersModule = module {
 }
 
 private val communicationModule = module {
-    factory<OnboardingStateCommunication> { OnboardingStateCommunication.Default() }
-    factory<CommentsStateCommunication> { CommentsStateCommunication.Default() }
+    factory<OnboardingStateStateFlowCommunication> { OnboardingStateStateFlowCommunication.Default() }
+    factory<CommentsStateStateFlowCommunication> { CommentsStateStateFlowCommunication.Default() }
 }
