@@ -16,10 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import org.joseph.friendsync.models.UserInfo
 import org.joseph.friendsync.common.extensions.SpacerHeight
 import org.joseph.friendsync.common.theme.FriendSyncTheme
 import org.joseph.friendsync.common.theme.dimens.LargeSpacing
+import org.joseph.friendsync.models.user.UserInfo
 import org.joseph.friendsync.strings.MainResStrings
 
 @Composable
@@ -50,11 +50,21 @@ fun OnBoardingSelection(
             color = FriendSyncTheme.colors.textSecondary
         )
         SpacerHeight(LargeSpacing)
-        UserRow(
-            users = users,
-            onUserClick = onUserClick,
-            onFollowButtonClick = onFollowButtonClick
-        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(LargeSpacing),
+            contentPadding = PaddingValues(horizontal = LargeSpacing),
+            modifier = modifier
+        ) {
+            items(
+                count = users.size
+            ) { position ->
+                OnboardingUserItem(
+                    followUser = users[position],
+                    onUserClick = onUserClick,
+                    onFollowButtonClick = onFollowButtonClick,
+                )
+            }
+        }
         OutlinedButton(
             onClick = onBoardingFinish,
             modifier = Modifier
@@ -70,30 +80,6 @@ fun OnBoardingSelection(
                 text = MainResStrings.onboarding_done_button,
                 color = FriendSyncTheme.colors.textPrimary,
                 style = FriendSyncTheme.typography.bodyExtraMedium.bold,
-            )
-        }
-    }
-}
-
-@Composable
-fun UserRow(
-    users: List<UserInfo>,
-    onUserClick: (UserInfo) -> Unit,
-    onFollowButtonClick: (Boolean, UserInfo) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(LargeSpacing),
-        contentPadding = PaddingValues(horizontal = LargeSpacing),
-        modifier = modifier
-    ) {
-        items(
-            count = users.size
-        ) { position ->
-            OnboardingUserItem(
-                followUser = users[position],
-                onUserClick = onUserClick,
-                onFollowButtonClick = onFollowButtonClick
             )
         }
     }

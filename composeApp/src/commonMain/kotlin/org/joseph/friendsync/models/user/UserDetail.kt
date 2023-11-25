@@ -1,4 +1,4 @@
-package org.joseph.friendsync.models
+package org.joseph.friendsync.models.user
 
 import kotlinx.datetime.LocalDate
 

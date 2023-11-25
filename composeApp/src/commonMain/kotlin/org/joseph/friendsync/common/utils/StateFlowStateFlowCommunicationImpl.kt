@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-abstract class StateFlowCommunicationImpl<T>(initialValue: T) : StateFlowCommunication<T> {
+abstract class StateFlowStateFlowCommunicationImpl<T>(initialValue: T) : StateFlowCommunication<T> {
 
     private val mutableStateFlow = MutableStateFlow(initialValue)
 

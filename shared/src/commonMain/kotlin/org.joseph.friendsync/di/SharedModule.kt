@@ -1,6 +1,7 @@
 package org.joseph.friendsync.di
 
 import org.joseph.friendsync.common.util.coroutines.provideDispatcher
+import org.joseph.friendsync.data.cache.DatabaseDriverFactory
 import org.joseph.friendsync.data.mappers.AuthResponseDataToAuthResultDataMapper
 import org.joseph.friendsync.data.mappers.CategoryCloudToCategoryDomainMapper
 import org.joseph.friendsync.data.mappers.CommentCloudToCommentDomainMapper
@@ -11,16 +12,20 @@ import org.joseph.friendsync.data.repository.AuthRepositoryImpl
 import org.joseph.friendsync.data.repository.CategoryRepositoryImpl
 import org.joseph.friendsync.data.repository.CommentsRepositoryImpl
 import org.joseph.friendsync.data.repository.PostRepositoryImpl
+import org.joseph.friendsync.data.repository.SubscriptionRepositoryImpl
 import org.joseph.friendsync.data.repository.UserRepositoryImpl
 import org.joseph.friendsync.data.service.AuthService
 import org.joseph.friendsync.data.service.CategoryService
 import org.joseph.friendsync.data.service.CommentsService
 import org.joseph.friendsync.data.service.PostService
+import org.joseph.friendsync.data.service.SubscriptionService
 import org.joseph.friendsync.data.service.UserService
+import org.joseph.friendsync.database.AppDatabase
 import org.joseph.friendsync.domain.repository.AuthRepository
 import org.joseph.friendsync.domain.repository.CategoryRepository
 import org.joseph.friendsync.domain.repository.CommentsRepository
 import org.joseph.friendsync.domain.repository.PostRepository
+import org.joseph.friendsync.domain.repository.SubscriptionRepository
 import org.joseph.friendsync.domain.repository.UserRepository
 import org.joseph.friendsync.domain.usecases.categories.FetchAllCategoriesUseCase
 import org.joseph.friendsync.domain.usecases.comments.AddCommentToPostUseCase
@@ -34,6 +39,7 @@ import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
 import org.joseph.friendsync.domain.usecases.signin.SignInUseCase
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
+import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.domain.usecases.user.FetchUserByIdUseCase
 import org.koin.dsl.module
 
@@ -43,10 +49,13 @@ fun getSharedModule() = listOf(
     usersModule,
     factoryModule,
     categoryModule,
-    commentsModule
+    commentsModule,
+    subscriptionModule
 )
 
 private val authModule = module {
+    single { DatabaseDriverFactory(get()).createDriver() }
+    single { AppDatabase(get()) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
     factory { AuthResponseDataToAuthResultDataMapper() }
     single { AuthService() }
@@ -90,6 +99,13 @@ private val commentsModule = module {
     factory { EditCommentUseCase() }
 }
 
+
+private val subscriptionModule = module {
+    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get()) }
+    single { SubscriptionService() }
+    factory { CommentCloudToCommentDomainMapper(get()) }
+    factory { SubscriptionsInteractor() }
+}
 
 private val factoryModule = module {
     factory { provideDispatcher() }

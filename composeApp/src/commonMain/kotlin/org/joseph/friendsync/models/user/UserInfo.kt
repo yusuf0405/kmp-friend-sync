@@ -1,4 +1,4 @@
-package org.joseph.friendsync.models
+package org.joseph.friendsync.models.user
 
 import kotlinx.datetime.LocalDate
 
@@ -8,6 +8,7 @@ data class UserInfo(
     val lastName: String,
     val avatar: String?,
     val releaseDate: LocalDate,
+    val isSubscribed: Boolean = false
 ) {
 
     companion object {
