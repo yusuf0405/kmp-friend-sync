@@ -54,7 +54,7 @@ fun PhotoPostItem(
     onPostClick: (Int) -> Unit,
     onProfileClick: (Int) -> Unit = {},
     onLikeClick: () -> Unit = {},
-    onCommentClick: () -> Unit = {},
+    onCommentClick: (Int) -> Unit = {},
     isDetailScreen: Boolean = false
 ) {
     val pagerState = rememberPagerState {
@@ -108,7 +108,7 @@ fun PhotoPostItem(
             likesCount = post.likesCount,
             commentsCount = post.commentCount,
             onLikeClick = onLikeClick,
-            onCommentClick = onCommentClick
+            onCommentClick = { onCommentClick(post.id) }
         )
         Text(
             text = post.text,
@@ -128,7 +128,7 @@ fun TextPostItem(
     onPostClick: (Int) -> Unit,
     onProfileClick: (Int) -> Unit = {},
     onLikeClick: () -> Unit = {},
-    onCommentClick: () -> Unit = {},
+    onCommentClick: (Int) -> Unit = {},
     isDetailScreen: Boolean = false
 ) {
     Column(
@@ -159,7 +159,7 @@ fun TextPostItem(
             likesCount = post.likesCount,
             commentsCount = post.commentCount,
             onLikeClick = onLikeClick,
-            onCommentClick = onCommentClick
+            onCommentClick = { onCommentClick(post.id) }
         )
     }
 }

@@ -27,6 +27,7 @@ import org.koin.core.component.KoinComponent
 
 class PostDetailViewModel(
     private val postId: Int,
+    private val shouldShowAddCommentDialog: Boolean,
     private val userDataStore: UserDataStore,
     private val fetchPostByIdUseCase: FetchPostByIdUseCase,
     private val fetchPostCommentsUseCase: FetchPostCommentsUseCase,
@@ -109,6 +110,7 @@ class PostDetailViewModel(
         val postsDomain = response.data
         return if (postsDomain != null) {
             CommentsUiState.Content(postsDomain.map(commentDomainToCommentMapper::map))
+                .copy(shouldShowAddCommentDialog = shouldShowAddCommentDialog)
         } else {
             CommentsUiState.Error(response.message ?: defaultErrorMessage)
         }

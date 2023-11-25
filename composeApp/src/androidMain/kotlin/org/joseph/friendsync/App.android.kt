@@ -10,6 +10,7 @@ import org.joseph.friendsync.di.appModules
 import org.joseph.friendsync.di.getSharedModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.dsl.module
 
 class AndroidApp : Application() {
     companion object {
@@ -21,7 +22,10 @@ class AndroidApp : Application() {
         INSTANCE = this
         startKoin {
             androidContext(this@AndroidApp)
-            modules(appModules() + getSharedModule())
+            modules(appModules() + getSharedModule() + module {
+                single { PlatformConfiguration(applicationContext) }
+            }
+            )
         }
     }
 }

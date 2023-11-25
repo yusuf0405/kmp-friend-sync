@@ -2,25 +2,34 @@ package org.joseph.friendsync.screens.home
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.core.screen.Screen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
+import org.joseph.friendsync.common.util.coroutines.callSafe
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.data.repository.defaultErrorMessage
 import org.joseph.friendsync.domain.models.PostDomain
 import org.joseph.friendsync.domain.models.UserInfoDomain
 import org.joseph.friendsync.domain.usecases.onboarding.FetchOnboardingUsersUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
+import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.managers.UserDataStore
 import org.joseph.friendsync.managers.UserPreferences
 import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
+import org.joseph.friendsync.models.user.UserInfo
+import org.joseph.friendsync.navigation.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.screens.home.onboarding.OnBoardingUiState
 import org.joseph.friendsync.screens.home.onboarding.OnboardingStateStateFlowCommunication
 import org.joseph.friendsync.screens.post_detils.PostScreenDestination
@@ -34,8 +43,10 @@ class HomeViewModel(
     private val fetchOnboardingUsersUseCase: FetchOnboardingUsersUseCase,
     private val fetchRecommendedPostsUseCase: FetchRecommendedPostsUseCase,
     private val userInfoDomainToUserInfoMapper: UserInfoDomainToUserInfoMapper,
+    private val subscriptionsInteractor: SubscriptionsInteractor,
     private val postDomainToPostMapper: PostDomainToPostMapper,
-    private val onboardingCommunication: OnboardingStateStateFlowCommunication
+    private val onboardingCommunication: OnboardingStateStateFlowCommunication,
+    private val navigationScreenCommunication: NavigationScreenStateFlowCommunication
 ) : StateScreenModel<HomeUiState>(HomeUiState.Initial), KoinComponent {
 
     private var currentPage = DEFAULT_PAGE
@@ -44,7 +55,9 @@ class HomeViewModel(
     private val mutex = Mutex()
     private var allDataJob: Job? = null
 
+    private val subscribeUserIdsFlow = MutableStateFlow<List<Int>>(emptyList())
     val onBoardingUiState: StateFlow<OnBoardingUiState> = onboardingCommunication.observe()
+    val navigationScreenFlow: SharedFlow<Screen?> = navigationScreenCommunication.observe()
 
     init {
         allDataJob = startLoadAllData()
@@ -60,18 +73,27 @@ class HomeViewModel(
             asyncFetchCurrentUser(),
             asyncFetchPosts(),
             asyncFetchOnboardingUsers(),
+            asyncFetchSubscriptionUserIds(),
         )
+
+        subscribeUserIdsFlow.onEach { userIds ->
+            val currentState = onBoardingUiState.value
+            val users = currentState.users.map { user ->
+                user.copy(isSubscribed = userIds.contains(user.id))
+            }
+            onboardingCommunication.emit(currentState.copy(users = users))
+        }.launchIn(screenModelScope)
     }
 
-    fun onEvent(event: HomeScreenEvent, navigator: Navigator) {
+    fun onEvent(event: HomeScreenEvent) {
         when (event) {
-            is HomeScreenEvent.OnCommentClick -> {}
+            is HomeScreenEvent.OnCommentClick -> navigatePostScreen(event.postId, true)
             is HomeScreenEvent.OnLikeClick -> {}
             is HomeScreenEvent.OnProfileClick -> {}
-            is HomeScreenEvent.OnPostClick -> navigator.push(PostScreenDestination(event.postId))
+            is HomeScreenEvent.OnPostClick -> navigatePostScreen(event.postId)
             is HomeScreenEvent.OnStoriesClick -> {}
             is HomeScreenEvent.OnFollowItemClick -> {}
-            is HomeScreenEvent.OnFollowButtonClick -> {}
+            is HomeScreenEvent.OnFollowButtonClick -> doFollowButtonClick(event)
             is HomeScreenEvent.OnBoardingFinish -> doOnboardingFinish()
             is HomeScreenEvent.OnUserClick -> {}
             is HomeScreenEvent.FetchMorePosts -> fetchMorePosts()
@@ -91,6 +113,13 @@ class HomeViewModel(
 
     private suspend fun asyncFetchCurrentUser() = asyncWithDefault(Unit) {
         currentUser = userDataStore.fetchCurrentUser()
+    }
+
+    private suspend fun asyncFetchSubscriptionUserIds() = asyncWithDefault(Unit) {
+        val userIds = subscriptionsInteractor
+            .fetchSubscriptionUserIds(currentUser.id).data
+            ?: emptyList()
+        subscribeUserIdsFlow.tryEmit(userIds)
     }
 
     private suspend fun asyncFetchPosts() = asyncWithDefault(Unit) {
@@ -153,6 +182,49 @@ class HomeViewModel(
             shouldShowOnBoarding = true,
         )
     }
+
+    private fun navigatePostScreen(postId: Int, shouldShowAddCommentDialog: Boolean = false) {
+        navigationScreenCommunication.emit(
+            PostScreenDestination(
+                postId,
+                shouldShowAddCommentDialog
+            )
+        )
+    }
+
+    private fun doFollowButtonClick(event: HomeScreenEvent.OnFollowButtonClick) {
+        screenModelScope.launchSafe {
+            if (event.isFollow) startCancelSubscription(event.user)
+            else startCreateSubscription(event.user)
+        }
+    }
+
+    private suspend fun startCancelSubscription(user: UserInfo) = callSafe(Unit) {
+        val result = subscriptionsInteractor.cancelSubscription(
+            followerId = currentUser.id,
+            followingId = user.id
+        )
+        when (result) {
+            is Result.Success -> subscribeUserIdsFlow.update { it - user.id }
+            is Result.Error -> {
+                // TODO: Add handle error
+            }
+        }
+    }
+
+    private suspend fun startCreateSubscription(user: UserInfo) = callSafe(Unit) {
+        val result = subscriptionsInteractor.createSubscription(
+            followerId = currentUser.id,
+            followingId = user.id
+        )
+        when (result) {
+            is Result.Success -> subscribeUserIdsFlow.update { it + user.id }
+            is Result.Error -> {
+                // TODO: Add handle error
+            }
+        }
+    }
+
 
     private fun doOnboardingFinish() {
         onboardingCommunication.update { currentState ->

@@ -19,11 +19,13 @@ import org.koin.core.parameter.parametersOf
 
 class PostScreenDestination(
     private val postId: Int,
+    private val shouldShowAddCommentDialog: Boolean = false,
 ) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<PostDetailViewModel> { parametersOf(postId) }
+        val viewModel =
+            getScreenModel<PostDetailViewModel> { parametersOf(postId, shouldShowAddCommentDialog) }
         val navigator = LocalNavigator.current
 
         Scaffold(

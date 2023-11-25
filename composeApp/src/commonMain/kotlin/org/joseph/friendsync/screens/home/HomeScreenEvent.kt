@@ -1,6 +1,6 @@
 package org.joseph.friendsync.screens.home
 
-import org.joseph.friendsync.models.UserInfo
+import org.joseph.friendsync.models.user.UserInfo
 
 sealed class HomeScreenEvent {
 
@@ -23,7 +23,7 @@ sealed class HomeScreenEvent {
 
     data object OnLikeClick : HomeScreenEvent()
 
-    data object OnCommentClick : HomeScreenEvent()
+    data class OnCommentClick(val postId: Int) : HomeScreenEvent()
 
     data class OnPostClick(val postId: Int) : HomeScreenEvent()
 

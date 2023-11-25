@@ -4,8 +4,12 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
+import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -20,7 +24,7 @@ import org.joseph.friendsync.navigation.tabs.NotificationTab
 import org.joseph.friendsync.navigation.tabs.ProfileTab
 import org.joseph.friendsync.navigation.tabs.SearchTab
 import org.koin.compose.KoinContext
-
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalVoyagerApi::class)
 @Composable

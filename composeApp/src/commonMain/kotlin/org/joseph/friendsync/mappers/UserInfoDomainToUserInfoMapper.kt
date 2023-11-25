@@ -3,7 +3,7 @@ package org.joseph.friendsync.mappers
 import org.joseph.friendsync.common.extensions.toLocalDate
 import org.joseph.friendsync.common.mapper.Mapper
 import org.joseph.friendsync.domain.models.UserInfoDomain
-import org.joseph.friendsync.models.UserInfo
+import org.joseph.friendsync.models.user.UserInfo
 
 class UserInfoDomainToUserInfoMapper : Mapper<UserInfoDomain, UserInfo> {
 

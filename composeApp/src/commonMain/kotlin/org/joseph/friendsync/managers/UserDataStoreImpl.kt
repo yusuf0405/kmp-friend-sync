@@ -42,7 +42,7 @@ class UserDataStoreImpl(
         return settings.decodeValue(
             UserPreferences.serializer(), CURRENT_USER_SETTING_KEY,
             UserPreferences.unknown
-        )
+        ).copy(id = 1)
     }
 
     override fun isUserAuthorized(): Boolean {

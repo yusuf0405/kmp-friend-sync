@@ -1,6 +1,7 @@
 package org.joseph.friendsync.models
 
 import androidx.compose.runtime.Immutable
+import org.joseph.friendsync.models.user.UserInfo
 
 @Immutable
 data class Comment(
