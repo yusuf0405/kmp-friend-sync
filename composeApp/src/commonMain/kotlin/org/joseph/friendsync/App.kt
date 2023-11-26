@@ -1,6 +1,9 @@
 package org.joseph.friendsync
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -41,7 +44,6 @@ internal fun App() = FriendSyncTheme {
         ) {
             Scaffold(
                 modifier = Modifier.systemBarsPadding(),
-                content = { CurrentTab() },
                 bottomBar = {
                     BottomNavigation {
                         TabNavigationItem(HomeTab)
@@ -51,7 +53,16 @@ internal fun App() = FriendSyncTheme {
                         TabNavigationItem(ProfileTab)
                     }
                 }
-            )
+            ) { paddings ->
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = paddings.calculateBottomPadding())
+                        .fillMaxSize()
+                ) {
+                    CurrentTab()
+
+                }
+            }
         }
     }
 }

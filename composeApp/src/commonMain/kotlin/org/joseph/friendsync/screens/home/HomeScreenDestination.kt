@@ -18,6 +18,7 @@ import compose.icons.feathericons.MessageCircle
 import io.github.skeptick.libres.compose.painterResource
 import org.joseph.friendsync.common.components.AppTopBar
 import org.joseph.friendsync.images.MainResImages
+import org.joseph.friendsync.screens.chat_list.ChatListDestination
 import org.joseph.friendsync.strings.MainResStrings
 import org.koin.compose.koinInject
 
@@ -35,12 +36,15 @@ class HomeScreenDestination : Screen {
             topBar = {
                 AppTopBar(
                     title = MainResStrings.home_destination_title,
-                    endIcon = FeatherIcons.MessageCircle
+                    endIcon = FeatherIcons.MessageCircle,
+                    onEndClick = {
+                        navigator?.push(ChatListDestination())
+                    }
                 )
             }
         ) { paddings ->
             HomeScreen(
-                modifier = Modifier.padding(paddings),
+                modifier = Modifier.padding(top = paddings.calculateTopPadding()),
                 onEvent = viewModel::onEvent,
                 onBoardingUiState = viewModel.onBoardingUiState.collectAsState().value,
                 uiState = viewModel.state.collectAsState().value,

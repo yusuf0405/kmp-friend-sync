@@ -137,9 +137,6 @@ fun LoadedPostDetailScreen(
                         }
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.height(FriendSyncTheme.dimens.dp32))
-                }
             }
         }
     }
