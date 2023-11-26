@@ -76,7 +76,7 @@ fun AppTopBar(
 }
 
 @Composable
-private fun AppBarIcon(
+fun AppBarIcon(
     imageVector: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

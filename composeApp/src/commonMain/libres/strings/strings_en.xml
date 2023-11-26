@@ -17,7 +17,8 @@
     <string name="home_destination_title">Home</string>
     <string name="follow_button_text">Follow</string>
     <string name="onboarding_title">Who to follow</string>
-    <string name="onboarding_description">Post from people you follow will appear here.\nHere are some suggested people you can follow
+    <string name="onboarding_description">Post from people you follow will appear here.\nHere are
+        some suggested people you can follow
     </string>
     <string name="onboarding_done_button">Done</string>
     <string name="post_detail_destination_title">Post detail</string>
@@ -52,4 +53,5 @@
     <string name="edit_comment">Edit comment</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="posts_empty_title">To see posts, you need to subscribe to other users</string>
+    <string name="chats_list_destination_title">Chats</string>
 </resources>
