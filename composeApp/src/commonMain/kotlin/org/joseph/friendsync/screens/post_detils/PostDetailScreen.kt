@@ -200,7 +200,7 @@ fun AddCommentBottomDialog(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = FriendSyncTheme.colors.backgroundPrimary
+        containerColor = FriendSyncTheme.colors.backgroundModal
     ) {
         Column(
             modifier = Modifier.padding(horizontal = LargeSpacing),
