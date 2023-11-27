@@ -1,5 +1,5 @@
 import androidx.compose.ui.window.ComposeUIViewController
-import org.joseph.friendsync.App
+import org.joseph.friendsync.app.App
 import org.joseph.friendsync.di.appModules
 import org.joseph.friendsync.di.getSharedModule
 import org.koin.core.context.startKoin

@@ -35,7 +35,7 @@ fun SignUpScreen(
 ) {
     Box(
         modifier = modifier.fillMaxSize()
-            .background(FriendSyncTheme.colors.backgroundModal),
+            .background(FriendSyncTheme.colors.backgroundPrimary),
         contentAlignment = Alignment.Center
     ) {
         Column(

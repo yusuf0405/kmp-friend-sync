@@ -46,6 +46,8 @@ class FriendSyncDimens(
     val sp20: TextUnit = 20.sp,
     val sp24: TextUnit = 24.sp,
     val sp28: TextUnit = 28.sp,
+    val sp32: TextUnit = 32.sp,
+    val sp36: TextUnit = 36.sp,
 
     val onboardingUserItemHeight: Dp = 140.dp,
     val onboardingUserItemWidth: Dp = 130.dp,

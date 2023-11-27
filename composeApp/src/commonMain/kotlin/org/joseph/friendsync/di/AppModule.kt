@@ -15,6 +15,7 @@ import org.joseph.friendsync.screens.home.HomeViewModel
 import org.joseph.friendsync.screens.home.onboarding.OnboardingStateStateFlowCommunication
 import org.joseph.friendsync.screens.post_detils.PostDetailViewModel
 import org.joseph.friendsync.screens.post_detils.comment.CommentsStateStateFlowCommunication
+import org.joseph.friendsync.screens.splash.SplashViewModel
 import org.koin.dsl.module
 
 fun appModules() =
@@ -34,6 +35,7 @@ private val viewModelsModule = module {
         )
     }
     factory { SignUpViewModel(get(), get()) }
+    factory { SplashViewModel(get(), get()) }
     factory { HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
