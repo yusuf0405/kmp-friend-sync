@@ -55,10 +55,10 @@ fun ChatAppTopBar(
                     imageUrl = chat.userImage,
                     modifier = Modifier.size(FriendSyncTheme.dimens.dp32)
                 )
-                SpacerHeight(FriendSyncTheme.dimens.dp2)
+                SpacerHeight(FriendSyncTheme.dimens.dp4)
                 Text(
                     text = chat.userName,
-                    style = FriendSyncTheme.typography.bodyMedium.medium,
+                    style = FriendSyncTheme.typography.bodyMedium.bold,
                     textAlign = TextAlign.Center
                 )
             }

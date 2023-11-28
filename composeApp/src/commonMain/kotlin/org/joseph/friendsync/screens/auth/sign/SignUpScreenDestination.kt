@@ -1,37 +1,46 @@
 package org.joseph.friendsync.screens.auth.sign
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
-import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import org.joseph.friendsync.screens.auth.login.LoginScreenDestination
-import org.joseph.friendsync.common.components.AppTopBar
-import org.joseph.friendsync.strings.MainResStrings
-import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 
-class SignUpScreenDestination : Screen {
+class SignUpScreenDestination(
+    private val email: String
+) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: SignUpViewModel = koinInject()
         val navigator = LocalNavigator.current
 
-        Scaffold(
-            topBar = { AppTopBar(title = MainResStrings.signup_destination_title) }
-        ) { paddings ->
-            SignUpScreen(
-                modifier = Modifier.padding(paddings),
-                uiState = viewModel.state.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateToLogin = { navigator?.push(LoginScreenDestination()) },
-                onNavigateToHome = {}
-            )
+        val viewModel: SignUpViewModel = getScreenModel {
+            parametersOf(email)
         }
-    }
 
+        val uiState by viewModel.state.collectAsState()
+        val passwordValidationStatus by viewModel.passwordValidationStatusFlow.collectAsState()
+        val nameValidationStatus by viewModel.nameValidationStatusFlow.collectAsState()
+        val lastnameValidationStatus by viewModel.lastnameValidationStatusFlow.collectAsState()
+        val shouldButtonEnabled by viewModel.shouldButtonEnabledFlow.collectAsState()
+
+        val navigationScreen by viewModel.navigationScreenFlow.collectAsState(null)
+        LaunchedEffect(key1 = navigationScreen) {
+            if (navigationScreen != null) navigator?.push(navigationScreen!!)
+        }
+
+        SignUpScreen(
+            uiState = uiState,
+            passwordValidationStatus = passwordValidationStatus,
+            nameValidationStatus = nameValidationStatus,
+            lastnameValidationStatus = lastnameValidationStatus,
+            shouldButtonEnabled = shouldButtonEnabled,
+            onEvent = viewModel::onEvent,
+            onNavigateBack = { navigator?.pop() },
+        )
+    }
 }

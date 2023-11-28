@@ -94,6 +94,8 @@ fun LoadedHomeScreen(
             item {
                 Spacer(Modifier.height(ExtraLargeSpacing))
                 ErrorScreen(
+                    modifier = Modifier.fillMaxSize()
+                        .background(FriendSyncTheme.colors.onBackgroundPrimary),
                     errorMessage = MainResStrings.posts_empty_title,
                     onClick = { onEvent(HomeScreenEvent.RefreshAllData) }
                 )

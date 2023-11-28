@@ -2,7 +2,7 @@ package org.joseph.friendsync.mappers
 
 import org.joseph.friendsync.common.mapper.Mapper
 import org.joseph.friendsync.domain.models.AuthResultData
-import org.joseph.friendsync.managers.UserPreferences
+import org.joseph.friendsync.managers.user.UserPreferences
 
 class AuthResultDataToUserPreferencesMapper : Mapper<AuthResultData, UserPreferences> {
     override fun map(from: AuthResultData): UserPreferences = from.run {

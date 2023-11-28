@@ -1,22 +1,22 @@
-package org.joseph.friendsync.managers
+package org.joseph.friendsync.managers.user
 
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
-import com.russhwolf.settings.serialization.containsValue
 import com.russhwolf.settings.serialization.decodeValue
-import com.russhwolf.settings.serialization.decodeValueOrNull
 import com.russhwolf.settings.serialization.encodeValue
-import com.russhwolf.settings.serialization.nullableSerializedValue
 import com.russhwolf.settings.serialization.removeValue
 import kotlinx.serialization.ExperimentalSerializationApi
 import org.joseph.friendsync.domain.models.AuthResultData
 import org.joseph.friendsync.mappers.AuthResultDataToUserPreferencesMapper
+import org.joseph.friendsync.navigation.GlobalNavigationFlowCommunication
+import org.joseph.friendsync.navigation.NavCommand
 
 private const val CURRENT_USER_SETTING_KEY = "current_user"
 
 @OptIn(ExperimentalSettingsApi::class, ExperimentalSerializationApi::class)
 class UserDataStoreImpl(
-    private val authResultDataToUserPreferencesMapper: AuthResultDataToUserPreferencesMapper
+    private val authResultDataToUserPreferencesMapper: AuthResultDataToUserPreferencesMapper,
+    private val globalNavigationFlowCommunication: GlobalNavigationFlowCommunication,
 ) : UserDataStore {
 
     private val settings: Settings by lazy(LazyThreadSafetyMode.NONE) { createSettings() }
@@ -39,16 +39,16 @@ class UserDataStoreImpl(
     }
 
     override fun fetchCurrentUser(): UserPreferences {
-        return settings.decodeValue(
-            UserPreferences.serializer(), CURRENT_USER_SETTING_KEY,
+        val user = settings.decodeValue(
+            UserPreferences.serializer(),
+            CURRENT_USER_SETTING_KEY,
             UserPreferences.unknown
-        ).copy(id = 1)
+        )
+        if (user.isUnknown()) globalNavigationFlowCommunication.emit(NavCommand.Auth)
+        return user
     }
 
     override fun isUserAuthorized(): Boolean {
-        return !settings.containsValue(
-            UserPreferences.serializer(),
-            CURRENT_USER_SETTING_KEY
-        )
+        return !fetchCurrentUser().isUnknown()
     }
 }

@@ -1,44 +1,82 @@
 package org.joseph.friendsync.screens.auth.sign
 
-import org.joseph.friendsync.common.util.Result
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import cafe.adriel.voyager.core.model.StateScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
+import cafe.adriel.voyager.core.screen.Screen
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import org.joseph.friendsync.screens.auth.login.LoginEvent
+import org.joseph.friendsync.app.MainNavGraph
+import org.joseph.friendsync.common.extensions.firstLetterIsCapitalizedRestSmall
+import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.domain.models.AuthResultData
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
-import org.joseph.friendsync.managers.UserDataStore
+import org.joseph.friendsync.managers.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.managers.snackbar.SnackbarDisplay
+import org.joseph.friendsync.managers.user.UserDataStore
+import org.joseph.friendsync.navigation.NavigationScreenStateFlowCommunication
+import org.joseph.friendsync.screens.auth.models.LoginValidationStatus
+import org.joseph.friendsync.screens.auth.validations.NameValidation
+import org.joseph.friendsync.screens.auth.validations.PasswordValidation
 import org.koin.core.component.KoinComponent
 
 class SignUpViewModel(
-    private var signUpUseCase: SignUpUseCase,
-    private val userDataStore: UserDataStore
-) : ViewModel(), KoinComponent {
+    private val email: String,
+    private val passwordValidation: PasswordValidation,
+    private val nameValidation: NameValidation,
+    private val signUpUseCase: SignUpUseCase,
+    private val userDataStore: UserDataStore,
+    private val snackbarDisplay: SnackbarDisplay,
+    private val navigationScreenCommunication: NavigationScreenStateFlowCommunication,
+) : StateScreenModel<SignUpUiState>(SignUpUiState(email = email)), KoinComponent {
 
-    private val _state = MutableStateFlow(SignUpUiState())
-    val state = _state.asStateFlow().stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        SignUpUiState()
-    )
+    val navigationScreenFlow: SharedFlow<Screen?> = navigationScreenCommunication.observe()
+
+    val nameValidationStatusFlow = mutableState.map { it.name }.map { name ->
+        if (name.isEmpty()) LoginValidationStatus.DEFAULT
+        else if (nameValidation.validate(name)) LoginValidationStatus.SUCCESS
+        else LoginValidationStatus.ERROR
+    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+
+    val lastnameValidationStatusFlow = mutableState.map { it.lastName }.map { lastName ->
+        if (lastName.isEmpty()) LoginValidationStatus.DEFAULT
+        else if (nameValidation.validate(lastName)) LoginValidationStatus.SUCCESS
+        else LoginValidationStatus.ERROR
+    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+
+    val passwordValidationStatusFlow = mutableState.map { it.password }.map { email ->
+        if (email.isEmpty()) LoginValidationStatus.DEFAULT
+        else if (passwordValidation.validate(email)) LoginValidationStatus.SUCCESS
+        else LoginValidationStatus.ERROR
+    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+
+    val shouldButtonEnabledFlow = combine(
+        nameValidationStatusFlow,
+        lastnameValidationStatusFlow,
+        passwordValidationStatusFlow,
+    ) { nameValidationStatus, lastnameValidationStatus, passwordValidationStatus ->
+        listOf(nameValidationStatus, lastnameValidationStatus, passwordValidationStatus)
+    }.map { it.all { status -> status == LoginValidationStatus.SUCCESS } }
+        .stateIn(screenModelScope, SharingStarted.Lazily, false)
 
     fun onEvent(event: SignUpEvent) {
         when (event) {
             is SignUpEvent.OnSignUp -> doSignUp()
             is SignUpEvent.OnPasswordChanged -> doPasswordChanged(event)
-            is SignUpEvent.OnEmailChanged -> doEmailChanged(event)
             is SignUpEvent.OnNameChanged -> doNameChanged(event)
             is SignUpEvent.OnLastNameChanged -> doLastNameChanged(event)
         }
     }
 
     private fun doSignUp() {
-        viewModelScope.launchSafe {
+        screenModelScope.launchSafe {
             setStateToAuthenticating()
+            delay(3000)
             val result = signUpUseCase(
                 email = state.value.email,
                 password = state.value.password,
@@ -56,41 +94,38 @@ class SignUpViewModel(
     }
 
     private fun doPasswordChanged(event: SignUpEvent.OnPasswordChanged) {
-        _state.update { currentState -> currentState.copy(password = event.value) }
-    }
-
-    private fun doEmailChanged(event: SignUpEvent.OnEmailChanged) {
-        _state.update { currentState -> currentState.copy(email = event.value) }
+        mutableState.update { currentState -> currentState.copy(password = event.value) }
     }
 
     private fun doLastNameChanged(event: SignUpEvent.OnLastNameChanged) {
-        _state.update { currentState -> currentState.copy(lastName = event.value) }
+        mutableState.update { currentState ->
+            currentState.copy(lastName = event.value.firstLetterIsCapitalizedRestSmall())
+        }
     }
 
     private fun doNameChanged(event: SignUpEvent.OnNameChanged) {
-        _state.update { currentState -> currentState.copy(name = event.value) }
-    }
-
-    private fun setStateToAuthenticating() {
-        _state.update { currentState -> currentState.copy(isAuthenticating = true) }
+        mutableState.update { currentState ->
+            currentState.copy(name = event.value.firstLetterIsCapitalizedRestSmall())
+        }
     }
 
     private fun handleSignUpSuccessResult(authResultData: AuthResultData) {
         userDataStore.saveCurrentUser(authResultData)
-        _state.update { currentState ->
-            currentState.copy(
-                isAuthenticating = false,
-                authenticationSucceed = true,
-            )
-        }
+        setStateToAuthenticatingEnd()
+        navigationScreenCommunication.emit(MainNavGraph())
     }
 
     private fun handleSignUpErrorResult(message: String?) {
-        _state.update { currentState ->
-            currentState.copy(
-                isAuthenticating = false,
-                authErrorMessage = message,
-            )
-        }
+        setStateToAuthenticatingEnd()
+        val snackbarMessage = message ?: return
+        snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(snackbarMessage))
+    }
+
+    private fun setStateToAuthenticating() {
+        mutableState.update { currentState -> currentState.copy(isAuthenticating = true) }
+    }
+
+    private fun setStateToAuthenticatingEnd() {
+        mutableState.update { currentState -> currentState.copy(isAuthenticating = false) }
     }
 }

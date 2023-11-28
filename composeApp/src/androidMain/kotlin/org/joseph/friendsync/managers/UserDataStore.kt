@@ -1,4 +1,4 @@
-package org.joseph.friendsync.managers
+package org.joseph.friendsync.managers.user
 
 import android.content.Context
 import com.russhwolf.settings.Settings

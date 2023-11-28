@@ -8,8 +8,6 @@ sealed class SignUpEvent {
 
     data class OnLastNameChanged(val value: String) : SignUpEvent()
 
-    data class OnEmailChanged(val value: String) : SignUpEvent()
-
     data class OnPasswordChanged(val value: String) : SignUpEvent()
 
 }

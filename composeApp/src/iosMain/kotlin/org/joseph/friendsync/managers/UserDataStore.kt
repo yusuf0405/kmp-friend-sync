@@ -1,4 +1,4 @@
-package org.joseph.friendsync.managers
+package org.joseph.friendsync.managers.user
 
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings

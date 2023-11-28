@@ -12,12 +12,14 @@ import compose.icons.feathericons.Settings
 import org.joseph.friendsync.common.components.AppTopBar
 import org.joseph.friendsync.screens.chat.ChatScreenDestination
 import org.joseph.friendsync.strings.MainResStrings
+import org.koin.compose.koinInject
 
 class ChatListDestination : Screen {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
+        val viewModel: ChatListViewModel = koinInject()
 
         Scaffold(
             topBar = {
@@ -25,7 +27,7 @@ class ChatListDestination : Screen {
                     title = MainResStrings.chats_list_destination_title,
                     endIcon = FeatherIcons.Settings,
                     startIcon = FeatherIcons.ArrowLeft,
-                    onStartClick = { navigator?.pop() }
+                    onStartClick = { viewModel.navigateToBack() }
                 )
             }
         ) { paddings ->

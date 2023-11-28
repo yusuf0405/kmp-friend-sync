@@ -15,9 +15,11 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.core.lifecycle.LifecycleEffect
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.stack.popUntil
 import cafe.adriel.voyager.navigator.LocalNavigator
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.joseph.friendsync.common.theme.FriendSyncTheme
 import org.joseph.friendsync.common.theme.colors.Blue
 import org.joseph.friendsync.common.theme.colors.LightCranberry
@@ -37,7 +39,6 @@ class SplashScreenDestination : Screen {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SplashScreen() {
     Box(

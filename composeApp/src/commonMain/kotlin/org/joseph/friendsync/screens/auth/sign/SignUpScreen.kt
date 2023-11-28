@@ -1,114 +1,126 @@
 package org.joseph.friendsync.screens.auth.sign
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.ArrowLeft
+import org.joseph.friendsync.common.components.AppBarIcon
 import org.joseph.friendsync.screens.auth.components.LoginTextField
 import org.joseph.friendsync.common.components.PrimaryButton
 import org.joseph.friendsync.common.extensions.SpacerHeight
-import org.joseph.friendsync.common.extensions.SpacerWidth
 import org.joseph.friendsync.common.theme.FriendSyncTheme
 import org.joseph.friendsync.common.theme.dimens.ExtraLargeSpacing
-import org.joseph.friendsync.common.theme.dimens.LargeSpacing
-import org.joseph.friendsync.common.theme.dimens.MediumSpacing
+import org.joseph.friendsync.screens.auth.login.generateEmailTextForLogin
+import org.joseph.friendsync.screens.auth.models.LoginValidationStatus
+import org.joseph.friendsync.screens.common.LoadingScreen
 import org.joseph.friendsync.strings.MainResStrings
 
 @Composable
 fun SignUpScreen(
     uiState: SignUpUiState,
+    passwordValidationStatus: LoginValidationStatus,
+    nameValidationStatus: LoginValidationStatus,
+    lastnameValidationStatus: LoginValidationStatus,
+    shouldButtonEnabled: Boolean,
     onEvent: (SignUpEvent) -> Unit,
-    onNavigateToLogin: () -> Unit,
-    onNavigateToHome: () -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier.fillMaxSize()
-            .background(FriendSyncTheme.colors.backgroundPrimary),
-        contentAlignment = Alignment.Center
+    val focusManager = LocalFocusManager.current
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(FriendSyncTheme.colors.backgroundPrimary)
+            .statusBarsPadding()
+            .padding(horizontal = FriendSyncTheme.dimens.dp40)
     ) {
-        Column(
-            modifier = Modifier
-                .padding(top = ExtraLargeSpacing, bottom = LargeSpacing)
-                .padding(horizontal = ExtraLargeSpacing)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(LargeSpacing)
-        ) {
-            LoginTextField(
-                value = uiState.name,
-                onValueChange = { value -> onEvent(SignUpEvent.OnNameChanged(value)) },
-                hint = MainResStrings.username_hint
-            )
+        SpacerHeight(ExtraLargeSpacing)
+        AppBarIcon(
+            imageVector = FeatherIcons.ArrowLeft,
+            modifier = Modifier,
+            onClick = onNavigateBack
+        )
+        SpacerHeight(FriendSyncTheme.dimens.dp32)
+        Text(
+            text = MainResStrings.signup_destination_title,
+            style = FriendSyncTheme.typography.titleExtraLarge.semiBold,
+            fontSize = FriendSyncTheme.dimens.sp40,
+            lineHeight = FriendSyncTheme.dimens.sp48
+        )
+        SpacerHeight(FriendSyncTheme.dimens.dp16)
+        Text(
+            text = generateEmailTextForLogin(uiState.email),
+        )
+        SpacerHeight(FriendSyncTheme.dimens.dp48)
 
-            LoginTextField(
-                value = uiState.lastName,
-                onValueChange = { value -> onEvent(SignUpEvent.OnLastNameChanged(value)) },
-                hint = MainResStrings.last_name_hint
-            )
+        LoginTextField(
+            title = MainResStrings.your_name.toUpperCase(Locale.current),
+            value = uiState.name,
+            onValueChange = { name ->
+                onEvent(SignUpEvent.OnNameChanged(name))
+            },
+            hint = MainResStrings.username_hint,
+            loginValidationStatus = nameValidationStatus,
+            readOnly = uiState.isAuthenticating
+        )
+        SpacerHeight(ExtraLargeSpacing)
 
-            LoginTextField(
-                value = uiState.email,
-                onValueChange = { value -> onEvent(SignUpEvent.OnEmailChanged(value)) },
-                hint = MainResStrings.email_hint,
-                keyboardType = KeyboardType.Email
-            )
+        LoginTextField(
+            title = MainResStrings.your_lastname.toUpperCase(Locale.current),
+            value = uiState.lastName,
+            onValueChange = { lastname ->
+                onEvent(SignUpEvent.OnLastNameChanged(lastname))
+            },
+            hint = MainResStrings.last_name_hint,
+            loginValidationStatus = lastnameValidationStatus,
+            readOnly = uiState.isAuthenticating
+        )
+        SpacerHeight(ExtraLargeSpacing)
 
-            LoginTextField(
-                value = uiState.password,
-                onValueChange = { value -> onEvent(SignUpEvent.OnPasswordChanged(value)) },
-                hint = MainResStrings.password_hint,
-                keyboardType = KeyboardType.Password,
-                isPasswordTextField = true
-            )
+        LoginTextField(
+            title = MainResStrings.your_password.toUpperCase(Locale.current),
+            value = uiState.password,
+            onValueChange = { password ->
+                onEvent(SignUpEvent.OnPasswordChanged(password))
+            },
+            keyboardType = KeyboardType.Password,
+            isPasswordTextField = true,
+            hint = MainResStrings.password_hint,
+            loginValidationStatus = passwordValidationStatus,
+            readOnly = uiState.isAuthenticating
+        )
+        SpacerHeight(FriendSyncTheme.dimens.dp32)
 
-            SpacerHeight(MediumSpacing)
-
-            PrimaryButton(
-                onClick = { onEvent(SignUpEvent.OnSignUp) },
-                text = MainResStrings.signup_button_hint
-            )
-
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = MainResStrings.already_have_an_account,
-                    style = FriendSyncTheme.typography.bodyExtraSmall.medium,
-                    color = FriendSyncTheme.colors.textSecondary
-                )
-                SpacerWidth(MediumSpacing)
-                Text(
-                    modifier = Modifier.clickable { onNavigateToLogin() },
-                    text = MainResStrings.login_button_label,
-                    style = FriendSyncTheme.typography.bodyExtraSmall.medium,
-                    color = FriendSyncTheme.colors.textPrimary
-                )
-            }
-        }
-
-        if (uiState.isAuthenticating) {
-            CircularProgressIndicator()
-        }
+        PrimaryButton(
+            modifier = Modifier,
+            onClick = {
+                focusManager.clearFocus()
+                onEvent(SignUpEvent.OnSignUp)
+            },
+            text = MainResStrings.signup_button_hint,
+            textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
+            shape = FriendSyncTheme.shapes.extraLarge,
+            enabled = shouldButtonEnabled && !uiState.isAuthenticating,
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = FriendSyncTheme.dimens.dp20
+            ),
+        )
     }
 
-    LaunchedEffect(
-        key1 = uiState.authenticationSucceed,
-        key2 = uiState.authErrorMessage,
-        block = {
-            if (uiState.authenticationSucceed) onNavigateToHome()
-        }
+    if (uiState.isAuthenticating) LoadingScreen(
+        modifier = Modifier
+            .background(FriendSyncTheme.colors.backgroundPrimary.copy(alpha = 0.3f))
     )
 }

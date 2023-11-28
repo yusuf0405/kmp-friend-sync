@@ -90,6 +90,7 @@ val MediumBlue = Color(0xFF63C5DA)
 val LargeBlue = Color(0xFF2E8AF6)
 
 val LightGray = Color(0xFF727477)
+val TransparentGray = Color(0xFF3A3D46)
 
 val DarkPlaceHolderColor = Color(0xFF373B3F)
 val LightPlaceHolderColor = Color(0xFFE5E5E5)

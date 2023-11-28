@@ -1,34 +1,38 @@
 package org.joseph.friendsync.screens.auth.login
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import org.joseph.friendsync.screens.auth.sign.SignUpScreenDestination
-import org.joseph.friendsync.common.components.AppTopBar
-import org.joseph.friendsync.strings.MainResStrings
-import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
-class LoginScreenDestination : Screen {
+class LoginScreenDestination(
+    private val email: String
+) : Screen {
+
     @Composable
     override fun Content() {
-        val viewModel: LoginViewModel = koinInject()
         val navigator = LocalNavigator.current
+        val viewModel: LoginViewModel = getScreenModel { parametersOf(email) }
 
-        Scaffold(
-            topBar = { AppTopBar(title = MainResStrings.login_destination_title) }
-        ) { paddings ->
-            LoginScreen(
-                modifier = Modifier.padding(paddings),
-                uiState = viewModel.state.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateToHome = {},
-                onNavigateToSignUp = { navigator?.push(SignUpScreenDestination()) },
-            )
+        val uiState by viewModel.state.collectAsState()
+        val passwordValidationStatus by viewModel.passwordValidationStatusFlow.collectAsState()
+        val shouldButtonEnabled by viewModel.shouldButtonEnabledFlow.collectAsState()
+
+        val navigationScreen by viewModel.navigationScreenFlow.collectAsState(null)
+        LaunchedEffect(key1 = navigationScreen) {
+            if (navigationScreen != null) navigator?.push(navigationScreen!!)
         }
-    }
 
+        LoginScreen(
+            uiState = uiState,
+            passwordValidationStatus = passwordValidationStatus,
+            shouldButtonEnabled = shouldButtonEnabled,
+            onEvent = viewModel::onEvent,
+            onNavigateBack = { navigator?.pop() },
+        )
+    }
 }

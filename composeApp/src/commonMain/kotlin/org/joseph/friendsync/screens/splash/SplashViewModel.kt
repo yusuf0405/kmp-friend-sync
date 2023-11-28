@@ -4,11 +4,11 @@ import cafe.adriel.voyager.core.screen.Screen
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
-import org.joseph.friendsync.app.MainDestination
+import org.joseph.friendsync.app.LoginNavGraph
+import org.joseph.friendsync.app.MainNavGraph
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.managers.UserDataStore
+import org.joseph.friendsync.managers.user.UserDataStore
 import org.joseph.friendsync.navigation.NavigationScreenStateFlowCommunication
-import org.joseph.friendsync.screens.auth.login.LoginScreenDestination
 
 private const val DEFAULT_SPLASH_SCREEN_DELAY_TIME = 5_000L
 
@@ -24,9 +24,9 @@ class SplashViewModel(
             val isUserAuthorized = userDataStore.isUserAuthorized()
             delay(DEFAULT_SPLASH_SCREEN_DELAY_TIME)
             if (isUserAuthorized) {
-                navigationScreenCommunication.emit(MainDestination())
+                navigationScreenCommunication.emit(MainNavGraph())
             } else {
-                navigationScreenCommunication.emit(LoginScreenDestination())
+                navigationScreenCommunication.emit(LoginNavGraph())
             }
         }
     }

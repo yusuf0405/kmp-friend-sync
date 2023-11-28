@@ -11,12 +11,11 @@ import org.joseph.friendsync.common.theme.FriendSyncTheme
 
 @Composable
 fun LoadingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.background(FriendSyncTheme.colors.backgroundPrimary)
 ) {
     Box(
         modifier = modifier
-            .fillMaxSize()
-            .background(FriendSyncTheme.colors.backgroundPrimary),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
