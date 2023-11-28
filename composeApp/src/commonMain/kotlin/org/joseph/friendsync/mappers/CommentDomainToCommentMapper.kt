@@ -2,9 +2,8 @@ package org.joseph.friendsync.mappers
 
 import org.joseph.friendsync.common.extensions.toLocalDate
 import org.joseph.friendsync.common.mapper.Mapper
-import org.joseph.friendsync.data.models.comments.CommentCloud
 import org.joseph.friendsync.domain.models.CommentDomain
-import org.joseph.friendsync.managers.UserDataStore
+import org.joseph.friendsync.managers.user.UserDataStore
 import org.joseph.friendsync.models.Comment
 
 class CommentDomainToCommentMapper(

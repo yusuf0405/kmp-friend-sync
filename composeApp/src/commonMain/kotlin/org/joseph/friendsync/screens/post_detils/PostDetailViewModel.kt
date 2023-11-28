@@ -17,8 +17,8 @@ import org.joseph.friendsync.domain.usecases.comments.DeleteCommentByIdUseCase
 import org.joseph.friendsync.domain.usecases.comments.EditCommentUseCase
 import org.joseph.friendsync.domain.usecases.comments.FetchPostCommentsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
-import org.joseph.friendsync.managers.UserDataStore
-import org.joseph.friendsync.managers.UserPreferences
+import org.joseph.friendsync.managers.user.UserDataStore
+import org.joseph.friendsync.managers.user.UserPreferences
 import org.joseph.friendsync.mappers.CommentDomainToCommentMapper
 import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.screens.post_detils.comment.CommentsStateStateFlowCommunication

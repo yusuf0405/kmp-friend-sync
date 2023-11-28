@@ -54,4 +54,13 @@
     <string name="unsubscribe">Unsubscribe</string>
     <string name="posts_empty_title">To see posts, you need to subscribe to other users</string>
     <string name="chats_list_destination_title">Chats</string>
+    <string name="your_email">your email</string>
+    <string name="your_password">your password</string>
+    <string name="your_name">your name</string>
+    <string name="your_lastname">your lastname</string>
+    <string name="sign_in">Sign In</string>
+    <string name="select_the_login_option">Select the login option</string>
+    <string name="continue_with_email">Continue with Email</string>
+    <string name="using_to_login">Using ${login} to login</string>
+    <string name="enter_with_email_screen_title">What’s your\nemail\naddress?</string>
 </resources>

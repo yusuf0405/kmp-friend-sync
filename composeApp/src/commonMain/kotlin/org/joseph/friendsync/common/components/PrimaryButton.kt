@@ -1,21 +1,24 @@
 package org.joseph.friendsync.common.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
+import org.joseph.friendsync.common.extensions.SpacerWidth
 import org.joseph.friendsync.common.theme.FriendSyncTheme
+import org.joseph.friendsync.common.theme.colors.TransparentGray
 import org.joseph.friendsync.common.theme.dimens.DefaultPrimaryButtonSize
-import org.joseph.friendsync.strings.MainResStrings
+import org.joseph.friendsync.common.theme.dimens.MediumSpacing
 
 @Composable
 fun PrimaryButton(
@@ -25,10 +28,13 @@ fun PrimaryButton(
     textModifier: Modifier = Modifier,
     color: Color = FriendSyncTheme.colors.accentActive,
     textStyle: TextStyle = FriendSyncTheme.typography.bodyLarge.medium,
-    textColor: Color = FriendSyncTheme.colors.onTextPrimary,
-    elevation: ButtonElevation = ButtonDefaults.buttonElevation(),
+    textColor: Color = Color.White,
+    elevation: ButtonElevation = ButtonDefaults.buttonElevation(
+        defaultElevation = FriendSyncTheme.dimens.dp4
+    ),
     shape: Shape = FriendSyncTheme.shapes.medium,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    startIcon: ImageVector? = null,
 ) {
     Button(
         onClick = onClick,
@@ -40,10 +46,17 @@ fun PrimaryButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = color,
             contentColor = textColor,
-            disabledContainerColor = Color.LightGray
+            disabledContainerColor = FriendSyncTheme.colors.iconsSecondary
         ),
         enabled = enabled
     ) {
+        if (startIcon != null) Icon(
+            modifier = Modifier.size(FriendSyncTheme.dimens.dp24),
+            imageVector = startIcon,
+            contentDescription = null,
+            tint = Color.White
+        )
+        SpacerWidth(MediumSpacing)
         Text(
             modifier = textModifier,
             text = text,

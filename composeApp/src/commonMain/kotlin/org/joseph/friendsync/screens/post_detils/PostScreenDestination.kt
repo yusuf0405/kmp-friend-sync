@@ -10,10 +10,7 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
-import compose.icons.feathericons.ArrowRight
-import io.github.skeptick.libres.compose.painterResource
 import org.joseph.friendsync.common.components.AppTopBar
-import org.joseph.friendsync.images.MainResImages
 import org.joseph.friendsync.strings.MainResStrings
 import org.koin.core.parameter.parametersOf
 

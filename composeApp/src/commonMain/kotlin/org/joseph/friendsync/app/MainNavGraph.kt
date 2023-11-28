@@ -1,38 +1,60 @@
-package org.joseph.friendsync
+package org.joseph.friendsync.app
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
-import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.core.lifecycle.LocalNavigatorScreenLifecycleProvider
+import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.tab.CurrentTab
-import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
-import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabDisposable
 import cafe.adriel.voyager.navigator.tab.TabNavigator
+import kotlinx.coroutines.flow.collectLatest
+import org.joseph.friendsync.common.components.FriendSyncSnackbar
+import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.managers.snackbar.SnackbarType
 import org.joseph.friendsync.navigation.BottomNavigation
-import org.joseph.friendsync.navigation.BottomNavigationItem
-import org.joseph.friendsync.common.theme.FriendSyncTheme
+import org.joseph.friendsync.navigation.TabNavigationItem
 import org.joseph.friendsync.navigation.tabs.AddPostTab
 import org.joseph.friendsync.navigation.tabs.HomeTab
 import org.joseph.friendsync.navigation.tabs.NotificationTab
 import org.joseph.friendsync.navigation.tabs.ProfileTab
 import org.joseph.friendsync.navigation.tabs.SearchTab
-import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
+import org.koin.core.component.getScopeId
 
-@OptIn(ExperimentalVoyagerApi::class)
-@Composable
-internal fun App() = FriendSyncTheme {
-    KoinContext {
+class MainNavGraph : Screen {
+
+    @OptIn(ExperimentalVoyagerApi::class)
+    @Composable
+    override fun Content() {
+        val viewModel: CommonViewModel = koinInject()
+        val snackbarHostState = remember { SnackbarHostState() }
+        val coroutineScope = rememberCoroutineScope()
+        var snackbarType by remember { mutableStateOf(SnackbarType.SAMPLE) }
+
+        coroutineScope.launchSafe {
+            viewModel.snackbarQueueFlow.collectLatest { snackbar ->
+                snackbarType = snackbar.snackbarType
+                snackbarHostState.showSnackbar(
+                    message = snackbar.snackbarMessage,
+                    duration = snackbar.snackbarDuration
+                )
+            }
+        }
+
         TabNavigator(
             tab = HomeTab,
             tabDisposable = { navigator ->
@@ -44,6 +66,17 @@ internal fun App() = FriendSyncTheme {
         ) {
             Scaffold(
                 modifier = Modifier.systemBarsPadding(),
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        snackbar = { data ->
+                            FriendSyncSnackbar(
+                                data.visuals.message,
+                                snackbarType
+                            )
+                        }
+                    )
+                },
                 bottomBar = {
                     BottomNavigation {
                         TabNavigationItem(HomeTab)
@@ -60,24 +93,8 @@ internal fun App() = FriendSyncTheme {
                         .fillMaxSize()
                 ) {
                     CurrentTab()
-
                 }
             }
         }
     }
 }
-
-
-@Composable
-private fun RowScope.TabNavigationItem(tab: Tab) {
-    val tabNavigator = LocalTabNavigator.current
-
-    BottomNavigationItem(
-        modifier = Modifier.weight(1f),
-        selected = tabNavigator.current == tab,
-        onClick = { tabNavigator.current = tab },
-        icon = tab.icon!!
-    )
-}
-
-internal expect fun openUrl(url: String?)

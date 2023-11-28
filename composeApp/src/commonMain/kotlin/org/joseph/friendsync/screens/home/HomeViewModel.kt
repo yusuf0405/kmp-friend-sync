@@ -24,11 +24,15 @@ import org.joseph.friendsync.domain.models.UserInfoDomain
 import org.joseph.friendsync.domain.usecases.onboarding.FetchOnboardingUsersUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
-import org.joseph.friendsync.managers.UserDataStore
-import org.joseph.friendsync.managers.UserPreferences
+import org.joseph.friendsync.managers.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.managers.snackbar.SnackbarDisplay
+import org.joseph.friendsync.managers.user.UserDataStore
+import org.joseph.friendsync.managers.user.UserPreferences
 import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
 import org.joseph.friendsync.models.user.UserInfo
+import org.joseph.friendsync.navigation.GlobalNavigationFlowCommunication
+import org.joseph.friendsync.navigation.NavCommand
 import org.joseph.friendsync.navigation.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.screens.home.onboarding.OnBoardingUiState
 import org.joseph.friendsync.screens.home.onboarding.OnboardingStateStateFlowCommunication
@@ -46,7 +50,9 @@ class HomeViewModel(
     private val subscriptionsInteractor: SubscriptionsInteractor,
     private val postDomainToPostMapper: PostDomainToPostMapper,
     private val onboardingCommunication: OnboardingStateStateFlowCommunication,
-    private val navigationScreenCommunication: NavigationScreenStateFlowCommunication
+    private val navigationScreenCommunication: NavigationScreenStateFlowCommunication,
+    private val globalNavigationFlowCommunication: GlobalNavigationFlowCommunication,
+    private val snackbarDisplay: SnackbarDisplay,
 ) : StateScreenModel<HomeUiState>(HomeUiState.Initial), KoinComponent {
 
     private var currentPage = DEFAULT_PAGE
@@ -65,6 +71,7 @@ class HomeViewModel(
 
     private fun startLoadAllData() = screenModelScope.launchSafe(
         onError = {
+            snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(defaultErrorMessage))
             mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
         }
     ) {
@@ -160,11 +167,18 @@ class HomeViewModel(
     } ?: mutableState.value
 
     private suspend fun asyncFetchOnboardingUsers() = asyncWithDefault(Unit) {
-        val onBoardingState = when (val result = fetchOnboardingUsersUseCase(currentUser.id)) {
-            is Result.Success -> fetchStateForSuccessfulOnboardingRequest(result)
-            is Result.Error -> onboardingCommunication.value().copy(errorMessage = result.message)
+        when (val result = fetchOnboardingUsersUseCase(currentUser.id)) {
+            is Result.Success -> {
+                val onBoardingState = fetchStateForSuccessfulOnboardingRequest(result)
+                onboardingCommunication.emit(onBoardingState)
+            }
+
+            is Result.Error -> {
+                val message = result.message ?: defaultErrorMessage
+                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(message))
+            }
         }
-        onboardingCommunication.emit(onBoardingState)
+
     }
 
     private fun fetchStateForSuccessfulOnboardingRequest(
@@ -172,15 +186,14 @@ class HomeViewModel(
     ): OnBoardingUiState {
         val usersDomain = result.data
         val onBoardingState = onboardingCommunication.value()
-        return if (usersDomain == null) onBoardingState.copy(
-            errorMessage = result.message
-        ) else if (usersDomain.isEmpty()) onBoardingState.copy(
-            shouldShowOnBoarding = false,
+        return onBoardingState.copy(
+            users = usersDomain?.map(userInfoDomainToUserInfoMapper::map) ?: emptyList(),
+            shouldShowOnBoarding = usersDomain?.isNotEmpty() == true,
         )
-        else onBoardingState.copy(
-            users = usersDomain.map(userInfoDomainToUserInfoMapper::map),
-            shouldShowOnBoarding = true,
-        )
+    }
+
+    fun navigateChatScreen() {
+        globalNavigationFlowCommunication.emit(NavCommand.Chat)
     }
 
     private fun navigatePostScreen(postId: Int, shouldShowAddCommentDialog: Boolean = false) {
@@ -205,9 +218,13 @@ class HomeViewModel(
             followingId = user.id
         )
         when (result) {
-            is Result.Success -> subscribeUserIdsFlow.update { it - user.id }
+            is Result.Success -> {
+                subscribeUserIdsFlow.update { it - user.id }
+            }
+
             is Result.Error -> {
-                // TODO: Add handle error
+                val message = result.message ?: defaultErrorMessage
+                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(message))
             }
         }
     }
@@ -218,9 +235,13 @@ class HomeViewModel(
             followingId = user.id
         )
         when (result) {
-            is Result.Success -> subscribeUserIdsFlow.update { it + user.id }
+            is Result.Success -> {
+                subscribeUserIdsFlow.update { it + user.id }
+            }
+
             is Result.Error -> {
-                // TODO: Add handle error
+                val message = result.message ?: defaultErrorMessage
+                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(message))
             }
         }
     }

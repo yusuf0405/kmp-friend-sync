@@ -1,4 +1,4 @@
-package org.joseph.friendsync.managers
+package org.joseph.friendsync.managers.user
 
 import kotlinx.serialization.Serializable
 import org.joseph.friendsync.domain.models.AuthResultData

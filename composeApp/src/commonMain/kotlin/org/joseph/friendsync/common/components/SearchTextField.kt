@@ -40,8 +40,8 @@ fun SearchTextField(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = backgroundColor,
             unfocusedContainerColor = backgroundColor,
-            focusedIndicatorColor = backgroundColor,
-            unfocusedIndicatorColor = backgroundColor,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
             focusedTextColor = FriendSyncTheme.colors.textPrimary,
             unfocusedTextColor = FriendSyncTheme.colors.textPrimary,
             unfocusedPlaceholderColor = FriendSyncTheme.colors.textSecondary,

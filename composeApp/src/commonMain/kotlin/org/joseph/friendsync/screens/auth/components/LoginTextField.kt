@@ -1,7 +1,11 @@
 package org.joseph.friendsync.screens.auth.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -17,78 +21,107 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import io.github.skeptick.libres.compose.painterResource
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Eye
+import compose.icons.feathericons.EyeOff
+import org.joseph.friendsync.common.extensions.SpacerHeight
 import org.joseph.friendsync.common.theme.FriendSyncTheme
-import org.joseph.friendsync.images.MainResImages
+import org.joseph.friendsync.common.theme.dimens.MediumSpacing
+import org.joseph.friendsync.screens.auth.models.LoginValidationStatus
 
 @Composable
 fun LoginTextField(
-    modifier: Modifier = Modifier,
+    title: String,
     value: String,
     hint: String,
+    modifier: Modifier = Modifier,
+    loginValidationStatus: LoginValidationStatus = LoginValidationStatus.DEFAULT,
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType = KeyboardType.Text,
     isPasswordTextField: Boolean = false,
+    readOnly: Boolean = false,
     isSingleLine: Boolean = true,
 ) {
-
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
+    val indicatorColor = when (loginValidationStatus) {
+        LoginValidationStatus.DEFAULT -> FriendSyncTheme.colors.backgroundSecondary
+        LoginValidationStatus.ERROR -> FriendSyncTheme.colors.accentNegative
+        LoginValidationStatus.SUCCESS -> FriendSyncTheme.colors.accentPositive
+    }
+
+    Column(
         modifier = modifier.fillMaxWidth(),
-        textStyle = FriendSyncTheme.typography.bodyMedium.regular,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = keyboardType
-        ),
-        singleLine = isSingleLine,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = FriendSyncTheme.colors.backgroundSecondary,
-            unfocusedContainerColor = FriendSyncTheme.colors.backgroundSecondary,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-        ),
-        trailingIcon = {
-            if (isPasswordTextField) {
-                PasswordEyeIcon(isPasswordVisible = isPasswordVisible) {
-                    isPasswordVisible = !isPasswordVisible
+    ) {
+        Text(
+            text = title,
+            color = FriendSyncTheme.colors.textSecondary,
+            style = FriendSyncTheme.typography.bodySmall.bold,
+        )
+        SpacerHeight(MediumSpacing)
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = value,
+            onValueChange = onValueChange,
+            textStyle = FriendSyncTheme.typography.bodyExtraMedium.bold,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = keyboardType
+            ),
+            singleLine = isSingleLine,
+            readOnly = readOnly,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                unfocusedIndicatorColor = indicatorColor,
+                focusedIndicatorColor = indicatorColor,
+            ),
+            trailingIcon = {
+                if (isPasswordTextField) {
+                    PasswordEyeIcon(isPasswordVisible = isPasswordVisible) {
+                        isPasswordVisible = !isPasswordVisible
+                    }
+                } else {
+                    IconButton(
+                        modifier = Modifier.size(FriendSyncTheme.dimens.dp16),
+                        onClick = { onValueChange(String()) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = null,
+                            tint = FriendSyncTheme.colors.iconsSecondary
+                        )
+                    }
                 }
-            }
-        },
-        visualTransformation = if (isPasswordTextField) {
-            if (isPasswordVisible) VisualTransformation.None
-            else PasswordVisualTransformation()
-        } else VisualTransformation.None,
-        placeholder = {
-            Text(
-                text = hint,
-                style = FriendSyncTheme.typography.bodyMedium.regular
-            )
-        },
-        shape = FriendSyncTheme.shapes.medium
-    )
+            },
+            visualTransformation = if (isPasswordTextField) {
+                if (isPasswordVisible) VisualTransformation.None
+                else PasswordVisualTransformation()
+            } else VisualTransformation.None,
+            placeholder = {
+                Text(
+                    text = hint,
+                    style = FriendSyncTheme.typography.bodyMedium.regular,
+                    color = FriendSyncTheme.colors.textSecondary
+                )
+            },
+        )
+    }
 }
 
 @Composable
-fun PasswordEyeIcon(
+private fun PasswordEyeIcon(
     isPasswordVisible: Boolean,
     onPasswordVisibilityToggle: () -> Unit,
 ) {
-    val iconId = if (isPasswordVisible) MainResImages.show_eye_icon_filled
-    else MainResImages.hide_eye_icon_filled
-    val image = painterResource(iconId)
-
     IconButton(
+        modifier = Modifier.size(FriendSyncTheme.dimens.dp16),
         onClick = onPasswordVisibilityToggle
     ) {
         Icon(
-            painter = image,
+            imageVector = if (isPasswordVisible) FeatherIcons.EyeOff
+            else FeatherIcons.Eye,
             contentDescription = null,
             tint = FriendSyncTheme.colors.iconsSecondary
         )
     }
 }
-
-
-

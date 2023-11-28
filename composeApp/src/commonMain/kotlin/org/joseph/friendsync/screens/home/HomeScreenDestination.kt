@@ -7,20 +7,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleOwner
-import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleProvider
-import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.MessageCircle
-import io.github.skeptick.libres.compose.painterResource
 import org.joseph.friendsync.common.components.AppTopBar
-import org.joseph.friendsync.images.MainResImages
 import org.joseph.friendsync.screens.chat_list.ChatListDestination
 import org.joseph.friendsync.strings.MainResStrings
-import org.koin.compose.koinInject
 
 class HomeScreenDestination : Screen {
 
@@ -37,9 +31,7 @@ class HomeScreenDestination : Screen {
                 AppTopBar(
                     title = MainResStrings.home_destination_title,
                     endIcon = FeatherIcons.MessageCircle,
-                    onEndClick = {
-                        navigator?.push(ChatListDestination())
-                    }
+                    onEndClick = { viewModel.navigateChatScreen() }
                 )
             }
         ) { paddings ->
