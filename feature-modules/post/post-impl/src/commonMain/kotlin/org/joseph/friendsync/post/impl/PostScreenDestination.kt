@@ -3,7 +3,9 @@ package org.joseph.friendsync.post.impl
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
@@ -24,6 +26,11 @@ class PostScreenDestination(
         val viewModel =
             getScreenModel<PostDetailViewModel> { parametersOf(postId, shouldShowAddCommentDialog) }
         val navigator = LocalNavigator.current
+
+        val navigationScreen by viewModel.navigationScreenFlow.collectAsState(null)
+        LaunchedEffect(key1 = navigationScreen) {
+            if (navigationScreen != null) navigator?.push(navigationScreen!!)
+        }
 
         Scaffold(
             topBar = {

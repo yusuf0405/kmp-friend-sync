@@ -32,9 +32,9 @@ import org.joseph.friendsync.navigation.tabs.AddPostTab
 import org.joseph.friendsync.navigation.tabs.HomeTab
 import org.joseph.friendsync.navigation.tabs.NotificationTab
 import org.joseph.friendsync.navigation.tabs.SearchTab
+import org.joseph.friendsync.profile.impl.ProfileScreenDestination
 import org.joseph.friendsync.screens.add_post.AddPostScreenDestination
 import org.joseph.friendsync.screens.notification.NotificationScreenDestination
-import org.joseph.friendsync.screens.profile.ProfileScreenDestination
 import org.joseph.friendsync.screens.search.SearchScreenDestination
 
 private const val DEFAULT_ICON_SIZE = 56

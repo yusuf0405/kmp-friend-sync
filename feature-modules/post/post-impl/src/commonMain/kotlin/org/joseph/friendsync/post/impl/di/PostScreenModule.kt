@@ -14,7 +14,7 @@ val postScreenModule = module {
         PostDetailViewModel(
             postId = params.get(),
             shouldShowAddCommentDialog = params.get(),
-            get(), get(), get(), get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
 }

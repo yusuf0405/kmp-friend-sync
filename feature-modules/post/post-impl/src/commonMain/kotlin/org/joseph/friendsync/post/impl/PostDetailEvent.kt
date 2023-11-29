@@ -16,7 +16,7 @@ sealed class PostDetailEvent {
 
     data class OnEditDialogChange(val isShow: Boolean, val comment: Comment?) : PostDetailEvent()
 
-    data object OnProfileClick : PostDetailEvent()
+    data class OnProfileClick(val userId: Int) : PostDetailEvent()
 
     data object OnAddCommentClick : PostDetailEvent()
 

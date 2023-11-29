@@ -14,7 +14,7 @@ import io.ktor.http.takeFrom
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-private const val CURRENT_CONFIG = "192.168.2.103"
+private const val CURRENT_CONFIG = "192.168.220.243"
 const val BASE_URL = "http://$CURRENT_CONFIG:8080"
 
 internal abstract class KtorApi {

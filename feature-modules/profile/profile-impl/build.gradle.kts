@@ -17,13 +17,13 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":domain"))
             implementation(project(":core-ui"))
-            implementation(project(":feature-modules:post:post-api"))
             implementation(project(":feature-modules:profile:profile-api"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.composeIcons.featherIcons)
+            implementation(libs.composeImageLoader)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
@@ -31,6 +31,7 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.kotlinx.datetime)
         }
 
         androidMain.dependencies {}
@@ -39,7 +40,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.joseph.friendsync.post.impl"
+    namespace = "org.joseph.friendsync.profile.impl"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
