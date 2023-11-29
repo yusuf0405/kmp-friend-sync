@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
-import org.joseph.friendsync.common.theme.FriendSyncTheme
+import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 
 class ProfileScreenDestination : Screen {
 

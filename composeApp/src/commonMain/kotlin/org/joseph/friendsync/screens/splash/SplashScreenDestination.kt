@@ -15,14 +15,11 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
-import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
-import cafe.adriel.voyager.core.lifecycle.LifecycleEffect
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.stack.popUntil
 import cafe.adriel.voyager.navigator.LocalNavigator
-import org.joseph.friendsync.common.theme.FriendSyncTheme
-import org.joseph.friendsync.common.theme.colors.Blue
-import org.joseph.friendsync.common.theme.colors.LightCranberry
+import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
+import org.joseph.friendsync.core.ui.theme.colors.Blue
+import org.joseph.friendsync.core.ui.theme.colors.LightCranberry
 import org.koin.compose.koinInject
 
 class SplashScreenDestination : Screen {

@@ -16,10 +16,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import kotlinx.coroutines.flow.collectLatest
-import org.joseph.friendsync.common.components.FriendSyncSnackbar
+import org.joseph.friendsync.chat.impl.chat_list.ChatListDestination
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.managers.snackbar.SnackbarType
-import org.joseph.friendsync.screens.chat_list.ChatListDestination
+import org.joseph.friendsync.core.ui.components.FriendSyncSnackbar
+import org.joseph.friendsync.core.ui.snackbar.SnackbarType
 import org.koin.compose.koinInject
 
 class ChatNavGraph : Screen {

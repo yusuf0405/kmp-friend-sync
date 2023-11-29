@@ -1,5 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose)
@@ -18,12 +16,6 @@ kotlin {
         }
     }
 
-    jvm()
-    js {
-        browser()
-        binaries.executable()
-    }
-
     listOf(
         iosX64(),
         iosArm64(),
@@ -37,24 +29,33 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":shared"))
+            implementation(project(":data"))
+            implementation(project(":domain"))
+            implementation(project(":core-ui"))
+
+            implementation(project(":feature-modules:auth:auth-api"))
+            implementation(project(":feature-modules:auth:auth-impl"))
+
+            implementation(project(":feature-modules:home:home-api"))
+            implementation(project(":feature-modules:home:home-impl"))
+
+            implementation(project(":feature-modules:chat:chat-api"))
+            implementation(project(":feature-modules:chat:chat-impl"))
+
+            implementation(project(":feature-modules:post:post-api"))
+            implementation(project(":feature-modules:post:post-impl"))
+
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
+            implementation(libs.composeIcons.featherIcons)
 
-            implementation(libs.libres)
             implementation(libs.composeImageLoader)
             implementation(libs.napier)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.moko.mvvm)
-            implementation(libs.ktor.core)
-            implementation(libs.composeIcons.featherIcons)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.multiplatform.settings)
-            implementation(libs.multiplatform.settings.coroutines)
-            implementation(libs.multiplatform.settings.serialization)
-            implementation(libs.multiplatform.settings.no.arg)
 
             // Voyager
             implementation(libs.voyager.navigator)
@@ -79,24 +80,8 @@ kotlin {
             implementation(libs.androidx.activityCompose)
             implementation(libs.compose.uitooling)
             implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.core.splashscreen)
         }
-
-        jvmMain.dependencies {
-            implementation(compose.desktop.common)
-            implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.okhttp)
-        }
-
-        jsMain.dependencies {
-            implementation(compose.html.core)
-        }
-
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
-
     }
 }
 
@@ -139,32 +124,12 @@ android {
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.joseph.friendsync.desktopApp"
-            packageVersion = "1.0.0"
-        }
-    }
-}
-
-compose.experimental {
-    web.application {}
-}
-
 libres {
     generatedClassName = "MainRes"
     generateNamedArguments = true
     baseLocaleLanguageCode = "en"
     camelCaseNamesForAppleFramework = false
 }
-
-tasks.getByPath("jvmProcessResources").dependsOn("libresGenerateResources")
-tasks.getByPath("jvmSourcesJar").dependsOn("libresGenerateResources")
-tasks.getByPath("jsProcessResources").dependsOn("libresGenerateResources")
 
 buildConfig {
     // BuildConfig configuration here.
