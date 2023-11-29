@@ -19,6 +19,7 @@ kotlin {
             implementation(project(":core-ui"))
 
             implementation(project(":feature-modules:post:post-api"))
+            implementation(project(":feature-modules:profile:profile-api"))
 
             implementation(compose.runtime)
             implementation(compose.material3)

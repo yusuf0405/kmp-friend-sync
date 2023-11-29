@@ -45,6 +45,9 @@ kotlin {
             implementation(project(":feature-modules:post:post-api"))
             implementation(project(":feature-modules:post:post-impl"))
 
+            implementation(project(":feature-modules:profile:profile-api"))
+            implementation(project(":feature-modules:profile:profile-impl"))
+
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)

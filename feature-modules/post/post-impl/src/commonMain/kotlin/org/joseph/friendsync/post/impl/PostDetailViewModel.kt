@@ -2,8 +2,10 @@ package org.joseph.friendsync.post.impl
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import cafe.adriel.voyager.core.screen.Screen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import org.joseph.friendsync.common.user.UserDataStore
@@ -11,6 +13,7 @@ import org.joseph.friendsync.common.user.UserPreferences
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
 import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.domain.models.CommentDomain
 import org.joseph.friendsync.domain.models.PostDomain
@@ -23,6 +26,7 @@ import org.joseph.friendsync.mappers.CommentDomainToCommentMapper
 import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.post.impl.comment.CommentsStateStateFlowCommunication
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
+import org.joseph.friendsync.profile.api.ProfileScreenProvider
 import org.koin.core.component.KoinComponent
 
 class PostDetailViewModel(
@@ -36,10 +40,13 @@ class PostDetailViewModel(
     private val deleteCommentByIdUseCase: DeleteCommentByIdUseCase,
     private val postDomainToPostMapper: PostDomainToPostMapper,
     private val commentDomainToCommentMapper: CommentDomainToCommentMapper,
-    private val commentsStateCommunication: CommentsStateStateFlowCommunication
+    private val commentsStateCommunication: CommentsStateStateFlowCommunication,
+    private val navigationScreenCommunication: NavigationScreenStateFlowCommunication,
+    private val profileScreenProvider: ProfileScreenProvider,
 ) : StateScreenModel<PostDetailUiState>(PostDetailUiState.Initial), KoinComponent {
 
     val commentsUiState: StateFlow<CommentsUiState> = commentsStateCommunication.observe()
+    val navigationScreenFlow: SharedFlow<Screen?> = navigationScreenCommunication.observe()
 
     private var currentUser = UserPreferences.unknown
 
@@ -70,7 +77,7 @@ class PostDetailViewModel(
         when (event) {
             is PostDetailEvent.RefreshPostData -> refreshPostData()
             is PostDetailEvent.RefreshCommentsData -> refreshCommentsData()
-            is PostDetailEvent.OnProfileClick -> doProfileClick()
+            is PostDetailEvent.OnProfileClick -> navigateProfileScreen(event.userId)
             is PostDetailEvent.OnAddCommentClick -> doAddCommentClick()
             is PostDetailEvent.OnEditCommentValueChange -> doCommentMoreIconClick(event)
             is PostDetailEvent.OnNewCommentValueChange -> doOnCommentValueChange(event)
@@ -214,7 +221,8 @@ class PostDetailViewModel(
         }
     }
 
-    private fun doProfileClick() {
+    private fun navigateProfileScreen(userId: Int) {
+        navigationScreenCommunication.emit(profileScreenProvider.profileScreen(userId))
     }
 
     private fun doOnCommentValueChange(event: PostDetailEvent.OnNewCommentValueChange) {

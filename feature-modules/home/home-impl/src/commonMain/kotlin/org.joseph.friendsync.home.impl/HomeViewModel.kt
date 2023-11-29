@@ -37,6 +37,7 @@ import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
 import org.joseph.friendsync.models.user.UserInfo
 import org.joseph.friendsync.post.api.PostScreenProvider
+import org.joseph.friendsync.profile.api.ProfileScreenProvider
 import org.koin.core.component.KoinComponent
 
 private const val DEFAULT_PAGE = 1
@@ -54,6 +55,7 @@ class HomeViewModel(
     private val navigationScreenCommunication: NavigationScreenStateFlowCommunication,
     private val globalNavigationFlowCommunication: GlobalNavigationFlowCommunication,
     private val postScreenProvider: PostScreenProvider,
+    private val profileScreenProvider: ProfileScreenProvider,
 ) : StateScreenModel<HomeUiState>(HomeUiState.Initial), KoinComponent {
 
     private var currentPage = DEFAULT_PAGE
@@ -97,17 +99,17 @@ class HomeViewModel(
 
     fun onEvent(event: HomeScreenEvent) {
         when (event) {
+            is HomeScreenEvent.FetchMorePosts -> fetchMorePosts()
+            is HomeScreenEvent.RefreshAllData -> refreshAll()
             is HomeScreenEvent.OnCommentClick -> navigatePostScreen(event.postId, true)
             is HomeScreenEvent.OnLikeClick -> {}
-            is HomeScreenEvent.OnProfileClick -> {}
+            is HomeScreenEvent.OnProfileClick -> navigateProfileScreen(event.userId)
             is HomeScreenEvent.OnPostClick -> navigatePostScreen(event.postId)
             is HomeScreenEvent.OnStoriesClick -> {}
             is HomeScreenEvent.OnFollowItemClick -> {}
             is HomeScreenEvent.OnFollowButtonClick -> doFollowButtonClick(event)
             is HomeScreenEvent.OnBoardingFinish -> doOnboardingFinish()
-            is HomeScreenEvent.OnUserClick -> {}
-            is HomeScreenEvent.FetchMorePosts -> fetchMorePosts()
-            is HomeScreenEvent.RefreshAllData -> refreshAll()
+            is HomeScreenEvent.OnUserClick -> navigateProfileScreen(event.user.id)
         }
     }
 
@@ -203,6 +205,10 @@ class HomeViewModel(
         navigationScreenCommunication.emit(
             postScreenProvider.postDetailsScreen(postId, shouldShowAddCommentDialog)
         )
+    }
+
+    private fun navigateProfileScreen(userId: Int) {
+        navigationScreenCommunication.emit(profileScreenProvider.profileScreen(userId))
     }
 
     private fun doFollowButtonClick(event: HomeScreenEvent.OnFollowButtonClick) {

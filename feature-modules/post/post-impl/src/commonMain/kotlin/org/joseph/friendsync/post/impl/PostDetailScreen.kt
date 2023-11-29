@@ -91,7 +91,7 @@ fun LoadedPostDetailScreen(
                 likesCount = post.likesCount,
                 text = post.text,
                 onPostClick = {},
-                onProfileClick = { onEvent(PostDetailEvent.OnProfileClick) },
+                onProfileClick = { onEvent(PostDetailEvent.OnProfileClick(post.authorId)) },
                 isDetailScreen = true
 
             )
@@ -123,7 +123,7 @@ fun LoadedPostDetailScreen(
                         releaseDate = comment.releaseDate,
                         commentText = comment.comment,
                         isCurrentUserComment = comment.isCurrentUserComment,
-                        onProfileClick = { onEvent(PostDetailEvent.OnProfileClick) },
+                        onProfileClick = { onEvent(PostDetailEvent.OnProfileClick(comment.user.id)) },
                         onEditClick = {
                             onEvent(PostDetailEvent.OnEditDialogChange(true, comment))
                         },
