@@ -2,9 +2,9 @@ package org.joseph.friendsync.app
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.SharedFlow
-import org.joseph.friendsync.managers.snackbar.SnackbarQueue
-import org.joseph.friendsync.managers.snackbar.FriendSyncSnackbar
-import org.joseph.friendsync.navigation.GlobalNavigationFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
+import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.core.ui.snackbar.SnackbarQueue
 
 class CommonViewModel(
     private val snackbarQueue: SnackbarQueue,

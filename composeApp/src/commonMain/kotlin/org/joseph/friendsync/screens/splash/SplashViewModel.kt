@@ -6,9 +6,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import org.joseph.friendsync.app.LoginNavGraph
 import org.joseph.friendsync.app.MainNavGraph
+import org.joseph.friendsync.common.user.UserDataStore
+import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.managers.user.UserDataStore
-import org.joseph.friendsync.navigation.NavigationScreenStateFlowCommunication
 
 private const val DEFAULT_SPLASH_SCREEN_DELAY_TIME = 5_000L
 

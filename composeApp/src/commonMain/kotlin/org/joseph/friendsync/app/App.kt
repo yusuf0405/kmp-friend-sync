@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import kotlinx.coroutines.flow.collectLatest
-import org.joseph.friendsync.common.theme.FriendSyncTheme
+import org.joseph.friendsync.core.ui.common.communication.NavCommand
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.navigation.NavCommand
+import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.screens.splash.SplashScreenDestination
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
@@ -34,6 +34,7 @@ internal fun App() = FriendSyncTheme {
                             is NavCommand.Back -> navigator.pop()
                             is NavCommand.Auth -> navigator.push(LoginNavGraph())
                             is NavCommand.Chat -> navigator.push(ChatNavGraph())
+                            is NavCommand.Main -> navigator.push(MainNavGraph())
                         }
                     }
                 }
