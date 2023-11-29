@@ -21,19 +21,20 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.transitions.SlideTransition
-import org.joseph.friendsync.common.extensions.SpacerHeight
-import org.joseph.friendsync.common.theme.FriendSyncTheme
-import org.joseph.friendsync.common.theme.dimens.SmallSpacing
+import org.joseph.friendsync.core.ui.extensions.SpacerHeight
+import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
+import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
+import org.joseph.friendsync.home.impl.HomeScreenDestination
 import org.joseph.friendsync.navigation.tabs.AddPostTab
 import org.joseph.friendsync.navigation.tabs.HomeTab
 import org.joseph.friendsync.navigation.tabs.NotificationTab
 import org.joseph.friendsync.navigation.tabs.SearchTab
-import org.joseph.friendsync.screens.home.HomeScreenDestination
+import org.joseph.friendsync.profile.impl.ProfileScreenDestination
 import org.joseph.friendsync.screens.add_post.AddPostScreenDestination
 import org.joseph.friendsync.screens.notification.NotificationScreenDestination
-import org.joseph.friendsync.screens.profile.ProfileScreenDestination
 import org.joseph.friendsync.screens.search.SearchScreenDestination
 
 private const val DEFAULT_ICON_SIZE = 56
@@ -52,6 +53,18 @@ fun BottomNavigation(
         Row { content() }
         SpacerHeight(SmallSpacing)
     }
+}
+
+@Composable
+fun RowScope.TabNavigationItem(tab: Tab) {
+    val tabNavigator = LocalTabNavigator.current
+
+    BottomNavigationItem(
+        modifier = Modifier.weight(1f),
+        selected = tabNavigator.current == tab,
+        onClick = { tabNavigator.current = tab },
+        icon = tab.icon!!
+    )
 }
 
 @Composable

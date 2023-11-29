@@ -7,11 +7,8 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Search
-import compose.icons.feathericons.User
-import io.github.skeptick.libres.compose.painterResource
-import org.joseph.friendsync.images.MainResImages
 import org.joseph.friendsync.navigation.TabContent
-import org.joseph.friendsync.strings.MainResStrings
+import org.joseph.friendsync.core.ui.strings.MainResStrings
 
 object SearchTab : Tab {
 
