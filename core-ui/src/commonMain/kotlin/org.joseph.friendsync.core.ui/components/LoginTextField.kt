@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.impl.components
+package org.joseph.friendsync.core.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +28,13 @@ import compose.icons.feathericons.EyeOff
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
-import org.joseph.friendsync.auth.impl.models.LoginValidationStatus
+
+@Immutable
+enum class LoginValidationStatus {
+    DEFAULT,
+    ERROR,
+    SUCCESS,
+}
 
 @Composable
 fun LoginTextField(
@@ -35,7 +42,7 @@ fun LoginTextField(
     value: String,
     hint: String,
     modifier: Modifier = Modifier,
-    loginValidationStatus: LoginValidationStatus = LoginValidationStatus.DEFAULT,
+    validationStatus: LoginValidationStatus = LoginValidationStatus.DEFAULT,
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType = KeyboardType.Text,
     isPasswordTextField: Boolean = false,
@@ -44,7 +51,7 @@ fun LoginTextField(
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    val indicatorColor = when (loginValidationStatus) {
+    val indicatorColor = when (validationStatus) {
         LoginValidationStatus.DEFAULT -> FriendSyncTheme.colors.backgroundSecondary
         LoginValidationStatus.ERROR -> FriendSyncTheme.colors.accentNegative
         LoginValidationStatus.SUCCESS -> FriendSyncTheme.colors.accentPositive

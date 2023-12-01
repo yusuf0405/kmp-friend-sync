@@ -19,15 +19,15 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
-import org.joseph.friendsync.auth.impl.components.LoginTextField
+import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.components.AppBarIcon
 import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
-import org.joseph.friendsync.auth.impl.models.LoginValidationStatus
 import org.joseph.friendsync.core.ui.common.LoadingScreen
+import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 
 @Composable
 fun LoginScreen(
@@ -74,7 +74,7 @@ fun LoginScreen(
             keyboardType = KeyboardType.Password,
             isPasswordTextField = true,
             hint = MainResStrings.password_hint,
-            loginValidationStatus = passwordValidationStatus,
+            validationStatus = passwordValidationStatus,
             readOnly = uiState.isAuthenticating
         )
         SpacerHeight(FriendSyncTheme.dimens.dp32)

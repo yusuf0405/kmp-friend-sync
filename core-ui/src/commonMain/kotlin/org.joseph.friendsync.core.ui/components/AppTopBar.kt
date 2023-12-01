@@ -34,6 +34,7 @@ fun AppTopBar(
     contentAlignment: Alignment = Alignment.Center,
     onEndClick: () -> Unit = {},
     onStartClick: () -> Unit = {},
+    endIconVisible: Boolean = true,
 ) {
     Surface(
         tonalElevation = MediumElevation,
@@ -58,7 +59,7 @@ fun AppTopBar(
                 style = FriendSyncTheme.typography.titleExtraMedium.medium,
                 textAlign = TextAlign.Center
             )
-            if (endIcon != null) AppBarIcon(
+            if (endIcon != null && endIconVisible) AppBarIcon(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 imageVector = endIcon,
                 onClick = onEndClick

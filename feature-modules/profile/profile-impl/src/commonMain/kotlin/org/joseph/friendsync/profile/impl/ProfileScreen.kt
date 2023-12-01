@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,8 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -33,17 +37,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.rememberImagePainter
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Edit
 import kotlinx.coroutines.launch
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
+import org.joseph.friendsync.core.ui.components.AppBarIcon
 import org.joseph.friendsync.core.ui.components.CircularImage
 import org.joseph.friendsync.core.ui.components.FollowButton
 import org.joseph.friendsync.core.ui.components.Placeholder
@@ -58,6 +67,7 @@ import org.joseph.friendsync.models.user.UserDetail
 @Composable
 fun ProfileScreen(
     uiState: ProfileUiState,
+    onEvent: (ProfileScreenEvent) -> Unit
 ) {
     val modifier = Modifier
         .fillMaxSize()
@@ -75,7 +85,8 @@ fun ProfileScreen(
         is ProfileUiState.Content -> {
             LoadedProfileScreen(
                 uiState = uiState,
-                modifier = modifier
+                modifier = modifier,
+                onEvent = onEvent
             )
         }
     }
@@ -85,6 +96,7 @@ fun ProfileScreen(
 @Composable
 fun LoadedProfileScreen(
     uiState: ProfileUiState.Content,
+    onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val profileTabs = uiState.tabs
@@ -104,7 +116,8 @@ fun LoadedProfileScreen(
         ) {
             UserPersonalInfo(
                 userDetail = uiState.userDetail,
-                isCurrentUser = uiState.isCurrentUser
+                isCurrentUser = uiState.isCurrentUser,
+                onEvent = onEvent
             )
             Column(modifier = Modifier.height(screenHeight)) {
                 TabRow(
@@ -172,6 +185,7 @@ fun LoadedProfileScreen(
 private fun UserPersonalInfo(
     userDetail: UserDetail,
     isCurrentUser: Boolean,
+    onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -179,19 +193,42 @@ private fun UserPersonalInfo(
     ) {
         val painter = rememberImagePainter(userDetail.profileBackground ?: String())
 
-        Image(
-            painter = painter,
+        Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .height(160.dp)
-                .background(Placeholder()),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-        )
+        ) {
+            Image(
+                painter = painter,
+                modifier = Modifier.background(Placeholder()),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+            if (isCurrentUser) Box(
+                modifier = Modifier
+                    .padding(LargeSpacing)
+                    .align(Alignment.TopEnd)
+                    .size(FriendSyncTheme.dimens.dp36)
+                    .clip(CircleShape)
+                    .background(FriendSyncTheme.colors.backgroundModal),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    onClick = { onEvent(ProfileScreenEvent.OnEditBackgroundImage) },
+                ) {
+                    Icon(
+                        modifier = Modifier.size(FriendSyncTheme.dimens.dp16),
+                        imageVector = FeatherIcons.Edit,
+                        contentDescription = null,
+                        tint = FriendSyncTheme.colors.iconsPrimary
+                    )
+                }
+            }
+        }
         Column(
             modifier = Modifier
-                .padding(top = 80.dp)
+                .padding(top = FriendSyncTheme.dimens.dp80)
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -206,6 +243,7 @@ private fun UserPersonalInfo(
             )
             Spacer(modifier = Modifier.height(SmallSpacing))
             if (userDetail.education != null) Text(
+                modifier = Modifier.padding(horizontal = ExtraLargeSpacing),
                 text = userDetail.education!!,
                 style = FriendSyncTheme.typography.bodyMedium.medium,
                 color = FriendSyncTheme.colors.textSecondary
@@ -213,12 +251,13 @@ private fun UserPersonalInfo(
             Spacer(modifier = Modifier.height(MediumSpacing))
             if (userDetail.bio != null) {
                 Text(
+                    modifier = Modifier.padding(horizontal = ExtraLargeSpacing),
                     text = userDetail.bio!!,
                     style = FriendSyncTheme.typography.bodyLarge.medium,
                 )
                 Spacer(modifier = Modifier.height(ExtraLargeSpacing))
             }
-            if (userDetail != UserDetail.unknown) FollowingInfo(userDetail, isCurrentUser)
+            if (userDetail != UserDetail.unknown) FollowingInfo(userDetail, isCurrentUser, onEvent)
         }
     }
 }
@@ -227,6 +266,7 @@ private fun UserPersonalInfo(
 fun FollowingInfo(
     userDetail: UserDetail,
     isCurrentUser: Boolean,
+    onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -260,7 +300,7 @@ fun FollowingInfo(
 
         if (isCurrentUser) OutlinedButton(
             modifier = Modifier,
-            onClick = {},
+            onClick = { onEvent(ProfileScreenEvent.OnEditProfile) },
             border = BorderStroke(1.dp, FriendSyncTheme.colors.iconsSecondary),
         ) {
             Text(
