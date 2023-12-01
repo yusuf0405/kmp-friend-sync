@@ -9,13 +9,11 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import org.koin.core.parameter.parametersOf
 
-class ProfileScreenDestination(
-    private val userId: Int,
-) : Screen {
+class CurrentProfileScreenDestination : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<ProfileViewModel> { parametersOf(userId) }
+        val viewModel = getScreenModel<ProfileViewModel> { parametersOf(UNKNOWN_USER_ID) }
         val navigator = LocalNavigator.current
 
         val navigationScreen by viewModel.navigationScreenFlow.collectAsState(null)

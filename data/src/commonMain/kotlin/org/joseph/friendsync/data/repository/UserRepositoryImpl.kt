@@ -4,17 +4,25 @@ import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
+import org.joseph.friendsync.data.mappers.ProfileParamsCloudToProfileParamsDomainMapper
+import org.joseph.friendsync.data.mappers.ProfileParamsDomainToProfileParamsCloudMapper
 import org.joseph.friendsync.data.mappers.UserDetailCloudToUserDetailDomainMapper
 import org.joseph.friendsync.data.mappers.UserInfoCloudToUserInfoDomainMapper
+import org.joseph.friendsync.data.mappers.UserPersonalInfoCloudToUserPersonalInfoDomainMapper
 import org.joseph.friendsync.data.service.UserService
+import org.joseph.friendsync.domain.models.EditProfileParams
 import org.joseph.friendsync.domain.models.UserDetailDomain
 import org.joseph.friendsync.domain.models.UserInfoDomain
+import org.joseph.friendsync.domain.models.UserPersonalInfoDomain
 import org.joseph.friendsync.domain.repository.UserRepository
 
 internal class UserRepositoryImpl(
+    private val userService: UserService,
     private val userInfoCloudToUserInfoDomainMapper: UserInfoCloudToUserInfoDomainMapper,
     private val userDetailCloudToUserDetailDomainMapper: UserDetailCloudToUserDetailDomainMapper,
-    private val userService: UserService,
+    private val userPersonalInfoCloudToUserPersonalInfoDomainMapper: UserPersonalInfoCloudToUserPersonalInfoDomainMapper,
+    private val profileParamsCloudToProfileParamsDomainMapper: ProfileParamsCloudToProfileParamsDomainMapper,
+    private val profileParamsDomainToProfileParamsCloudMapper: ProfileParamsDomainToProfileParamsCloudMapper,
     private val dispatcherProvider: DispatcherProvider,
 ) : UserRepository {
 
@@ -50,6 +58,37 @@ internal class UserRepositoryImpl(
                     data = userDetailCloudToUserDetailDomainMapper.map(response.data)
                 )
             }
+        }
+    }
+
+    override suspend fun fetchUserPersonalInfoById(
+        userId: Int
+    ): Result<UserPersonalInfoDomain> = callSafe(Result.Error(message = defaultErrorMessage)) {
+        val response = userService.fetchUserPersonalInfoById(userId)
+        if (response.data == null) {
+            Result.Error(
+                message = response.errorMessage ?: defaultErrorMessage,
+            )
+        } else {
+            Result.Success(
+                data = userPersonalInfoCloudToUserPersonalInfoDomainMapper.map(response.data)
+            )
+        }
+    }
+
+    override suspend fun editUserWithParams(
+        params: EditProfileParams
+    ): Result<EditProfileParams> = callSafe(Result.Error(message = defaultErrorMessage)) {
+        val response =
+            userService.editUserWithParams(profileParamsDomainToProfileParamsCloudMapper.map(params))
+        if (response.data == null) {
+            Result.Error(
+                message = response.errorMessage ?: defaultErrorMessage,
+            )
+        } else {
+            Result.Success(
+                data = profileParamsCloudToProfileParamsDomainMapper.map(response.data)
+            )
         }
     }
 }

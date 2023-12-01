@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.impl.validations
+package org.joseph.friendsync.common.validations
 
 private val EMAIL_ADDRESS_PATTERN = Regex(
     "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"

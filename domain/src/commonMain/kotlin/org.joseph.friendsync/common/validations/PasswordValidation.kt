@@ -1,4 +1,4 @@
-package org.joseph.friendsync.auth.impl.validations
+package org.joseph.friendsync.common.validations
 
 private val PASSWORD_PATTERN = Regex("[a-zA-Z0-9!@#\$]{8,24}")
 
