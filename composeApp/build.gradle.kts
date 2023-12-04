@@ -59,6 +59,7 @@ kotlin {
             implementation(libs.moko.mvvm)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.napier)
 
             // Voyager
             implementation(libs.voyager.navigator)

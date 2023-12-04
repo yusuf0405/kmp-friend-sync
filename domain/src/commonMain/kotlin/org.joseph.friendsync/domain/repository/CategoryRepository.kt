@@ -5,7 +5,7 @@ import org.joseph.friendsync.domain.models.CategoryDomain
 
 interface CategoryRepository {
 
-    suspend fun addNewCategory(categoryName: String)
+    suspend fun addNewCategory(categoryName: String):Result<CategoryDomain>
 
     suspend fun deleteCategoryById(id: Int): Result<String>
 

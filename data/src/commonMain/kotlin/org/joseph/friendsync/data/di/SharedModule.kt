@@ -49,6 +49,7 @@ import org.joseph.friendsync.domain.usecases.user.FetchUserPersonalInfoByIdUseCa
 import org.koin.dsl.module
 
 fun getSharedModule() = listOf(
+    networkModule,
     authModule,
     postModule,
     usersModule,
@@ -63,7 +64,7 @@ private val authModule = module {
     single { AppDatabase(get()) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
     factory { AuthResponseDataToAuthResultDataMapper() }
-    single { AuthService() }
+    single { AuthService(get()) }
     single { SignInUseCase() }
     single { SignUpUseCase() }
 }
@@ -71,7 +72,7 @@ private val authModule = module {
 private val postModule = module {
     single<PostRepository> { PostRepositoryImpl(get(), get(), get()) }
     factory { PostCloudToPostDomainMapper(get()) }
-    single { PostService() }
+    single { PostService(get()) }
     factory { AddPostUseCase() }
     factory { FetchUserPostsUseCase() }
     factory { FetchRecommendedPostsUseCase() }
@@ -88,20 +89,20 @@ private val usersModule = module {
     factory { UserDetailCloudToUserDetailDomainMapper() }
     factory { ProfileParamsDomainToProfileParamsCloudMapper() }
     factory { ProfileParamsCloudToProfileParamsDomainMapper() }
-    single { UserService() }
+    single { UserService(get()) }
     factory { FetchOnboardingUsersUseCase() }
 }
 
 private val categoryModule = module {
     single<CategoryRepository> { CategoryRepositoryImpl(get(), get(), get()) }
-    single { CategoryService() }
+    single { CategoryService(get()) }
     factory { CategoryCloudToCategoryDomainMapper() }
     factory { FetchAllCategoriesUseCase() }
 }
 
 private val commentsModule = module {
-    single<CommentsRepository> { CommentsRepositoryImpl(get(), get()) }
-    single { CommentsService() }
+    single<CommentsRepository> { CommentsRepositoryImpl(get(), get(), get()) }
+    single { CommentsService(get()) }
     factory { CommentCloudToCommentDomainMapper(get()) }
     factory { AddCommentToPostUseCase() }
     factory { DeleteCommentByIdUseCase() }
@@ -111,8 +112,8 @@ private val commentsModule = module {
 
 
 private val subscriptionModule = module {
-    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get()) }
-    single { SubscriptionService() }
+    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get(), get()) }
+    single { SubscriptionService(get()) }
     factory { CommentCloudToCommentDomainMapper(get()) }
     factory { SubscriptionsInteractor() }
 }

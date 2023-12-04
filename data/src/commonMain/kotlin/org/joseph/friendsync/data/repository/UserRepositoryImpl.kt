@@ -4,6 +4,8 @@ import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
+import org.joseph.friendsync.common.util.filterNotNull
+import org.joseph.friendsync.common.util.map
 import org.joseph.friendsync.data.mappers.ProfileParamsCloudToProfileParamsDomainMapper
 import org.joseph.friendsync.data.mappers.ProfileParamsDomainToProfileParamsCloudMapper
 import org.joseph.friendsync.data.mappers.UserDetailCloudToUserDetailDomainMapper
@@ -29,17 +31,9 @@ internal class UserRepositoryImpl(
     override suspend fun fetchOnboardingUsers(
         userId: Int
     ): Result<List<UserInfoDomain>> = withContext(dispatcherProvider.io) {
-        callSafe(Result.Error(message = defaultErrorMessage)) {
-            val response = userService.fetchOnboardingUsers(userId)
-            if (response.data == null) {
-                Result.Error(
-                    message = response.errorMessage ?: defaultErrorMessage,
-                    data = emptyList()
-                )
-            } else {
-                Result.Success(
-                    data = response.data.map(userInfoCloudToUserInfoDomainMapper::map)
-                )
+        callSafe {
+            userService.fetchOnboardingUsers(userId).map { response ->
+                response.data?.map(userInfoCloudToUserInfoDomainMapper::map) ?: emptyList()
             }
         }
     }
@@ -47,48 +41,31 @@ internal class UserRepositoryImpl(
     override suspend fun fetchUserById(
         userId: Int
     ): Result<UserDetailDomain> = withContext(dispatcherProvider.io) {
-        callSafe(Result.Error(message = defaultErrorMessage)) {
-            val response = userService.fetchUserById(userId)
-            if (response.data == null) {
-                Result.Error(
-                    message = response.errorMessage ?: defaultErrorMessage,
-                )
-            } else {
-                Result.Success(
-                    data = userDetailCloudToUserDetailDomainMapper.map(response.data)
-                )
-            }
+        callSafe {
+            userService.fetchUserById(userId).map { response ->
+                response.data?.let(userDetailCloudToUserDetailDomainMapper::map)
+            }.filterNotNull()
         }
     }
 
     override suspend fun fetchUserPersonalInfoById(
         userId: Int
-    ): Result<UserPersonalInfoDomain> = callSafe(Result.Error(message = defaultErrorMessage)) {
-        val response = userService.fetchUserPersonalInfoById(userId)
-        if (response.data == null) {
-            Result.Error(
-                message = response.errorMessage ?: defaultErrorMessage,
-            )
-        } else {
-            Result.Success(
-                data = userPersonalInfoCloudToUserPersonalInfoDomainMapper.map(response.data)
-            )
+    ): Result<UserPersonalInfoDomain> = withContext(dispatcherProvider.io) {
+        callSafe {
+            userService.fetchUserPersonalInfoById(userId).map { response ->
+                response.data?.let(userPersonalInfoCloudToUserPersonalInfoDomainMapper::map)
+            }.filterNotNull()
         }
     }
 
     override suspend fun editUserWithParams(
         params: EditProfileParams
-    ): Result<EditProfileParams> = callSafe(Result.Error(message = defaultErrorMessage)) {
-        val response =
-            userService.editUserWithParams(profileParamsDomainToProfileParamsCloudMapper.map(params))
-        if (response.data == null) {
-            Result.Error(
-                message = response.errorMessage ?: defaultErrorMessage,
-            )
-        } else {
-            Result.Success(
-                data = profileParamsCloudToProfileParamsDomainMapper.map(response.data)
-            )
+    ): Result<EditProfileParams> = withContext(dispatcherProvider.io) {
+        callSafe {
+            val mappedParams = profileParamsDomainToProfileParamsCloudMapper.map(params)
+            userService.editUserWithParams(mappedParams).map { response ->
+                response.data?.let(profileParamsCloudToProfileParamsDomainMapper::map)
+            }.filterNotNull()
         }
     }
 }

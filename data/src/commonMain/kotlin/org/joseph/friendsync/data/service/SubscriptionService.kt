@@ -1,34 +1,40 @@
 package org.joseph.friendsync.data.service
 
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.post
+import io.ktor.client.HttpClient
 import io.ktor.client.request.setBody
-import org.joseph.friendsync.data.KtorApi
+import io.ktor.http.HttpMethod
+import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.data.models.subscription.CreateOrCancelSubscription
 import org.joseph.friendsync.data.models.subscription.SubscriptionCountResponse
 import org.joseph.friendsync.data.models.subscription.SubscriptionIdsResponse
+import org.joseph.friendsync.data.request
 
-internal class SubscriptionService : KtorApi() {
+private const val SUBSCRIPTIONS_REQUEST_PATH = "/subscriptions"
+
+internal class SubscriptionService(
+    private val client: HttpClient
+) {
 
     suspend fun createSubscription(
-        followerId: Int, followingId: Int
-    ): SubscriptionCountResponse = client.post {
-        endPoint(path = "/subscriptions/create")
-        setBody(CreateOrCancelSubscription(followerId = followerId, followingId = followingId))
-    }.body()
+        followerId: Int,
+        followingId: Int
+    ): Result<SubscriptionCountResponse> =
+        client.request("$SUBSCRIPTIONS_REQUEST_PATH/create") {
+            method = HttpMethod.Post
+            setBody(CreateOrCancelSubscription(followerId, followingId))
+        }
 
     suspend fun cancelSubscription(
         followerId: Int,
         followingId: Int
-    ): SubscriptionCountResponse = client.post {
-        endPoint(path = "/subscriptions/cancel")
-        setBody(CreateOrCancelSubscription(followerId = followerId, followingId = followingId))
-    }.body()
+    ): Result<SubscriptionCountResponse> =
+        client.request("$SUBSCRIPTIONS_REQUEST_PATH/cancel") {
+            method = HttpMethod.Post
+            setBody(CreateOrCancelSubscription(followerId, followingId))
+        }
 
-    suspend fun fetchSubscriptionUserIds(
-        userId: Int
-    ): SubscriptionIdsResponse = client.get {
-        endPoint(path = "/subscriptions/${userId}")
-    }.body()
+    suspend fun fetchSubscriptionUserIds(userId: Int): Result<SubscriptionIdsResponse> =
+        client.request("$SUBSCRIPTIONS_REQUEST_PATH/${userId}") {
+            method = HttpMethod.Get
+        }
 }
