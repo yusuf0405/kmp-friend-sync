@@ -1,5 +1,6 @@
 package org.joseph.friendsync.common.util.coroutines
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -9,6 +10,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import org.joseph.friendsync.common.util.Result
 
 /**
  * The launchSafe function is an extension of the [CoroutineScope.launch()]
@@ -21,7 +23,7 @@ import kotlinx.coroutines.launch
  */
 inline fun CoroutineScope.launchSafe(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    crossinline onError: (Throwable) -> Unit = { println(it) },
+    crossinline onError: (Throwable) -> Unit = { Napier.e(it) { it.stackTraceToString() } },
     crossinline safeAction: suspend CoroutineScope.() -> Unit,
 ) = this.launch(dispatcher) {
     try {
@@ -53,8 +55,21 @@ suspend fun <T> callSafe(
     } catch (e: CancellationException) {
         throw e
     } catch (e: Throwable) {
-        println(e)
+        Napier.e(e) { e.stackTraceToString() }
         defaultValue
+    }
+}
+
+suspend fun <T> callSafe(
+    block: suspend () -> Result<T>
+): Result<T> {
+    return try {
+        block()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        Napier.e(e) { e.stackTraceToString() }
+        Result.defaultError()
     }
 }
 

@@ -1,22 +1,32 @@
 package org.joseph.friendsync.data.service
 
-import io.ktor.client.call.body
-import io.ktor.client.request.post
+import io.ktor.client.HttpClient
 import io.ktor.client.request.setBody
-import org.joseph.friendsync.data.KtorApi
+import io.ktor.http.HttpMethod
+import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.data.models.user.AuthResponse
 import org.joseph.friendsync.data.models.user.SignInRequest
 import org.joseph.friendsync.data.models.user.SignUpRequest
+import org.joseph.friendsync.data.request
 
-internal class AuthService : KtorApi() {
+private const val SIGN_UP_REQUEST_PATH = "/signup"
+private const val LOGIN_REQUEST_PATH = "/login"
 
-    suspend fun signUp(request: SignUpRequest): AuthResponse = client.post {
-        endPoint(path = "/signup")
+internal class AuthService(
+    private val client: HttpClient
+) {
+
+    suspend fun signUp(
+        request: SignUpRequest
+    ): Result<AuthResponse> = client.request(SIGN_UP_REQUEST_PATH) {
+        method = HttpMethod.Post
         setBody(request)
-    }.body()
+    }
 
-    suspend fun signIn(request: SignInRequest): AuthResponse = client.post {
-        endPoint(path = "/login")
+    suspend fun signIn(
+        request: SignInRequest
+    ): Result<AuthResponse> = client.request(LOGIN_REQUEST_PATH) {
+        method = HttpMethod.Post
         setBody(request)
-    }.body()
+    }
 }

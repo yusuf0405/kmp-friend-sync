@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import org.joseph.friendsync.app.App
 import org.joseph.friendsync.di.appModules
 import org.joseph.friendsync.data.di.getSharedModule
@@ -19,6 +21,7 @@ class AndroidApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Napier.base(DebugAntilog())
         INSTANCE = this
         startKoin {
             androidContext(this@AndroidApp)
