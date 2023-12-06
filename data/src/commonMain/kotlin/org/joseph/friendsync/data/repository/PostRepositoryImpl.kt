@@ -4,7 +4,7 @@ import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNull
+import org.joseph.friendsync.common.util.filterNotNullOrError
 import org.joseph.friendsync.common.util.map
 import org.joseph.friendsync.data.mappers.PostCloudToPostDomainMapper
 import org.joseph.friendsync.data.models.post.RecommendedPostsParam
@@ -38,7 +38,7 @@ internal class PostRepositoryImpl(
         callSafe {
             postService.fetchPostById(postId).map { response ->
                 response.data?.let(postCloudToPostDomainMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 

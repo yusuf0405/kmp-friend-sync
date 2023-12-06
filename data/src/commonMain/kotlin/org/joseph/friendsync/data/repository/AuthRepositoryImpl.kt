@@ -4,7 +4,7 @@ import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNull
+import org.joseph.friendsync.common.util.filterNotNullOrError
 import org.joseph.friendsync.common.util.map
 import org.joseph.friendsync.data.mappers.AuthResponseDataToAuthResultDataMapper
 import org.joseph.friendsync.data.models.user.SignInRequest
@@ -34,7 +34,7 @@ internal class AuthRepositoryImpl(
             )
             authService.signUp(request).map { response ->
                 response.data?.let(authResponseDataToAuthResultDataMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 
@@ -46,7 +46,7 @@ internal class AuthRepositoryImpl(
             val request = SignInRequest(email, password)
             authService.signIn(request).map { response ->
                 response.data?.let(authResponseDataToAuthResultDataMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 }

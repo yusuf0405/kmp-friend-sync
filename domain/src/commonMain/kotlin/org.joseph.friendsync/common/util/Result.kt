@@ -24,7 +24,7 @@ sealed class Result<T>(
     }
 }
 
-fun <T> Result<T?>.filterNotNull(): Result<T> {
+fun <T> Result<T?>.filterNotNullOrError(): Result<T> {
     val data = this.data
     return if (data == null) Result.defaultError()
     else Result.Success(data)

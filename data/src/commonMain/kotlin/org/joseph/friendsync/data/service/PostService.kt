@@ -16,8 +16,15 @@ import org.joseph.friendsync.data.models.post.PostListResponse
 import org.joseph.friendsync.data.models.post.PostResponse
 import org.joseph.friendsync.data.models.post.RecommendedPostsParam
 import org.joseph.friendsync.data.request
+import org.joseph.friendsync.data.utils.ADD_REQUEST_PATH
+import org.joseph.friendsync.data.utils.LIST_REQUEST_PATH
+import org.joseph.friendsync.data.utils.MESSAGE_PARAM
+import org.joseph.friendsync.data.utils.PAGE_PARAM
+import org.joseph.friendsync.data.utils.PAGE_SIZE_PARAM
+import org.joseph.friendsync.data.utils.POST_REQUEST_PATH
+import org.joseph.friendsync.data.utils.RECOMMENDED_REQUEST_PATH
+import org.joseph.friendsync.data.utils.USER_ID_PARAM
 
-private const val POST_REQUEST_PATH = "/post"
 
 internal class PostService(
     private val client: HttpClient,
@@ -28,10 +35,10 @@ internal class PostService(
         message: String?,
         userId: Int
     ): PostResponse = client.submitFormWithBinaryData(
-        url = "$BASE_URL${POST_REQUEST_PATH}/add",
+        url = "$BASE_URL${POST_REQUEST_PATH}$ADD_REQUEST_PATH",
         formData = formData {
             append("user_id", userId.toString())
-            if (message != null) append("message", message)
+            if (message != null) append(MESSAGE_PARAM, message)
             for ((index, byteArray) in byteArrays.withIndex()) {
                 if (byteArray != null) append("image$index", byteArray, Headers.build {
                     append(HttpHeaders.ContentType, "image/jpeg")
@@ -47,22 +54,22 @@ internal class PostService(
 
     suspend fun fetchUserPosts(
         userId: Int
-    ): Result<PostListResponse> = client.request("$POST_REQUEST_PATH/list/${userId}") {
+    ): Result<PostListResponse> = client.request("$POST_REQUEST_PATH$LIST_REQUEST_PATH/${userId}") {
         method = HttpMethod.Get
     }
 
     suspend fun fetchPostById(
         postId: Int
-    ): Result<PostResponse> = client.request("/post/${postId}") {
+    ): Result<PostResponse> = client.request("$POST_REQUEST_PATH/${postId}") {
         method = HttpMethod.Get
     }
 
     suspend fun fetchRecommendedPosts(
         params: RecommendedPostsParam
-    ): Result<PostListResponse> = client.request("$POST_REQUEST_PATH/recommended") {
+    ): Result<PostListResponse> = client.request("$POST_REQUEST_PATH$RECOMMENDED_REQUEST_PATH") {
         method = HttpMethod.Get
-        parameter("page", params.page)
-        parameter("page_size", params.pageSize)
-        parameter("user_id", params.userId)
+        parameter(PAGE_PARAM, params.page)
+        parameter(PAGE_SIZE_PARAM, params.pageSize)
+        parameter(USER_ID_PARAM, params.userId)
     }
 }

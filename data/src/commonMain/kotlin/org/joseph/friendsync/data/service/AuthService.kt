@@ -8,9 +8,8 @@ import org.joseph.friendsync.data.models.user.AuthResponse
 import org.joseph.friendsync.data.models.user.SignInRequest
 import org.joseph.friendsync.data.models.user.SignUpRequest
 import org.joseph.friendsync.data.request
-
-private const val SIGN_UP_REQUEST_PATH = "/signup"
-private const val LOGIN_REQUEST_PATH = "/login"
+import org.joseph.friendsync.data.utils.LOGIN_REQUEST_PATH
+import org.joseph.friendsync.data.utils.SIGN_UP_REQUEST_PATH
 
 internal class AuthService(
     private val client: HttpClient
