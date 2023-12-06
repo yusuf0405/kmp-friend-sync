@@ -4,7 +4,7 @@ import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNull
+import org.joseph.friendsync.common.util.filterNotNullOrError
 import org.joseph.friendsync.common.util.map
 import org.joseph.friendsync.data.mappers.ProfileParamsCloudToProfileParamsDomainMapper
 import org.joseph.friendsync.data.mappers.ProfileParamsDomainToProfileParamsCloudMapper
@@ -44,7 +44,7 @@ internal class UserRepositoryImpl(
         callSafe {
             userService.fetchUserById(userId).map { response ->
                 response.data?.let(userDetailCloudToUserDetailDomainMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 
@@ -54,7 +54,7 @@ internal class UserRepositoryImpl(
         callSafe {
             userService.fetchUserPersonalInfoById(userId).map { response ->
                 response.data?.let(userPersonalInfoCloudToUserPersonalInfoDomainMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 
@@ -65,7 +65,7 @@ internal class UserRepositoryImpl(
             val mappedParams = profileParamsDomainToProfileParamsCloudMapper.map(params)
             userService.editUserWithParams(mappedParams).map { response ->
                 response.data?.let(profileParamsCloudToProfileParamsDomainMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 }

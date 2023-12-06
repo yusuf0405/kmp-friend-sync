@@ -8,9 +8,11 @@ import org.joseph.friendsync.data.models.comments.AddCommentParams
 import org.joseph.friendsync.data.models.comments.CommentListResponse
 import org.joseph.friendsync.data.models.comments.CommentResponse
 import org.joseph.friendsync.data.request
+import org.joseph.friendsync.data.utils.ADD_REQUEST_PATH
+import org.joseph.friendsync.data.utils.COMMENTS_REQUEST_PATH
+import org.joseph.friendsync.data.utils.DELETE_REQUEST_PATH
+import org.joseph.friendsync.data.utils.EDIT_REQUEST_PATH
 import org.joseph.friendsync.models.comments.EditCommentParams
-
-private const val COMMENTS_REQUEST_PATH = "/comments"
 
 internal class CommentsService(
     private val client: HttpClient
@@ -20,21 +22,21 @@ internal class CommentsService(
         userId: Int,
         postId: Int,
         commentText: String
-    ): Result<CommentResponse> = client.request("$COMMENTS_REQUEST_PATH/add") {
+    ): Result<CommentResponse> = client.request("$COMMENTS_REQUEST_PATH$ADD_REQUEST_PATH") {
         method = HttpMethod.Post
         setBody(AddCommentParams(userId, postId, commentText))
     }
 
     suspend fun deleteCommentById(
         commentId: Int
-    ): Result<Int> = client.request("$COMMENTS_REQUEST_PATH/delete/$commentId") {
+    ): Result<Int> = client.request("$COMMENTS_REQUEST_PATH$DELETE_REQUEST_PATH/$commentId") {
         method = HttpMethod.Post
     }
 
     suspend fun editCommentById(
         commentId: Int,
         editedText: String
-    ): Result<Int> = client.request("$COMMENTS_REQUEST_PATH/edit") {
+    ): Result<Int> = client.request("$COMMENTS_REQUEST_PATH$EDIT_REQUEST_PATH") {
         method = HttpMethod.Post
         setBody(EditCommentParams(commentId, editedText))
     }

@@ -4,7 +4,7 @@ import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNull
+import org.joseph.friendsync.common.util.filterNotNullOrError
 import org.joseph.friendsync.common.util.map
 import org.joseph.friendsync.data.mappers.CategoryCloudToCategoryDomainMapper
 import org.joseph.friendsync.data.service.CategoryService
@@ -23,7 +23,7 @@ internal class CategoryRepositoryImpl(
         callSafe {
             categoryService.addNewCategory(categoryName).map { response ->
                 response.data?.let(categoryCloudToCategoryDomainMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 
@@ -49,7 +49,7 @@ internal class CategoryRepositoryImpl(
         callSafe {
             categoryService.fetchCategoryById(id).map { response ->
                 response.data?.let(categoryCloudToCategoryDomainMapper::map)
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 }

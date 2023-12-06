@@ -7,15 +7,17 @@ import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.data.models.category.CategoriesResponse
 import org.joseph.friendsync.data.models.category.CategoryResponse
 import org.joseph.friendsync.data.request
-
-private const val CATEGORIES_REQUEST_PATH = "/categories"
+import org.joseph.friendsync.data.utils.ADD_REQUEST_PATH
+import org.joseph.friendsync.data.utils.CATEGORIES_REQUEST_PATH
+import org.joseph.friendsync.data.utils.CATEGORY_NAME_PARAM
+import org.joseph.friendsync.data.utils.LIST_REQUEST_PATH
 
 internal class CategoryService(
     private val client: HttpClient
 ) {
 
     suspend fun fetchAllCategory(
-    ): Result<CategoriesResponse> = client.request("$CATEGORIES_REQUEST_PATH/list") {
+    ): Result<CategoriesResponse> = client.request("$CATEGORIES_REQUEST_PATH$LIST_REQUEST_PATH") {
         method = HttpMethod.Get
     }
 
@@ -27,9 +29,9 @@ internal class CategoryService(
 
     suspend fun addNewCategory(
         categoryName: String
-    ): Result<CategoryResponse> = client.request("$CATEGORIES_REQUEST_PATH/add") {
+    ): Result<CategoryResponse> = client.request("$CATEGORIES_REQUEST_PATH$ADD_REQUEST_PATH") {
         method = HttpMethod.Post
-        parameter("category_name", categoryName)
+        parameter(CATEGORY_NAME_PARAM, categoryName)
     }
 
     suspend fun deleteCategoryById(

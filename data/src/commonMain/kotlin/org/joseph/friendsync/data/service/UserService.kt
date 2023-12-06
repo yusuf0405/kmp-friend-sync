@@ -10,8 +10,10 @@ import org.joseph.friendsync.data.models.user.UserDetailResponse
 import org.joseph.friendsync.data.models.user.UserInfoListResponse
 import org.joseph.friendsync.data.models.user.UserPersonalInfoResponse
 import org.joseph.friendsync.data.request
-
-private const val USERS_PATCH = "/users"
+import org.joseph.friendsync.data.utils.EDIT_REQUEST_PATH
+import org.joseph.friendsync.data.utils.ONBOARDING_REQUEST_PATCH
+import org.joseph.friendsync.data.utils.PERSONAL_REQUEST_PATH
+import org.joseph.friendsync.data.utils.USERS_REQUEST_PATCH
 
 internal class UserService(
     private val client: HttpClient
@@ -19,26 +21,29 @@ internal class UserService(
 
     suspend fun fetchOnboardingUsers(
         userId: Int
-    ): Result<UserInfoListResponse> = client.request("$USERS_PATCH/onboarding/${userId}") {
-        method = HttpMethod.Get
-    }
+    ): Result<UserInfoListResponse> =
+        client.request("$USERS_REQUEST_PATCH$ONBOARDING_REQUEST_PATCH/${userId}") {
+            method = HttpMethod.Get
+        }
 
     suspend fun fetchUserById(
         userId: Int
-    ): Result<UserDetailResponse> = client.request("$USERS_PATCH/${userId}") {
+    ): Result<UserDetailResponse> = client.request("$USERS_REQUEST_PATCH/${userId}") {
         method = HttpMethod.Get
     }
 
     suspend fun fetchUserPersonalInfoById(
         userId: Int
-    ): Result<UserPersonalInfoResponse> = client.request("$USERS_PATCH/personal/${userId}") {
-        method = HttpMethod.Get
-    }
+    ): Result<UserPersonalInfoResponse> =
+        client.request("$USERS_REQUEST_PATCH$PERSONAL_REQUEST_PATH/${userId}") {
+            method = HttpMethod.Get
+        }
 
     suspend fun editUserWithParams(
         request: EditProfileParamsCloud
-    ): Result<EditProfileParamsResponse> = client.request("$USERS_PATCH/edit") {
-        method = HttpMethod.Post
-        setBody(request)
-    }
+    ): Result<EditProfileParamsResponse> =
+        client.request("$USERS_REQUEST_PATCH$EDIT_REQUEST_PATH") {
+            method = HttpMethod.Post
+            setBody(request)
+        }
 }

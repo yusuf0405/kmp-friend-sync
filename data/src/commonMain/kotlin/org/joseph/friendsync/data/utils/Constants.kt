@@ -1,0 +1,25 @@
+package org.joseph.friendsync.data.utils
+
+internal const val LIST_REQUEST_PATH = "/list"
+internal const val ADD_REQUEST_PATH = "/add"
+internal const val EDIT_REQUEST_PATH = "/edit"
+internal const val DELETE_REQUEST_PATH = "/delete"
+internal const val RECOMMENDED_REQUEST_PATH = "/recommended"
+internal const val CREATE_REQUEST_PATH = "/create"
+internal const val CANCEL_REQUEST_PATH = "/cancel"
+internal const val PERSONAL_REQUEST_PATH = "/personal"
+
+internal const val CATEGORIES_REQUEST_PATH = "/categories"
+internal const val COMMENTS_REQUEST_PATH = "/comments"
+internal const val SIGN_UP_REQUEST_PATH = "/signup"
+internal const val LOGIN_REQUEST_PATH = "/login"
+internal const val POST_REQUEST_PATH = "/post"
+internal const val SUBSCRIPTIONS_REQUEST_PATH = "/subscriptions"
+internal const val USERS_REQUEST_PATCH = "/users"
+internal const val ONBOARDING_REQUEST_PATCH = "/onboarding"
+
+internal const val CATEGORY_NAME_PARAM = "category_name"
+internal const val PAGE_PARAM = "page"
+internal const val PAGE_SIZE_PARAM = "page_size"
+internal const val USER_ID_PARAM = "user_id"
+internal const val MESSAGE_PARAM = "message"

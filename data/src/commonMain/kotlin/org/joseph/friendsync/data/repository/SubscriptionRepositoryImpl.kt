@@ -4,7 +4,7 @@ import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNull
+import org.joseph.friendsync.common.util.filterNotNullOrError
 import org.joseph.friendsync.common.util.map
 import org.joseph.friendsync.data.service.SubscriptionService
 import org.joseph.friendsync.domain.repository.SubscriptionRepository
@@ -24,7 +24,7 @@ internal class SubscriptionRepositoryImpl(
                 followingId = followingId
             ).map { response ->
                 response.data?.followingCount
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 
@@ -38,7 +38,7 @@ internal class SubscriptionRepositoryImpl(
                 followingId = followingId
             ).map { response ->
                 response.data?.followingCount
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 
@@ -49,7 +49,7 @@ internal class SubscriptionRepositoryImpl(
             service.fetchSubscriptionUserIds(userId).map { response ->
                 response.data?.userIds
 
-            }.filterNotNull()
+            }.filterNotNullOrError()
         }
     }
 }
