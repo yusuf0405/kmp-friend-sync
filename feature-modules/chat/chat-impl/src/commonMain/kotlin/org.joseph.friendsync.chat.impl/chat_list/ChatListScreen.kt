@@ -22,9 +22,9 @@ import org.joseph.friendsync.core.ui.components.SearchTextField
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
-import org.joseph.friendsync.models.FollowsUser
-import org.joseph.friendsync.models.sampleChats
-import org.joseph.friendsync.models.sampleUsers
+import org.joseph.friendsync.ui.components.models.FollowsUser
+import org.joseph.friendsync.ui.components.models.sampleChats
+import org.joseph.friendsync.ui.components.models.sampleUsers
 
 @Composable
 fun ChatListScreen(

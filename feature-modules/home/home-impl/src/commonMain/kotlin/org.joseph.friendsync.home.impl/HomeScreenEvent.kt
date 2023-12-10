@@ -1,6 +1,6 @@
 package org.joseph.friendsync.home.impl
 
-import org.joseph.friendsync.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
 
 sealed class HomeScreenEvent {

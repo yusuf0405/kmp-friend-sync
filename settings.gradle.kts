@@ -21,6 +21,7 @@ include(":domain")
 include(":data")
 
 include(":core-ui")
+include(":ui-components")
 
 include(":feature-modules:auth:auth-api")
 include(":feature-modules:auth:auth-impl")

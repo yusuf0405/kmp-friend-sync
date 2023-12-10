@@ -32,6 +32,7 @@ kotlin {
             implementation(project(":data"))
             implementation(project(":domain"))
             implementation(project(":core-ui"))
+            implementation(project(":ui-components"))
 
             implementation(project(":feature-modules:auth:auth-api"))
             implementation(project(":feature-modules:auth:auth-impl"))

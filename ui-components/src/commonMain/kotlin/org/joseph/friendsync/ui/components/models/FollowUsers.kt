@@ -1,5 +1,8 @@
-package org.joseph.friendsync.models
+package org.joseph.friendsync.ui.components.models
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class FollowsUser(
     val id: Int,
     val name: String,

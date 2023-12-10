@@ -21,7 +21,7 @@ import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
-import org.joseph.friendsync.models.Category
+import org.joseph.friendsync.ui.components.models.Category
 
 @Composable
 fun SearchScreen(

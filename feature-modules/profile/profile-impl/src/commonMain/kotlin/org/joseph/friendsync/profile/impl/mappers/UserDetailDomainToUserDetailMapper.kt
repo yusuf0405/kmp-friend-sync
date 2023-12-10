@@ -1,9 +1,9 @@
 package org.joseph.friendsync.profile.impl.mappers
 
 import org.joseph.friendsync.common.mapper.Mapper
+import org.joseph.friendsync.core.ui.common.extensions.toLocalDate
 import org.joseph.friendsync.domain.models.UserDetailDomain
-import org.joseph.friendsync.mappers.toLocalDate
-import org.joseph.friendsync.models.user.UserDetail
+import org.joseph.friendsync.ui.components.models.user.UserDetail
 
 class UserDetailDomainToUserDetailMapper : Mapper<UserDetailDomain, UserDetail> {
 

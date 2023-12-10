@@ -24,7 +24,7 @@ import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
-import org.joseph.friendsync.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
 @Composable
 fun OnboardingUserItem(

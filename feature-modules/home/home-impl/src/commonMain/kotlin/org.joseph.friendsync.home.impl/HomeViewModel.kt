@@ -17,12 +17,12 @@ import kotlinx.coroutines.sync.withLock
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.user.UserPreferences
 import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
-import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
 import org.joseph.friendsync.common.util.coroutines.callSafe
 import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.NavCommand
+import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
@@ -33,11 +33,11 @@ import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.home.impl.onboarding.OnBoardingUiState
 import org.joseph.friendsync.home.impl.onboarding.OnboardingStateStateFlowCommunication
-import org.joseph.friendsync.mappers.PostDomainToPostMapper
-import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
-import org.joseph.friendsync.models.user.UserInfo
 import org.joseph.friendsync.post.api.PostScreenProvider
 import org.joseph.friendsync.profile.api.ProfileScreenProvider
+import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
+import org.joseph.friendsync.ui.components.mappers.UserInfoDomainToUserInfoMapper
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 import org.koin.core.component.KoinComponent
 
 private const val DEFAULT_PAGE = 1

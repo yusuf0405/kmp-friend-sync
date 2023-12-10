@@ -1,6 +1,7 @@
 package org.joseph.friendsync.post.impl
 
-import org.joseph.friendsync.models.Comment
+import org.joseph.friendsync.ui.components.models.Comment
+
 
 sealed class PostDetailEvent {
 

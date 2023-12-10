@@ -15,29 +15,28 @@ kotlin {
     )
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":domain"))
             implementation(project(":core-ui"))
-            implementation(project(":ui-components"))
+            implementation(project(":domain"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.composeIcons.featherIcons)
 
-            // Voyager
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.koin)
 
-            // Koin
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            implementation(libs.kotlinx.datetime)
         }
     }
 }
 
 android {
-    namespace = "org.joseph.friendsync.auth.impl"
+    namespace = "org.joseph.friendsync.ui.components"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {

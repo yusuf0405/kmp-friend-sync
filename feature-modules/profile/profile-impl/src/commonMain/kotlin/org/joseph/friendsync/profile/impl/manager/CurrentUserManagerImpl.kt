@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.joseph.friendsync.domain.models.EditProfileParams
 import org.joseph.friendsync.domain.usecases.user.FetchUserByIdUseCase
-import org.joseph.friendsync.models.user.UserDetail
 import org.joseph.friendsync.profile.impl.mappers.UserDetailDomainToUserDetailMapper
+import org.joseph.friendsync.ui.components.models.user.UserDetail
 
 class CurrentUserManagerImpl(
     private val fetchUserByIdUseCase: FetchUserByIdUseCase,

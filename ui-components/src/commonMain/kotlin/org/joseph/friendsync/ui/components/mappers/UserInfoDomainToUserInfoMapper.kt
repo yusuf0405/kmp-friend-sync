@@ -1,15 +1,10 @@
-package org.joseph.friendsync.mappers
+package org.joseph.friendsync.ui.components.mappers
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.joseph.friendsync.common.mapper.Mapper
+import org.joseph.friendsync.core.ui.common.extensions.toLocalDate
 import org.joseph.friendsync.domain.models.UserInfoDomain
-import org.joseph.friendsync.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
-fun Long.toLocalDate(): LocalDate = Instant.fromEpochMilliseconds(this)
-    .toLocalDateTime(TimeZone.currentSystemDefault()).date
 class UserInfoDomainToUserInfoMapper : Mapper<UserInfoDomain, UserInfo> {
 
     override fun map(from: UserInfoDomain): UserInfo = from.run {

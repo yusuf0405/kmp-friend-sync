@@ -1,7 +1,7 @@
 package org.joseph.friendsync.profile.impl
 
-import org.joseph.friendsync.models.user.UserDetail
 import org.joseph.friendsync.profile.impl.models.ProfileTab
+import org.joseph.friendsync.ui.components.models.user.UserDetail
 
 sealed class ProfileUiState {
 

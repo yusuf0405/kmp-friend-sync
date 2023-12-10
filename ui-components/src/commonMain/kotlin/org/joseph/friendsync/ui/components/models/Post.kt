@@ -1,11 +1,14 @@
-package org.joseph.friendsync.models
+package org.joseph.friendsync.ui.components.models
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Post(
     val id: Int,
     val text: String,
     val imageUrls: List<String> = emptyList(),
     val createdAt: String,
-    val likesCount: Int,
+    val likedCount: Int,
     val commentCount: Int,
     val authorId: Int,
     val authorName: String,
@@ -20,7 +23,7 @@ val sampleTextPosts = listOf(
         id = 99,
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         createdAt = "Apr 12, 2023",
-        likesCount = 221,
+        likedCount = 221,
         commentCount = 41,
         authorId = 3,
         authorName = "Cristiano",
@@ -32,7 +35,7 @@ val sampleTextPosts = listOf(
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " +
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         createdAt = "Apr 12, 2023",
-        likesCount = 221,
+        likedCount = 221,
         commentCount = 41,
         authorId = 3,
         authorName = "Cristiano",
@@ -44,7 +47,7 @@ val sampleTextPosts = listOf(
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " +
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         createdAt = "Apr 12, 2023",
-        likesCount = 221,
+        likedCount = 221,
         commentCount = 41,
         authorId = 3,
         authorName = "Cristiano",
@@ -58,7 +61,7 @@ val sampleTextPosts = listOf(
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " +
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         createdAt = "Apr 12, 2023",
-        likesCount = 221,
+        likedCount = 221,
         commentCount = 41,
         authorId = 3,
         authorName = "Cristiano",
@@ -79,7 +82,7 @@ val samplePhotoPosts = listOf(
             "https://www.wallpaperflare.com/static/956/184/864/rick-and-morty-adult-swim-cartoon-rick-sanchez-wallpaper.jpg"
         ),
         createdAt = "20 min",
-        likesCount = 12,
+        likedCount = 12,
         commentCount = 3,
         authorId = 1,
         authorName = "Mr Dip",
@@ -96,7 +99,7 @@ val samplePhotoPosts = listOf(
             "https://sun9-67.userapi.com/c4741/u112406626/-6/x_706b6a3c.jpg"
         ),
         createdAt = "May 03, 2023",
-        likesCount = 121,
+        likedCount = 121,
         commentCount = 23,
         authorId = 2,
         authorName = "John Cena",
@@ -108,7 +111,7 @@ val samplePhotoPosts = listOf(
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         imageUrls = listOf("https://yt3.googleusercontent.com/Io8UGoybnX-C6bXuvuxNKGG6Mz-8cfdkO5wKbdJRE7IdwO7jrwbWU9OSE96vESg9Y1ofx-OOUfg=s900-c-k-c0x00ffffff-no-rj"),
         createdAt = "Apr 12, 2023",
-        likesCount = 221,
+        likedCount = 221,
         commentCount = 41,
         authorId = 3,
         authorName = "Cristiano",
@@ -124,7 +127,7 @@ val samplePhotoPosts = listOf(
             "https://www.wallpaperflare.com/static/956/184/864/rick-and-morty-adult-swim-cartoon-rick-sanchez-wallpaper.jpg"
         ),
         createdAt = "Mar 31, 2023",
-        likesCount = 90,
+        likedCount = 90,
         commentCount = 13,
         authorId = 3,
         authorName = "Cristiano",
@@ -138,7 +141,7 @@ val samplePhotoPosts = listOf(
             "https://www.wallpaperflare.com/static/956/184/864/rick-and-morty-adult-swim-cartoon-rick-sanchez-wallpaper.jpg"
         ),
         createdAt = "Jan 30, 2023",
-        likesCount = 121,
+        likedCount = 121,
         commentCount = 31,
         authorId = 4,
         authorName = "L. James",

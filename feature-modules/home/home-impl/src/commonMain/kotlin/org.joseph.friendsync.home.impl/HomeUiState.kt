@@ -1,6 +1,7 @@
 package org.joseph.friendsync.home.impl
 
-import org.joseph.friendsync.models.Post
+import org.joseph.friendsync.ui.components.models.Post
+
 
 sealed class HomeUiState {
 

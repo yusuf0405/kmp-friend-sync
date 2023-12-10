@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.domain.usecases.categories.FetchAllCategoriesUseCase
-import org.joseph.friendsync.mappers.CategoryDomainToCategoryMapper
-import org.joseph.friendsync.models.Category
 import org.koin.core.component.KoinComponent
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.ui.components.mappers.CategoryDomainToCategoryMapper
+import org.joseph.friendsync.ui.components.models.Category
 
 class SearchViewModel(
     private val fetchAllCategoriesUseCase: FetchAllCategoriesUseCase,

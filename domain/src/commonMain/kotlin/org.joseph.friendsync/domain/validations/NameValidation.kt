@@ -1,4 +1,4 @@
-package org.joseph.friendsync.common.validations
+package org.joseph.friendsync.domain.validations
 
 private val FIRST_LETTER_CAPITAL_NO_DIGIT_PATTERN = Regex("^[A-Z][^\\d]*$")
 

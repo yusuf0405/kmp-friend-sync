@@ -1,5 +1,8 @@
-package org.joseph.friendsync.models
+package org.joseph.friendsync.ui.components.models
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Stories(
     val imageUrl: String,
     val userId: String,
