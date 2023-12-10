@@ -9,6 +9,8 @@ import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
 import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.core.ui.common.communication.BooleanStateFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.EventSharedFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
@@ -37,21 +39,22 @@ class ProfileViewModel(
     private val snackbarDisplay: SnackbarDisplay,
     private val profilePostsUiStateCommunication: ProfilePostsUiStateCommunication,
     private val navigationScreenCommunication: NavigationScreenStateFlowCommunication,
+    private val shouldCurrentUserFlowCommunication: BooleanStateFlowCommunication,
+    private val navigateBackEventFlowCommunication: EventSharedFlowCommunication
 ) : StateScreenModel<ProfileUiState>(ProfileUiState.Initial), KoinComponent {
 
     private val postsUiStateFlow = profilePostsUiStateCommunication.observe()
 
     val navigationScreenFlow = navigationScreenCommunication.observe()
+    val shouldCurrentUserFlow = shouldCurrentUserFlowCommunication.observe()
+    val navigateBackEventFlow = navigateBackEventFlowCommunication.observe()
 
     private val defaultErrorMessage = MainResStrings.default_error_message
-
-    private var isCurrentUser = false
 
     private val currentUserFlow = currentUserManager.fetchCurrentUserFlow().onEach { user ->
         val profileUiState = ProfileUiState.Content(
             userDetail = user,
             tabs = ProfileTab.fetchProfileTabs(postsUiStateFlow),
-            isCurrentUser = isCurrentUser
         )
         mutableState.tryEmit(profileUiState)
     }
@@ -63,7 +66,8 @@ class ProfileViewModel(
             mutableState.tryEmit(ProfileUiState.Loading)
             val currentUserId = fetchCurrentUserId().await()
             val userId = if (id == UNKNOWN_USER_ID) currentUserId else id
-            isCurrentUser = userId == currentUserId
+            val isCurrentUser = userId == currentUserId
+            shouldCurrentUserFlowCommunication.emit(isCurrentUser)
             if (isCurrentUser) startFetchCurrentUser(currentUserId)
             else fetchUserInfo(id)
             fetchUserPosts(userId)
@@ -73,6 +77,7 @@ class ProfileViewModel(
     fun onEvent(event: ProfileScreenEvent) {
         when (event) {
             is ProfileScreenEvent.OnEditProfile -> navigateEditProfileScreen()
+            is ProfileScreenEvent.OnNavigateToBack -> navigateToBack()
             is ProfileScreenEvent.OnEditBackgroundImage -> {
                 val message = MainResStrings.function_is_temporarily_unavailable
                 snackbarDisplay.showSnackbar(FriendSyncSnackbar.Sample(message))
@@ -97,7 +102,6 @@ class ProfileViewModel(
                     ProfileUiState.Content(
                         userDetail = userDetailDomainToUserDetailMapper.map(userDomain),
                         tabs = ProfileTab.fetchProfileTabs(postsUiStateFlow),
-                        isCurrentUser = isCurrentUser
                     )
 
                 } else {
@@ -138,6 +142,10 @@ class ProfileViewModel(
     private fun navigateEditProfileScreen() {
         val state = mutableState.value as? ProfileUiState.Content ?: return
         navigationScreenCommunication.emit(EditProfileScreenDestination(state.userDetail.id))
+    }
+
+    private fun navigateToBack() {
+        navigateBackEventFlowCommunication.emit(Unit)
     }
 
     private fun showErrorSnackbar(message: String?) {
