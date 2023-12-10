@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import org.joseph.friendsync.common.validations.PasswordValidation
+import org.joseph.friendsync.domain.validations.PasswordValidation
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.launchSafe
@@ -18,7 +18,7 @@ import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.domain.models.AuthResultData
 import org.joseph.friendsync.domain.usecases.signin.SignInUseCase
-import org.joseph.friendsync.mappers.AuthResultDataToUserPreferencesMapper
+import org.joseph.friendsync.ui.components.mappers.AuthResultDataToUserPreferencesMapper
 import org.koin.core.component.KoinComponent
 
 class LoginViewModel(

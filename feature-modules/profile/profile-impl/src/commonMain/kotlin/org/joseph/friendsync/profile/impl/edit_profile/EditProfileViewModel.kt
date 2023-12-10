@@ -13,8 +13,8 @@ import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.callSafe
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.common.validations.EmailValidation
-import org.joseph.friendsync.common.validations.NameValidation
+import org.joseph.friendsync.domain.validations.EmailValidation
+import org.joseph.friendsync.domain.validations.NameValidation
 import org.joseph.friendsync.core.ui.common.extensions.firstLetterIsCapitalizedRestSmall
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
@@ -24,8 +24,8 @@ import org.joseph.friendsync.domain.models.EditProfileParams
 import org.joseph.friendsync.domain.models.UserPersonalInfoDomain
 import org.joseph.friendsync.domain.usecases.user.EditUserWithParamsUseCase
 import org.joseph.friendsync.domain.usecases.user.FetchUserPersonalInfoByIdUseCase
-import org.joseph.friendsync.models.user.UserDetail
 import org.joseph.friendsync.profile.impl.manager.CurrentUserManager
+import org.joseph.friendsync.ui.components.models.user.UserDetail
 
 class EditProfileViewModel(
     private val userId: Int,

@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import org.joseph.friendsync.core.ui.components.ChatAppTopBar
-import org.joseph.friendsync.models.sampleChats
+import org.joseph.friendsync.ui.components.models.sampleChats
 
 class ChatScreenDestination : Screen {
 

@@ -18,7 +18,7 @@ import org.joseph.friendsync.core.ui.components.CircularImage
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
-import org.joseph.friendsync.models.FollowsUser
+import org.joseph.friendsync.ui.components.models.FollowsUser
 
 @Composable
 fun PinnedUserList(

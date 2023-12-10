@@ -1,6 +1,7 @@
 package org.joseph.friendsync.search.impl
 
-import org.joseph.friendsync.models.Category
+import org.joseph.friendsync.ui.components.models.Category
+
 
 sealed class SearchScreenEvent {
 

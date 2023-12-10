@@ -13,28 +13,23 @@ import org.joseph.friendsync.core.ui.snackbar.SnackbarManager
 import org.joseph.friendsync.core.ui.snackbar.SnackbarQueue
 import org.joseph.friendsync.data.local.user.UserDataStoreImpl
 import org.joseph.friendsync.home.impl.di.homeScreenModule
-import org.joseph.friendsync.mappers.AuthResultDataToUserPreferencesMapper
-import org.joseph.friendsync.mappers.CategoryDomainToCategoryMapper
-import org.joseph.friendsync.mappers.CommentDomainToCommentMapper
-import org.joseph.friendsync.mappers.PostDomainToPostMapper
-import org.joseph.friendsync.mappers.PostDomainToPostMapperImpl
-import org.joseph.friendsync.mappers.UserInfoDomainToUserInfoMapper
 import org.joseph.friendsync.post.impl.di.postScreenModule
 import org.joseph.friendsync.profile.impl.di.profileScreenModule
 import org.joseph.friendsync.screens.splash.SplashViewModel
 import org.joseph.friendsync.search.impl.di.searchModule
+import org.joseph.friendsync.ui.components.di.uiComponentsModule
 import org.koin.dsl.module
 
 fun appModules() = listOf(
     communicationModule,
     managersModule,
     viewModelsModule,
-    mappersModule,
     authScreenModule,
     postScreenModule,
     homeScreenModule,
     profileScreenModule,
     searchModule,
+    uiComponentsModule
 )
 
 private val communicationModule = module {
@@ -48,14 +43,6 @@ private val viewModelsModule = module {
     single { CommonViewModel(get(), get()) }
     single { ChatListViewModel(get()) }
     factory { SplashViewModel(get(), get()) }
-}
-
-private val mappersModule = module {
-    factory { UserInfoDomainToUserInfoMapper() }
-    factory<PostDomainToPostMapper> { PostDomainToPostMapperImpl() }
-    factory { AuthResultDataToUserPreferencesMapper() }
-    factory { CommentDomainToCommentMapper(get(), get()) }
-    factory { CategoryDomainToCategoryMapper() }
 }
 
 private val managersModule = module {

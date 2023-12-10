@@ -17,13 +17,13 @@ import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
 import org.joseph.friendsync.domain.usecases.user.FetchUserByIdUseCase
-import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.profile.impl.communication.ProfilePostsUiStateCommunication
 import org.joseph.friendsync.profile.impl.edit_profile.EditProfileScreenDestination
 import org.joseph.friendsync.profile.impl.manager.CurrentUserManager
 import org.joseph.friendsync.profile.impl.mappers.UserDetailDomainToUserDetailMapper
 import org.joseph.friendsync.profile.impl.models.ProfileTab
 import org.joseph.friendsync.profile.impl.tabs.posts.ProfilePostsUiState
+import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
 import org.koin.core.component.KoinComponent
 
 const val UNKNOWN_USER_ID = -1

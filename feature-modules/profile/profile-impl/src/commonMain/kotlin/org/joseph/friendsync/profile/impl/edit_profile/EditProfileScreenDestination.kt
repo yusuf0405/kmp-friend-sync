@@ -14,7 +14,6 @@ import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Save
 import org.joseph.friendsync.core.ui.components.AppTopBar
 import org.joseph.friendsync.core.ui.strings.MainResStrings
-import org.joseph.friendsync.models.user.UserDetail
 import org.koin.core.parameter.parametersOf
 
 class EditProfileScreenDestination(

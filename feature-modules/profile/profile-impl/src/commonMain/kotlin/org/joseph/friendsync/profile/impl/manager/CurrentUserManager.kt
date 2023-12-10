@@ -2,7 +2,7 @@ package org.joseph.friendsync.profile.impl.manager
 
 import kotlinx.coroutines.flow.Flow
 import org.joseph.friendsync.domain.models.EditProfileParams
-import org.joseph.friendsync.models.user.UserDetail
+import org.joseph.friendsync.ui.components.models.user.UserDetail
 
 interface CurrentUserManager {
 

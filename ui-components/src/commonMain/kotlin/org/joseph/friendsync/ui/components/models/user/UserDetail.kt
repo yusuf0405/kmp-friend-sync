@@ -1,7 +1,9 @@
-package org.joseph.friendsync.models.user
+package org.joseph.friendsync.ui.components.models.user
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 
+@Immutable
 data class UserDetail(
     val id: Int,
     val name: String,

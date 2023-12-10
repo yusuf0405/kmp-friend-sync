@@ -22,11 +22,11 @@ import org.joseph.friendsync.domain.usecases.comments.DeleteCommentByIdUseCase
 import org.joseph.friendsync.domain.usecases.comments.EditCommentUseCase
 import org.joseph.friendsync.domain.usecases.comments.FetchPostCommentsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
-import org.joseph.friendsync.mappers.CommentDomainToCommentMapper
-import org.joseph.friendsync.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.post.impl.comment.CommentsStateStateFlowCommunication
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
 import org.joseph.friendsync.profile.api.ProfileScreenProvider
+import org.joseph.friendsync.ui.components.mappers.CommentDomainToCommentMapper
+import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
 import org.koin.core.component.KoinComponent
 
 class PostDetailViewModel(

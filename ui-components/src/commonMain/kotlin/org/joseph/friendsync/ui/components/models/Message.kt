@@ -1,7 +1,9 @@
-package org.joseph.friendsync.models
+package org.joseph.friendsync.ui.components.models
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 
+@Immutable
 data class Message(
     val userId: String,
     val userImage: String,

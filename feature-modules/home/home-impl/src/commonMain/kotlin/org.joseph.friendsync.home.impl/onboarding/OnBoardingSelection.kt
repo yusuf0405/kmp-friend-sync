@@ -19,7 +19,7 @@ import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
-import org.joseph.friendsync.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
 @Composable
 fun OnBoardingSelection(

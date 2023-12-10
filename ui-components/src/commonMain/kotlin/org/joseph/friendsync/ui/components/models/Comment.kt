@@ -1,7 +1,9 @@
-package org.joseph.friendsync.models
+package org.joseph.friendsync.ui.components.models
 
-import org.joseph.friendsync.models.user.UserInfo
+import androidx.compose.runtime.Immutable
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
+@Immutable
 data class Comment(
     val id: Int,
     val comment: String,

@@ -17,6 +17,8 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":domain"))
             implementation(project(":core-ui"))
+            implementation(project(":ui-components"))
+
             implementation(project(":feature-modules:profile:profile-api"))
 
             implementation(compose.runtime)
@@ -33,9 +35,6 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.kotlinx.datetime)
         }
-
-        androidMain.dependencies {}
-        iosMain.dependencies {}
     }
 }
 

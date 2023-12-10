@@ -24,7 +24,7 @@ import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraSmallSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
-import org.joseph.friendsync.models.Chat
+import org.joseph.friendsync.ui.components.models.Chat
 
 @Composable
 fun ChatItem(

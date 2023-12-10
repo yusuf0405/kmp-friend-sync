@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import org.joseph.friendsync.chat.impl.ChatTextField
 import org.joseph.friendsync.chat.impl.MessageItemList
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
-import org.joseph.friendsync.models.Chat
-import org.joseph.friendsync.models.sampleMessages
+import org.joseph.friendsync.ui.components.models.Chat
+import org.joseph.friendsync.ui.components.models.sampleMessages
 
 @Composable
 fun ChatScreen(
