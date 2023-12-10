@@ -45,7 +45,7 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="sarch_screen_placeholder">Search for people, posts, tags...</string>
+    <string name="search_screen_placeholder">Search for people, posts...</string>
     <string name="popular">Popular</string>
     <string name="refresh">Refresh</string>
     <string name="dont_have_anaccount">Don't have an account?</string>

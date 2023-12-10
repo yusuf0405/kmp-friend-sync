@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -48,6 +50,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.rememberImagePainter
 import compose.icons.FeatherIcons
+import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Edit
 import kotlinx.coroutines.launch
 import org.joseph.friendsync.core.ui.common.ErrorScreen
@@ -67,6 +70,7 @@ import org.joseph.friendsync.models.user.UserDetail
 @Composable
 fun ProfileScreen(
     uiState: ProfileUiState,
+    shouldCurrentUser: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit
 ) {
     val modifier = Modifier
@@ -85,6 +89,7 @@ fun ProfileScreen(
         is ProfileUiState.Content -> {
             LoadedProfileScreen(
                 uiState = uiState,
+                shouldCurrentUser = shouldCurrentUser,
                 modifier = modifier,
                 onEvent = onEvent
             )
@@ -96,6 +101,7 @@ fun ProfileScreen(
 @Composable
 fun LoadedProfileScreen(
     uiState: ProfileUiState.Content,
+    shouldCurrentUser: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -116,7 +122,7 @@ fun LoadedProfileScreen(
         ) {
             UserPersonalInfo(
                 userDetail = uiState.userDetail,
-                isCurrentUser = uiState.isCurrentUser,
+                shouldCurrentUser = shouldCurrentUser,
                 onEvent = onEvent
             )
             Column(modifier = Modifier.height(screenHeight)) {
@@ -184,20 +190,21 @@ fun LoadedProfileScreen(
 @Composable
 private fun UserPersonalInfo(
     userDetail: UserDetail,
-    isCurrentUser: Boolean,
+    shouldCurrentUser: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val painter = rememberImagePainter(userDetail.profileBackground ?: String())
+
     Box(
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        val painter = rememberImagePainter(userDetail.profileBackground ?: String())
-
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(FriendSyncTheme.dimens.dp160)
         ) {
             Image(
                 painter = painter,
@@ -205,26 +212,16 @@ private fun UserPersonalInfo(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
             )
-            if (isCurrentUser) Box(
-                modifier = Modifier
-                    .padding(LargeSpacing)
-                    .align(Alignment.TopEnd)
-                    .size(FriendSyncTheme.dimens.dp36)
-                    .clip(CircleShape)
-                    .background(FriendSyncTheme.colors.backgroundModal),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(
-                    onClick = { onEvent(ProfileScreenEvent.OnEditBackgroundImage) },
-                ) {
-                    Icon(
-                        modifier = Modifier.size(FriendSyncTheme.dimens.dp16),
-                        imageVector = FeatherIcons.Edit,
-                        contentDescription = null,
-                        tint = FriendSyncTheme.colors.iconsPrimary
-                    )
-                }
-            }
+            if (shouldCurrentUser) ProfileIcon(
+                icon = FeatherIcons.Edit,
+                alignment = Alignment.TopEnd,
+                onClick = { onEvent(ProfileScreenEvent.OnEditBackgroundImage) }
+            )
+            else ProfileIcon(
+                icon = FeatherIcons.ArrowLeft,
+                alignment = Alignment.TopStart,
+                onClick = { onEvent(ProfileScreenEvent.OnNavigateToBack) }
+            )
         }
         Column(
             modifier = Modifier
@@ -234,7 +231,7 @@ private fun UserPersonalInfo(
         ) {
             CircularImage(
                 imageUrl = userDetail.avatar,
-                modifier = modifier.size(150.dp),
+                modifier = Modifier.size(150.dp),
             )
             Spacer(modifier = Modifier.height(LargeSpacing))
             Text(
@@ -257,15 +254,45 @@ private fun UserPersonalInfo(
                 )
                 Spacer(modifier = Modifier.height(ExtraLargeSpacing))
             }
-            if (userDetail != UserDetail.unknown) FollowingInfo(userDetail, isCurrentUser, onEvent)
+            if (userDetail != UserDetail.unknown) FollowingInfo(
+                userDetail = userDetail,
+                shouldCurrentUser = shouldCurrentUser,
+                onEvent = onEvent
+            )
         }
     }
 }
 
 @Composable
-fun FollowingInfo(
+private fun BoxScope.ProfileIcon(
+    icon: ImageVector,
+    alignment: Alignment,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .padding(LargeSpacing)
+            .align(alignment)
+            .size(FriendSyncTheme.dimens.dp36)
+            .clip(CircleShape)
+            .background(FriendSyncTheme.colors.backgroundModal),
+        contentAlignment = Alignment.Center
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                modifier = Modifier.size(FriendSyncTheme.dimens.dp16),
+                imageVector = icon,
+                contentDescription = null,
+                tint = FriendSyncTheme.colors.iconsPrimary
+            )
+        }
+    }
+}
+
+@Composable
+private fun FollowingInfo(
     userDetail: UserDetail,
-    isCurrentUser: Boolean,
+    shouldCurrentUser: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -298,7 +325,7 @@ fun FollowingInfo(
             )
         }
 
-        if (isCurrentUser) OutlinedButton(
+        if (shouldCurrentUser) OutlinedButton(
             modifier = Modifier,
             onClick = { onEvent(ProfileScreenEvent.OnEditProfile) },
             border = BorderStroke(1.dp, FriendSyncTheme.colors.iconsSecondary),

@@ -6,4 +6,6 @@ sealed class ProfileScreenEvent {
 
     data object OnEditProfile : ProfileScreenEvent()
 
+    data object OnNavigateToBack : ProfileScreenEvent()
+
 }

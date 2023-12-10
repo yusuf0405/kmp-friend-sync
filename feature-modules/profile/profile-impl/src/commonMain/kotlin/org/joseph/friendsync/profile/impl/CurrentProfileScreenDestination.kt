@@ -17,6 +17,8 @@ class CurrentProfileScreenDestination : Screen {
         val navigator = LocalNavigator.current
 
         val navigationScreen by viewModel.navigationScreenFlow.collectAsState(null)
+        val shouldCurrentUser by viewModel.shouldCurrentUserFlow.collectAsState()
+
         LaunchedEffect(key1 = navigationScreen) {
             if (navigationScreen != null) navigator?.push(navigationScreen!!)
         }
@@ -24,6 +26,7 @@ class CurrentProfileScreenDestination : Screen {
         val uiState by viewModel.state.collectAsState()
         ProfileScreen(
             uiState = uiState,
+            shouldCurrentUser = shouldCurrentUser,
             onEvent = viewModel::onEvent
         )
     }

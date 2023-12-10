@@ -48,6 +48,9 @@ kotlin {
             implementation(project(":feature-modules:profile:profile-api"))
             implementation(project(":feature-modules:profile:profile-impl"))
 
+            implementation(project(":feature-modules:search:search-api"))
+            implementation(project(":feature-modules:search:search-impl"))
+
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)

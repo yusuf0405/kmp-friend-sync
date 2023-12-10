@@ -14,6 +14,5 @@ sealed class ProfileUiState {
     data class Content(
         val userDetail: UserDetail,
         val tabs: List<ProfileTab> = emptyList(),
-        val isCurrentUser: Boolean = false
     ) : ProfileUiState()
 }

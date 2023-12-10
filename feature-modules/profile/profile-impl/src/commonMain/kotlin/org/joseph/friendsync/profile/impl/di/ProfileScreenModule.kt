@@ -15,7 +15,7 @@ val profileScreenModule = module {
     factory { params ->
         ProfileViewModel(
             id = params.get(),
-            get(), get(), get(), get(), get(), get(), get(), get(), get(),
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
         )
     }
 
