@@ -40,12 +40,14 @@ import org.joseph.friendsync.domain.usecases.post.AddPostUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
+import org.joseph.friendsync.domain.usecases.post.SearchPostsByQueryUseCase
 import org.joseph.friendsync.domain.usecases.signin.SignInUseCase
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.domain.usecases.user.EditUserWithParamsUseCase
 import org.joseph.friendsync.domain.usecases.user.FetchUserByIdUseCase
 import org.joseph.friendsync.domain.usecases.user.FetchUserPersonalInfoByIdUseCase
+import org.joseph.friendsync.domain.usecases.user.SearchUsersByQueryUseCase
 import org.koin.dsl.module
 
 fun getSharedModule() = listOf(
@@ -77,6 +79,7 @@ private val postModule = module {
     factory { FetchUserPostsUseCase() }
     factory { FetchRecommendedPostsUseCase() }
     factory { FetchPostByIdUseCase() }
+    factory { SearchPostsByQueryUseCase() }
 }
 
 private val usersModule = module {
@@ -85,6 +88,7 @@ private val usersModule = module {
     factory { UserPersonalInfoCloudToUserPersonalInfoDomainMapper() }
     factory { FetchUserByIdUseCase() }
     factory { FetchUserPersonalInfoByIdUseCase() }
+    factory { SearchUsersByQueryUseCase() }
     factory { EditUserWithParamsUseCase() }
     factory { UserDetailCloudToUserDetailDomainMapper() }
     factory { ProfileParamsDomainToProfileParamsCloudMapper() }

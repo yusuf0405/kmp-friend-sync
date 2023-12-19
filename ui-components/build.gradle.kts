@@ -15,7 +15,6 @@ kotlin {
     )
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":core-ui"))
             implementation(project(":domain"))
 
             implementation(compose.runtime)
@@ -51,6 +50,6 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }

@@ -20,11 +20,15 @@ kotlin {
             implementation(project(":ui-components"))
 
             implementation(project(":feature-modules:search:search-api"))
+            implementation(project(":feature-modules:post:post-api"))
+            implementation(project(":feature-modules:profile:profile-api"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.composeIcons.featherIcons)
+
+            implementation(libs.napier)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
@@ -54,6 +58,6 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }

@@ -17,7 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.joseph.friendsync.chat.impl.ChatItem
-import org.joseph.friendsync.chat.impl.PinnedUserList
+import org.joseph.friendsync.core.ui.components.FollowsUserList
 import org.joseph.friendsync.core.ui.components.SearchTextField
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
@@ -78,6 +78,6 @@ fun PinnedUsers(
             style = FriendSyncTheme.typography.bodyMedium.medium,
             color = FriendSyncTheme.colors.textSecondary
         )
-        PinnedUserList(pinnedUsers = pinnedUsers)
+        FollowsUserList(pinnedUsers = pinnedUsers, onClick = {})
     }
 }

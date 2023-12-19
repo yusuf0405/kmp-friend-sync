@@ -10,7 +10,7 @@ import org.koin.dsl.module
 
 val uiComponentsModule = module {
     factory { UserInfoDomainToUserInfoMapper() }
-    factory<PostDomainToPostMapper> { PostDomainToPostMapperImpl() }
+    factory<PostDomainToPostMapper> { PostDomainToPostMapperImpl(get()) }
     factory { AuthResultDataToUserPreferencesMapper() }
     factory { CommentDomainToCommentMapper(get(), get()) }
     factory { CategoryDomainToCategoryMapper() }

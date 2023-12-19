@@ -68,4 +68,14 @@ internal class UserRepositoryImpl(
             }.filterNotNullOrError()
         }
     }
+
+    override suspend fun searchUsers(
+        query: String,
+        page: Int,
+        pageSize: Int
+    ): Result<List<UserInfoDomain>> = withContext(dispatcherProvider.io) {
+        userService.searchUsers(query, page, pageSize).map { response ->
+            response.data?.map(userInfoCloudToUserInfoDomainMapper::map) ?: emptyList()
+        }
+    }
 }

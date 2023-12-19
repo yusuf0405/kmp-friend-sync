@@ -106,13 +106,10 @@ fun LoadedHomeScreen(
             key = { _, item -> item.id }
         ) { index, post ->
             PostItem(
-                authorImage = post.authorImage,
-                authorName = post.authorName,
+                post = post,
                 imageUrls = post.imageUrls,
-                createdAt = post.createdAt,
                 commentCount = post.commentCount,
                 likesCount = post.likedCount,
-                text = post.text,
                 onPostClick = { onEvent(HomeScreenEvent.OnPostClick(post.id)) },
                 onProfileClick = { onEvent(HomeScreenEvent.OnProfileClick(post.authorId)) },
                 onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick) },

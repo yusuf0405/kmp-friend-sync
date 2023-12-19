@@ -24,6 +24,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":ui-components"))
+
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
@@ -40,9 +42,6 @@ kotlin {
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activityCompose)
             implementation(libs.compose.uitooling)
-        }
-
-        iosMain.dependencies {
         }
     }
 }
@@ -63,7 +62,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }
 

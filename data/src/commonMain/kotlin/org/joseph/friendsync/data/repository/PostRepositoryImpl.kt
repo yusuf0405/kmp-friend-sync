@@ -58,8 +58,19 @@ internal class PostRepositoryImpl(
         userId: Int
     ): Result<List<PostDomain>> = withContext(dispatcherProvider.io) {
         callSafe {
-            val param = RecommendedPostsParam(page, pageSize, userId)
-            postService.fetchRecommendedPosts(param).map { response ->
+            postService.fetchRecommendedPosts(page, pageSize, userId).map { response ->
+                response.data?.map(postCloudToPostDomainMapper::map) ?: emptyList()
+            }
+        }
+    }
+
+    override suspend fun searchPosts(
+        query: String,
+        page: Int,
+        pageSize: Int
+    ): Result<List<PostDomain>> = withContext(dispatcherProvider.io) {
+        callSafe {
+            postService.searchPosts(query, page, pageSize).map { response ->
                 response.data?.map(postCloudToPostDomainMapper::map) ?: emptyList()
             }
         }
