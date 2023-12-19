@@ -22,7 +22,9 @@ import org.joseph.friendsync.data.utils.MESSAGE_PARAM
 import org.joseph.friendsync.data.utils.PAGE_PARAM
 import org.joseph.friendsync.data.utils.PAGE_SIZE_PARAM
 import org.joseph.friendsync.data.utils.POST_REQUEST_PATH
+import org.joseph.friendsync.data.utils.QUERY_PARAM
 import org.joseph.friendsync.data.utils.RECOMMENDED_REQUEST_PATH
+import org.joseph.friendsync.data.utils.SEARCH_REQUEST_PATCH
 import org.joseph.friendsync.data.utils.USER_ID_PARAM
 
 
@@ -65,11 +67,24 @@ internal class PostService(
     }
 
     suspend fun fetchRecommendedPosts(
-        params: RecommendedPostsParam
+        page: Int,
+        pageSize: Int,
+        userId: Int
     ): Result<PostListResponse> = client.request("$POST_REQUEST_PATH$RECOMMENDED_REQUEST_PATH") {
         method = HttpMethod.Get
-        parameter(PAGE_PARAM, params.page)
-        parameter(PAGE_SIZE_PARAM, params.pageSize)
-        parameter(USER_ID_PARAM, params.userId)
+        parameter(PAGE_PARAM, page)
+        parameter(PAGE_SIZE_PARAM, pageSize)
+        parameter(USER_ID_PARAM, userId)
+    }
+
+    suspend fun searchPosts(
+        query: String,
+        page: Int,
+        pageSize: Int
+    ): Result<PostListResponse> = client.request("$POST_REQUEST_PATH$SEARCH_REQUEST_PATCH") {
+        method = HttpMethod.Get
+        parameter(PAGE_PARAM, page)
+        parameter(PAGE_SIZE_PARAM, pageSize)
+        parameter(QUERY_PARAM, query)
     }
 }

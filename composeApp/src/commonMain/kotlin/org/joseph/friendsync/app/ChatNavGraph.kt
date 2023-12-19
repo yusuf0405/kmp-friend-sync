@@ -1,5 +1,6 @@
 package org.joseph.friendsync.app
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -20,6 +21,7 @@ import org.joseph.friendsync.chat.impl.chat_list.ChatListDestination
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.core.ui.components.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarType
+import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.koin.compose.koinInject
 
 class ChatNavGraph : Screen {
@@ -54,7 +56,9 @@ class ChatNavGraph : Screen {
                 screen = ChatListDestination()
             ) { navigator ->
                 SlideTransition(
-                    modifier = Modifier.padding(bottom = paddings.calculateBottomPadding()),
+                    modifier = Modifier
+                        .background(FriendSyncTheme.colors.backgroundModal)
+                        .padding(bottom = paddings.calculateBottomPadding()),
                     navigator = navigator
                 )
             }

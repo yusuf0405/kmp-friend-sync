@@ -18,7 +18,6 @@ object HomeTab : Tab {
         get() {
             val title = MainResStrings.home_destination_title
             val imageVector = rememberVectorPainter(FeatherIcons.Home)
-
             Icons.Outlined
             return remember {
                 TabOptions(

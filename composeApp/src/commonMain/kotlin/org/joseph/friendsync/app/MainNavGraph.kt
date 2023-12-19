@@ -1,5 +1,6 @@
 package org.joseph.friendsync.app
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.collectLatest
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.core.ui.components.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarType
+import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.navigation.BottomNavigation
 import org.joseph.friendsync.navigation.TabNavigationItem
 import org.joseph.friendsync.navigation.tabs.AddPostTab
@@ -62,7 +64,10 @@ class MainNavGraph : Screen {
             }
         ) {
             Scaffold(
-                modifier = Modifier.systemBarsPadding(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(FriendSyncTheme.colors.backgroundModal)
+                    .systemBarsPadding(),
                 snackbarHost = {
                     SnackbarHost(
                         hostState = snackbarHostState,

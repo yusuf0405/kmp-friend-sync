@@ -83,13 +83,10 @@ fun LoadedPostDetailScreen(
         item {
             val post = uiState.post
             PostItem(
-                authorImage = post.authorImage,
-                authorName = post.authorName,
+                post = post,
                 imageUrls = post.imageUrls,
-                createdAt = post.createdAt,
                 commentCount = post.commentCount,
                 likesCount = post.likedCount,
-                text = post.text,
                 onPostClick = {},
                 onProfileClick = { onEvent(PostDetailEvent.OnProfileClick(post.authorId)) },
                 isDetailScreen = true

@@ -18,6 +18,14 @@ data class Post(
     val isOwnPost: Boolean = false
 )
 
+fun List<Post>.filterPhotoPosts(): List<Post> {
+    return this.filter { post -> post.imageUrls.isNotEmpty() }
+}
+
+fun List<Post>.filterTextPosts(): List<Post> {
+   return this.filter { post -> post.text.isNotEmpty() && post.imageUrls.isEmpty() }
+}
+
 val sampleTextPosts = listOf(
     Post(
         id = 99,

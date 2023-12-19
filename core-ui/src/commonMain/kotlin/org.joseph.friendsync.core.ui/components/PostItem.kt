@@ -43,14 +43,12 @@ import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
+import org.joseph.friendsync.ui.components.models.Post
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostItem(
-    authorName: String,
-    authorImage: String,
-    createdAt: String,
-    text: String,
+    post: Post,
     likesCount: Int,
     commentCount: Int,
     imageUrls: List<String> = emptyList(),
@@ -73,9 +71,9 @@ fun PostItem(
         if (!isDetailScreen) Divider()
         SpacerHeight(SmallSpacing)
         PostItemHeader(
-            name = authorName,
-            profileUrl = authorImage,
-            date = createdAt,
+            name = post.authorName,
+            profileUrl = post.authorImage,
+            date = post.createdAt,
             onProfileClick = { onProfileClick() }
         )
         if (imageUrls.isNotEmpty()) HorizontalPager(
@@ -107,9 +105,9 @@ fun PostItem(
                 )
             }
         }
-        if (imageUrls.isEmpty() && text.isNotEmpty()) Text(
+        if (imageUrls.isEmpty() && post.text.isNotEmpty()) Text(
             modifier = Modifier.padding(FriendSyncTheme.dimens.dp20),
-            text = text,
+            text = post.text,
             style = FriendSyncTheme.typography.bodyExtraMedium.medium,
             maxLines = if (isDetailScreen) Int.MAX_VALUE else 9,
             overflow = TextOverflow.Ellipsis,
