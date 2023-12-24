@@ -1,7 +1,7 @@
 package org.joseph.friendsync.data.mappers
 
-import org.joseph.friendsync.data.BASE_URL
 import org.joseph.friendsync.common.mapper.Mapper
+import org.joseph.friendsync.data.di.BASE_URL
 import org.joseph.friendsync.data.models.post.PostCloud
 import org.joseph.friendsync.domain.models.PostDomain
 

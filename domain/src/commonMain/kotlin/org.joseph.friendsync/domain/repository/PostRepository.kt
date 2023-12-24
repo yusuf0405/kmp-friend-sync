@@ -21,4 +21,10 @@ interface PostRepository {
         pageSize: Int,
         userId: Int
     ): Result<List<PostDomain>>
+
+    suspend fun searchPosts(
+        query: String,
+        page: Int,
+        pageSize: Int,
+    ): Result<List<PostDomain>>
 }

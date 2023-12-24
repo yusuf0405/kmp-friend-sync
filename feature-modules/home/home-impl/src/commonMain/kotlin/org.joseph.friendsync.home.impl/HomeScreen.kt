@@ -28,8 +28,8 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.home.impl.onboarding.OnBoardingSelection
 import org.joseph.friendsync.home.impl.onboarding.OnBoardingUiState
-import org.joseph.friendsync.models.Stories
-import org.joseph.friendsync.models.fakeStories
+import org.joseph.friendsync.ui.components.models.Stories
+import org.joseph.friendsync.ui.components.models.fakeStories
 
 @Composable
 fun HomeScreen(
@@ -106,13 +106,10 @@ fun LoadedHomeScreen(
             key = { _, item -> item.id }
         ) { index, post ->
             PostItem(
-                authorImage = post.authorImage,
-                authorName = post.authorName,
+                post = post,
                 imageUrls = post.imageUrls,
-                createdAt = post.createdAt,
                 commentCount = post.commentCount,
-                likesCount = post.likesCount,
-                text = post.text,
+                likesCount = post.likedCount,
                 onPostClick = { onEvent(HomeScreenEvent.OnPostClick(post.id)) },
                 onProfileClick = { onEvent(HomeScreenEvent.OnProfileClick(post.authorId)) },
                 onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick) },

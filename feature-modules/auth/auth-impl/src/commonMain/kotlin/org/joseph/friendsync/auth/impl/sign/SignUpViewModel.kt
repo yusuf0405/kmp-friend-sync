@@ -8,20 +8,20 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import org.joseph.friendsync.auth.impl.models.LoginValidationStatus
-import org.joseph.friendsync.auth.impl.validations.NameValidation
-import org.joseph.friendsync.auth.impl.validations.PasswordValidation
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.core.ui.common.extensions.firstLetterIsCapitalizedRestSmall
 import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.domain.validations.NameValidation
+import org.joseph.friendsync.domain.validations.PasswordValidation
 import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.NavCommand
+import org.joseph.friendsync.core.ui.common.extensions.firstLetterIsCapitalizedRestSmall
+import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.domain.models.AuthResultData
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
-import org.joseph.friendsync.mappers.AuthResultDataToUserPreferencesMapper
+import org.joseph.friendsync.ui.components.mappers.AuthResultDataToUserPreferencesMapper
 import org.koin.core.component.KoinComponent
 
 class SignUpViewModel(

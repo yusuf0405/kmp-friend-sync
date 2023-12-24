@@ -36,6 +36,7 @@ kotlin {
 
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.sqldelight.coroutines.extensions)
+                implementation(libs.napier)
 
                 implementation(libs.multiplatform.settings)
                 implementation(libs.multiplatform.settings.coroutines)

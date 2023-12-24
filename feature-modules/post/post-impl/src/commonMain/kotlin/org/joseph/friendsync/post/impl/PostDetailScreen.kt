@@ -34,9 +34,9 @@ import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
-import org.joseph.friendsync.models.Comment
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.ui.components.models.Comment
 
 @Composable
 fun PostDetailScreen(
@@ -83,13 +83,10 @@ fun LoadedPostDetailScreen(
         item {
             val post = uiState.post
             PostItem(
-                authorImage = post.authorImage,
-                authorName = post.authorName,
+                post = post,
                 imageUrls = post.imageUrls,
-                createdAt = post.createdAt,
                 commentCount = post.commentCount,
-                likesCount = post.likesCount,
-                text = post.text,
+                likesCount = post.likedCount,
                 onPostClick = {},
                 onProfileClick = { onEvent(PostDetailEvent.OnProfileClick(post.authorId)) },
                 isDetailScreen = true

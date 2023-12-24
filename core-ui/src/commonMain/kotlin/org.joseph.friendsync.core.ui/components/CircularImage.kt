@@ -27,6 +27,7 @@ import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
 fun CircularImage(
     imageUrl: String?,
     modifier: Modifier = Modifier,
+    placeholder: Color = Placeholder(),
     onClick: () -> Unit = {},
 ) {
     val painter = rememberImagePainter(imageUrl ?: String())
@@ -36,7 +37,7 @@ fun CircularImage(
         contentDescription = null,
         modifier = modifier
             .clip(CircleShape)
-            .background(Placeholder())
+            .background(placeholder)
             .clickable { onClick() },
         contentScale = ContentScale.Crop,
     )

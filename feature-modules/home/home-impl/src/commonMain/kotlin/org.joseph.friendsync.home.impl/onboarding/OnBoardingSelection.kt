@@ -1,5 +1,6 @@
 package org.joseph.friendsync.home.impl.onboarding
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +20,7 @@ import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
-import org.joseph.friendsync.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
 @Composable
 fun OnBoardingSelection(
@@ -29,8 +30,10 @@ fun OnBoardingSelection(
     onBoardingFinish: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Divider()
+    Column(
+        modifier = modifier.fillMaxWidth()
+            .background(FriendSyncTheme.colors.backgroundHover)
+    ) {
         SpacerHeight(LargeSpacing)
         Text(
             text = MainResStrings.onboarding_title,

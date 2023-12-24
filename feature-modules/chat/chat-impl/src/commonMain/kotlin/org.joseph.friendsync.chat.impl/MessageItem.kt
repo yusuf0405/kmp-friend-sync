@@ -31,7 +31,7 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
-import org.joseph.friendsync.models.Message
+import org.joseph.friendsync.ui.components.models.Message
 
 @Composable
 fun MessageItemList(

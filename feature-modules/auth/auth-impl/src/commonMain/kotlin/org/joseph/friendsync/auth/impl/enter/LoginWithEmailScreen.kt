@@ -25,11 +25,11 @@ import compose.icons.feathericons.ArrowLeft
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
-import org.joseph.friendsync.auth.impl.components.LoginTextField
+import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.components.AppBarIcon
+import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.strings.MainResStrings
-import org.joseph.friendsync.auth.impl.models.LoginValidationStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +71,7 @@ fun EnterWithEmailScreen(
             value = uiState.email,
             onValueChange = { onEvent(LoginWithEmailEvent.OnEmailChanged(it)) },
             hint = MainResStrings.email_hint,
-            loginValidationStatus = emailValidationStatus
+            validationStatus = emailValidationStatus
         )
         SpacerHeight(FriendSyncTheme.dimens.dp32)
         PrimaryButton(

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.joseph.friendsync.core.ui.extensions.clickableNoRipple
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 
@@ -29,6 +31,7 @@ fun SearchTextField(
     isEnabled: Boolean = true,
 ) {
     val backgroundColor = FriendSyncTheme.colors.backgroundSecondary
+    val trailingIcon = if (value.isEmpty()) Icons.Default.Search else Icons.Filled.Clear
 
     TextField(
         modifier = modifier
@@ -60,8 +63,9 @@ fun SearchTextField(
             Icon(
                 modifier = Modifier
                     .padding(end = MediumSpacing)
-                    .fillMaxHeight(),
-                imageVector = Icons.Filled.Search,
+                    .fillMaxHeight()
+                    .clickableNoRipple { if (value.isNotEmpty()) onValueChange(String()) },
+                imageVector = trailingIcon,
                 contentDescription = null,
                 tint = Color.Gray
             )

@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.joseph.friendsync.auth.impl.login.LoginScreenDestination
-import org.joseph.friendsync.auth.impl.models.LoginValidationStatus
 import org.joseph.friendsync.auth.impl.sign.SignUpScreenDestination
-import org.joseph.friendsync.auth.impl.validations.EmailValidation
+import org.joseph.friendsync.domain.validations.EmailValidation
 import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
+import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.koin.core.component.KoinComponent
 
 class LoginWithEmailViewModel(

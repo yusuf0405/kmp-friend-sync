@@ -14,8 +14,9 @@ fun LoadingScreen(
     modifier: Modifier = Modifier.background(FriendSyncTheme.colors.backgroundPrimary)
 ) {
     Box(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()

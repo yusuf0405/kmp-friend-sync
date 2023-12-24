@@ -1,41 +1,49 @@
 package org.joseph.friendsync.data.service
 
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.post
+import io.ktor.client.HttpClient
 import io.ktor.client.request.setBody
-import org.joseph.friendsync.data.KtorApi
+import io.ktor.http.HttpMethod
+import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.data.models.comments.AddCommentParams
 import org.joseph.friendsync.data.models.comments.CommentListResponse
 import org.joseph.friendsync.data.models.comments.CommentResponse
+import org.joseph.friendsync.data.request
+import org.joseph.friendsync.data.utils.ADD_REQUEST_PATH
+import org.joseph.friendsync.data.utils.COMMENTS_REQUEST_PATH
+import org.joseph.friendsync.data.utils.DELETE_REQUEST_PATH
+import org.joseph.friendsync.data.utils.EDIT_REQUEST_PATH
 import org.joseph.friendsync.models.comments.EditCommentParams
 
-private const val COMMENTS_REQUEST_PATH = "/comments"
-
-internal class CommentsService : KtorApi() {
+internal class CommentsService(
+    private val client: HttpClient
+) {
 
     suspend fun addCommentToPost(
         userId: Int,
         postId: Int,
         commentText: String
-    ): CommentResponse = client.post {
-        endPoint(path = "$COMMENTS_REQUEST_PATH/add")
+    ): Result<CommentResponse> = client.request("$COMMENTS_REQUEST_PATH$ADD_REQUEST_PATH") {
+        method = HttpMethod.Post
         setBody(AddCommentParams(userId, postId, commentText))
-    }.body()
+    }
 
+    suspend fun deleteCommentById(
+        commentId: Int
+    ): Result<Int> = client.request("$COMMENTS_REQUEST_PATH$DELETE_REQUEST_PATH/$commentId") {
+        method = HttpMethod.Post
+    }
 
-    suspend fun deleteCommentById(commentId: Int): Int = client.post {
-        endPoint(path = "$COMMENTS_REQUEST_PATH/delete/$commentId")
-    }.body()
-
-
-    suspend fun editCommentById(commentId: Int, editedText: String): Int = client.post {
-        endPoint(path = "$COMMENTS_REQUEST_PATH/edit")
+    suspend fun editCommentById(
+        commentId: Int,
+        editedText: String
+    ): Result<Int> = client.request("$COMMENTS_REQUEST_PATH$EDIT_REQUEST_PATH") {
+        method = HttpMethod.Post
         setBody(EditCommentParams(commentId, editedText))
-    }.body()
+    }
 
-
-    suspend fun fetchAllPostComments(postId: Int): CommentListResponse = client.get {
-        endPoint(path = "$COMMENTS_REQUEST_PATH/$postId")
-    }.body()
+    suspend fun fetchAllPostComments(
+        postId: Int
+    ): Result<CommentListResponse> = client.request("$COMMENTS_REQUEST_PATH/$postId") {
+        method = HttpMethod.Get
+    }
 }

@@ -1,14 +1,17 @@
 package org.joseph.friendsync.data.di
 
-import org.joseph.friendsync.PlatformConfiguration
+import org.joseph.friendsync.common.util.ImageByteArrayProvider
 import org.joseph.friendsync.common.util.coroutines.provideDispatcher
 import org.joseph.friendsync.data.local.DatabaseDriverFactory
 import org.joseph.friendsync.data.mappers.AuthResponseDataToAuthResultDataMapper
 import org.joseph.friendsync.data.mappers.CategoryCloudToCategoryDomainMapper
 import org.joseph.friendsync.data.mappers.CommentCloudToCommentDomainMapper
+import org.joseph.friendsync.data.mappers.ProfileParamsCloudToProfileParamsDomainMapper
+import org.joseph.friendsync.data.mappers.ProfileParamsDomainToProfileParamsCloudMapper
 import org.joseph.friendsync.data.mappers.PostCloudToPostDomainMapper
 import org.joseph.friendsync.data.mappers.UserDetailCloudToUserDetailDomainMapper
 import org.joseph.friendsync.data.mappers.UserInfoCloudToUserInfoDomainMapper
+import org.joseph.friendsync.data.mappers.UserPersonalInfoCloudToUserPersonalInfoDomainMapper
 import org.joseph.friendsync.data.repository.AuthRepositoryImpl
 import org.joseph.friendsync.data.repository.CategoryRepositoryImpl
 import org.joseph.friendsync.data.repository.CommentsRepositoryImpl
@@ -22,6 +25,8 @@ import org.joseph.friendsync.data.service.PostService
 import org.joseph.friendsync.data.service.SubscriptionService
 import org.joseph.friendsync.data.service.UserService
 import org.joseph.friendsync.database.AppDatabase
+import org.joseph.friendsync.domain.managers.SubscriptionsManager
+import org.joseph.friendsync.domain.managers.SubscriptionsManagerImpl
 import org.joseph.friendsync.domain.repository.AuthRepository
 import org.joseph.friendsync.domain.repository.CategoryRepository
 import org.joseph.friendsync.domain.repository.CommentsRepository
@@ -38,13 +43,19 @@ import org.joseph.friendsync.domain.usecases.post.AddPostUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
+import org.joseph.friendsync.domain.usecases.post.SearchPostsByQueryUseCase
 import org.joseph.friendsync.domain.usecases.signin.SignInUseCase
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
+import org.joseph.friendsync.domain.usecases.subscriptions.HasUserSubscriptionUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
+import org.joseph.friendsync.domain.usecases.user.EditUserWithParamsUseCase
 import org.joseph.friendsync.domain.usecases.user.FetchUserByIdUseCase
+import org.joseph.friendsync.domain.usecases.user.FetchUserPersonalInfoByIdUseCase
+import org.joseph.friendsync.domain.usecases.user.SearchUsersByQueryUseCase
 import org.koin.dsl.module
 
 fun getSharedModule() = listOf(
+    networkModule,
     authModule,
     postModule,
     usersModule,
@@ -59,7 +70,7 @@ private val authModule = module {
     single { AppDatabase(get()) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
     factory { AuthResponseDataToAuthResultDataMapper() }
-    single { AuthService() }
+    single { AuthService(get()) }
     single { SignInUseCase() }
     single { SignUpUseCase() }
 }
@@ -67,32 +78,39 @@ private val authModule = module {
 private val postModule = module {
     single<PostRepository> { PostRepositoryImpl(get(), get(), get()) }
     factory { PostCloudToPostDomainMapper(get()) }
-    single { PostService() }
+    single { PostService(get()) }
     factory { AddPostUseCase() }
     factory { FetchUserPostsUseCase() }
     factory { FetchRecommendedPostsUseCase() }
     factory { FetchPostByIdUseCase() }
+    factory { SearchPostsByQueryUseCase() }
 }
 
 private val usersModule = module {
-    single<UserRepository> { UserRepositoryImpl(get(), get(), get(), get()) }
+    single<UserRepository> { UserRepositoryImpl(get(), get(), get(), get(), get(), get(), get()) }
     factory { UserInfoCloudToUserInfoDomainMapper() }
+    factory { UserPersonalInfoCloudToUserPersonalInfoDomainMapper() }
     factory { FetchUserByIdUseCase() }
+    factory { FetchUserPersonalInfoByIdUseCase() }
+    factory { SearchUsersByQueryUseCase() }
+    factory { EditUserWithParamsUseCase() }
     factory { UserDetailCloudToUserDetailDomainMapper() }
-    single { UserService() }
+    factory { ProfileParamsDomainToProfileParamsCloudMapper() }
+    factory { ProfileParamsCloudToProfileParamsDomainMapper() }
+    single { UserService(get()) }
     factory { FetchOnboardingUsersUseCase() }
 }
 
 private val categoryModule = module {
     single<CategoryRepository> { CategoryRepositoryImpl(get(), get(), get()) }
-    single { CategoryService() }
+    single { CategoryService(get()) }
     factory { CategoryCloudToCategoryDomainMapper() }
     factory { FetchAllCategoriesUseCase() }
 }
 
 private val commentsModule = module {
-    single<CommentsRepository> { CommentsRepositoryImpl(get(), get()) }
-    single { CommentsService() }
+    single<CommentsRepository> { CommentsRepositoryImpl(get(), get(), get()) }
+    single { CommentsService(get()) }
     factory { CommentCloudToCommentDomainMapper(get()) }
     factory { AddCommentToPostUseCase() }
     factory { DeleteCommentByIdUseCase() }
@@ -102,12 +120,15 @@ private val commentsModule = module {
 
 
 private val subscriptionModule = module {
-    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get()) }
-    single { SubscriptionService() }
+    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get(), get()) }
+    single { SubscriptionService(get()) }
     factory { CommentCloudToCommentDomainMapper(get()) }
     factory { SubscriptionsInteractor() }
+    factory { HasUserSubscriptionUseCase() }
+    single<SubscriptionsManager> { SubscriptionsManagerImpl() }
 }
 
 private val factoryModule = module {
     factory { provideDispatcher() }
+    factory { ImageByteArrayProvider(get()) }
 }

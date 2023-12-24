@@ -13,6 +13,7 @@
     <string name="chat_list_destination_title">Messages</string>
     <string name="search_destination_title">Search</string>
     <string name="create_destination_title">Create</string>
+    <string name="edit_profile_destination_title">Edit Profile</string>
     <string name="notification_destination_title">Notification</string>
     <string name="profile_destination_title">Profile</string>
     <string name="no_destination_title" />
@@ -44,7 +45,7 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="sarch_screen_placeholder">Search for people, posts, tags...</string>
+    <string name="search_screen_placeholder">Search for people, posts...</string>
     <string name="popular">Popular</string>
     <string name="refresh">Refresh</string>
     <string name="dont_have_anaccount">Don't have an account?</string>
@@ -65,4 +66,10 @@
     <string name="continue_with_email">Continue with Email</string>
     <string name="using_to_login">Using ${login} to login</string>
     <string name="enter_with_email_screen_title">What’s your\nemail\naddress?</string>
+    <string name="about_me">About me</string>
+    <string name="education">Education</string>
+    <string name="profile_has_been_successfully_updated">The profile has been successfully updated!</string>
+    <string name="post_has_been_successfully_added">The post has been successfully added!</string>
+    <string name="function_is_temporarily_unavailable">The function is temporarily unavailable!</string>
+    <string name="empty_data">Empty data</string>
 </resources>

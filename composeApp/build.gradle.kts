@@ -32,6 +32,7 @@ kotlin {
             implementation(project(":data"))
             implementation(project(":domain"))
             implementation(project(":core-ui"))
+            implementation(project(":ui-components"))
 
             implementation(project(":feature-modules:auth:auth-api"))
             implementation(project(":feature-modules:auth:auth-impl"))
@@ -48,6 +49,12 @@ kotlin {
             implementation(project(":feature-modules:profile:profile-api"))
             implementation(project(":feature-modules:profile:profile-impl"))
 
+            implementation(project(":feature-modules:search:search-api"))
+            implementation(project(":feature-modules:search:search-impl"))
+
+            implementation(project(":feature-modules:add-post:add-post-api"))
+            implementation(project(":feature-modules:add-post:add-post-impl"))
+
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
@@ -59,6 +66,7 @@ kotlin {
             implementation(libs.moko.mvvm)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.napier)
 
             // Voyager
             implementation(libs.voyager.navigator)
@@ -123,7 +131,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }
 

@@ -37,6 +37,8 @@ kotlin {
                 implementation(libs.sqldelight.coroutines.extensions)
 
                 implementation(libs.kotlinx.datetime)
+                implementation(libs.composeImageLoader)
+                implementation(libs.napier)
                 api(libs.koin.core)
             }
         }

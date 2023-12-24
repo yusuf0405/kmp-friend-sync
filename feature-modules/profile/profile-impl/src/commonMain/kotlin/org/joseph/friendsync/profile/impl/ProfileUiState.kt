@@ -1,7 +1,7 @@
 package org.joseph.friendsync.profile.impl
 
-import org.joseph.friendsync.models.user.UserDetail
 import org.joseph.friendsync.profile.impl.models.ProfileTab
+import org.joseph.friendsync.ui.components.models.user.UserDetail
 
 sealed class ProfileUiState {
 
@@ -14,6 +14,5 @@ sealed class ProfileUiState {
     data class Content(
         val userDetail: UserDetail,
         val tabs: List<ProfileTab> = emptyList(),
-        val isCurrentUser: Boolean = false
     ) : ProfileUiState()
 }

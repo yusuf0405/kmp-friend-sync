@@ -17,14 +17,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.joseph.friendsync.chat.impl.ChatItem
-import org.joseph.friendsync.chat.impl.PinnedUserList
+import org.joseph.friendsync.core.ui.components.FollowsUserList
 import org.joseph.friendsync.core.ui.components.SearchTextField
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
-import org.joseph.friendsync.models.FollowsUser
-import org.joseph.friendsync.models.sampleChats
-import org.joseph.friendsync.models.sampleUsers
+import org.joseph.friendsync.ui.components.models.FollowsUser
+import org.joseph.friendsync.ui.components.models.sampleChats
+import org.joseph.friendsync.ui.components.models.sampleUsers
 
 @Composable
 fun ChatListScreen(
@@ -78,6 +78,6 @@ fun PinnedUsers(
             style = FriendSyncTheme.typography.bodyMedium.medium,
             color = FriendSyncTheme.colors.textSecondary
         )
-        PinnedUserList(pinnedUsers = pinnedUsers)
+        FollowsUserList(pinnedUsers = pinnedUsers, onClick = {})
     }
 }

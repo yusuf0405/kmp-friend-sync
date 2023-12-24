@@ -34,9 +34,13 @@ class FriendSyncDimens(
     val dp50: Dp = 50.dp,
     val dp56: Dp = 56.dp,
     val dp68: Dp = 68.dp,
+    val dp80: Dp = 80.dp,
     val dp100: Dp = 100.dp,
     val dp120: Dp = 120.dp,
+    val dp130: Dp = 130.dp,
     val dp136: Dp = 136.dp,
+    val dp150: Dp = 150.dp,
+    val dp160: Dp = 160.dp,
 
     val sp10: TextUnit = 10.sp,
     val sp11: TextUnit = 11.sp,

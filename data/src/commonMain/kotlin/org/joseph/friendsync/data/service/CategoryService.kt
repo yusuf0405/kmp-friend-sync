@@ -1,30 +1,42 @@
 package org.joseph.friendsync.data.service
 
-import io.ktor.client.call.body
-import io.ktor.client.request.get
+import io.ktor.client.HttpClient
 import io.ktor.client.request.parameter
-import org.joseph.friendsync.data.KtorApi
+import io.ktor.http.HttpMethod
+import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.data.models.category.CategoriesResponse
 import org.joseph.friendsync.data.models.category.CategoryResponse
+import org.joseph.friendsync.data.request
+import org.joseph.friendsync.data.utils.ADD_REQUEST_PATH
+import org.joseph.friendsync.data.utils.CATEGORIES_REQUEST_PATH
+import org.joseph.friendsync.data.utils.CATEGORY_NAME_PARAM
+import org.joseph.friendsync.data.utils.LIST_REQUEST_PATH
 
-private const val CATEGORIES_REQUEST_PATH = "/categories"
+internal class CategoryService(
+    private val client: HttpClient
+) {
 
-internal class CategoryService : KtorApi() {
+    suspend fun fetchAllCategory(
+    ): Result<CategoriesResponse> = client.request("$CATEGORIES_REQUEST_PATH$LIST_REQUEST_PATH") {
+        method = HttpMethod.Get
+    }
 
-    suspend fun fetchAllCategory(): CategoriesResponse = client.get {
-        endPoint(path = "$CATEGORIES_REQUEST_PATH/list")
-    }.body()
+    suspend fun fetchCategoryById(
+        categoryId: Int
+    ): Result<CategoryResponse> = client.request("$CATEGORIES_REQUEST_PATH/${categoryId}") {
+        method = HttpMethod.Get
+    }
 
-    suspend fun fetchCategoryById(categoryId: Int): CategoryResponse = client.get {
-        endPoint(path = "/users/${categoryId}")
-    }.body()
+    suspend fun addNewCategory(
+        categoryName: String
+    ): Result<CategoryResponse> = client.request("$CATEGORIES_REQUEST_PATH$ADD_REQUEST_PATH") {
+        method = HttpMethod.Post
+        parameter(CATEGORY_NAME_PARAM, categoryName)
+    }
 
-    suspend fun addNewCategory(categoryName: String): CategoryResponse = client.get {
-        endPoint(path = "/add")
-        parameter("category_name", categoryName)
-    }.body()
-
-    suspend fun deleteCategoryById(categoryId: Int): CategoryResponse = client.get {
-        endPoint(path = "/delete/{$categoryId}")
-    }.body()
+    suspend fun deleteCategoryById(
+        categoryId: Int
+    ): Result<String> = client.request("$CATEGORIES_REQUEST_PATH/{$categoryId}") {
+        method = HttpMethod.Post
+    }
 }

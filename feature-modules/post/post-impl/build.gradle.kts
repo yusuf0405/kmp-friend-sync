@@ -17,6 +17,8 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":domain"))
             implementation(project(":core-ui"))
+            implementation(project(":ui-components"))
+
             implementation(project(":feature-modules:post:post-api"))
             implementation(project(":feature-modules:profile:profile-api"))
 
@@ -32,9 +34,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
         }
-
-        androidMain.dependencies {}
-        iosMain.dependencies {}
     }
 }
 
@@ -54,6 +53,6 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }

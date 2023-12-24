@@ -1,6 +1,6 @@
 package org.joseph.friendsync.profile.impl.tabs.posts
 
-import org.joseph.friendsync.models.Post
+import org.joseph.friendsync.ui.components.models.Post
 
 
 sealed class ProfilePostsUiState {
