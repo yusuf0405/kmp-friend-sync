@@ -52,6 +52,9 @@ kotlin {
             implementation(project(":feature-modules:search:search-api"))
             implementation(project(":feature-modules:search:search-impl"))
 
+            implementation(project(":feature-modules:add-post:add-post-api"))
+            implementation(project(":feature-modules:add-post:add-post-impl"))
+
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)

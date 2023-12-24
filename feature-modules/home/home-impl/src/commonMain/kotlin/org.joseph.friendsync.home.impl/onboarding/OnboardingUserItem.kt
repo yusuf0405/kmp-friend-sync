@@ -45,7 +45,7 @@ fun OnboardingUserItem(
             defaultElevation = FriendSyncTheme.dimens.dp4
         ),
         colors = CardDefaults.cardColors(
-            containerColor = FriendSyncTheme.colors.backgroundModal
+            containerColor = FriendSyncTheme.colors.backgroundPrimary
         ),
     ) {
         Column(

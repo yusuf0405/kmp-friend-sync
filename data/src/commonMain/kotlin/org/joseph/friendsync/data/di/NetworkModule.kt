@@ -15,7 +15,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
-private const val CURRENT_CONFIG = "192.168.2.103"
+private const val CURRENT_CONFIG = "192.168.205.243"
 const val BASE_URL = "http://$CURRENT_CONFIG:8080"
 
 private const val DEFAULT_REQUEST_TIMEOUT_MILLS = 10_000L

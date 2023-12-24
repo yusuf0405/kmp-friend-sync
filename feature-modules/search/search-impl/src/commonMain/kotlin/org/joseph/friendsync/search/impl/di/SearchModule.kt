@@ -10,7 +10,7 @@ val searchModule = module {
     factory {
         SearchViewModel(
             get(), get(), get(), get(), get(),
-            get(), get(), get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
     factory<PostUiStateCommunication> { PostUiStateCommunication.Default() }

@@ -24,8 +24,10 @@ import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCo
 import org.joseph.friendsync.core.ui.common.communication.NavCommand
 import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Error
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.domain.managers.SubscriptionsManager
 import org.joseph.friendsync.domain.models.PostDomain
 import org.joseph.friendsync.domain.models.UserInfoDomain
 import org.joseph.friendsync.domain.usecases.onboarding.FetchOnboardingUsersUseCase
@@ -48,7 +50,7 @@ class HomeViewModel(
     private val fetchOnboardingUsersUseCase: FetchOnboardingUsersUseCase,
     private val fetchRecommendedPostsUseCase: FetchRecommendedPostsUseCase,
     private val userInfoDomainToUserInfoMapper: UserInfoDomainToUserInfoMapper,
-    private val subscriptionsInteractor: SubscriptionsInteractor,
+    private val subscriptionsManager: SubscriptionsManager,
     private val postDomainToPostMapper: PostDomainToPostMapper,
     private val snackbarDisplay: SnackbarDisplay,
     private val onboardingCommunication: OnboardingStateStateFlowCommunication,
@@ -66,7 +68,6 @@ class HomeViewModel(
     private val mutex = Mutex()
     private var allDataJob: Job? = null
 
-    private val subscribeUserIdsFlow = MutableStateFlow<List<Int>>(emptyList())
     val onBoardingUiState: StateFlow<OnBoardingUiState> = onboardingCommunication.observe()
     val navigationScreenFlow: SharedFlow<Screen?> = navigationScreenCommunication.observe()
 
@@ -76,7 +77,7 @@ class HomeViewModel(
 
     private fun startLoadAllData() = screenModelScope.launchSafe(
         onError = {
-            snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(defaultErrorMessage))
+            snackbarDisplay.showSnackbar(Error(defaultErrorMessage))
             mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
         }
     ) {
@@ -85,10 +86,9 @@ class HomeViewModel(
             asyncFetchCurrentUser(),
             asyncFetchPosts(),
             asyncFetchOnboardingUsers(),
-            asyncFetchSubscriptionUserIds(),
         )
-
-        subscribeUserIdsFlow.onEach { userIds ->
+        subscriptionsManager.fetchSubscriptionUserIds()
+        subscriptionsManager.subscribeUserIdsFlow.onEach { userIds ->
             val currentState = onBoardingUiState.value
             val users = currentState.users.map { user ->
                 user.copy(isSubscribed = userIds.contains(user.id))
@@ -125,13 +125,6 @@ class HomeViewModel(
 
     private suspend fun asyncFetchCurrentUser() = asyncWithDefault(Unit) {
         currentUser = userDataStore.fetchCurrentUser()
-    }
-
-    private suspend fun asyncFetchSubscriptionUserIds() = asyncWithDefault(Unit) {
-        val userIds = subscriptionsInteractor
-            .fetchSubscriptionUserIds(currentUser.id).data
-            ?: emptyList()
-        subscribeUserIdsFlow.tryEmit(userIds)
     }
 
     private suspend fun asyncFetchPosts() = asyncWithDefault(Unit) {
@@ -180,7 +173,7 @@ class HomeViewModel(
 
             is Result.Error -> {
                 val message = result.message ?: defaultErrorMessage
-                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(message))
+                snackbarDisplay.showSnackbar(Error(message))
             }
         }
 
@@ -213,45 +206,16 @@ class HomeViewModel(
 
     private fun doFollowButtonClick(event: HomeScreenEvent.OnFollowButtonClick) {
         screenModelScope.launchSafe {
-            if (event.isFollow) startCancelSubscription(event.user)
-            else startCreateSubscription(event.user)
+            if (event.isFollow) subscriptionsManager.cancelSubscription(
+                event.user.id,
+                onError = { snackbarDisplay.showSnackbar(Error(it)) }
+            )
+            else subscriptionsManager.createSubscription(
+                event.user.id,
+                onError = { snackbarDisplay.showSnackbar(Error(it)) }
+            )
         }
     }
-
-    private suspend fun startCancelSubscription(user: UserInfo) = callSafe(Unit) {
-        val result = subscriptionsInteractor.cancelSubscription(
-            followerId = currentUser.id,
-            followingId = user.id
-        )
-        when (result) {
-            is Result.Success -> {
-                subscribeUserIdsFlow.update { it - user.id }
-            }
-
-            is Result.Error -> {
-                val message = result.message ?: defaultErrorMessage
-                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(message))
-            }
-        }
-    }
-
-    private suspend fun startCreateSubscription(user: UserInfo) = callSafe(Unit) {
-        val result = subscriptionsInteractor.createSubscription(
-            followerId = currentUser.id,
-            followingId = user.id
-        )
-        when (result) {
-            is Result.Success -> {
-                subscribeUserIdsFlow.update { it + user.id }
-            }
-
-            is Result.Error -> {
-                val message = result.message ?: defaultErrorMessage
-                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(message))
-            }
-        }
-    }
-
 
     private fun doOnboardingFinish() {
         onboardingCommunication.update { currentState ->

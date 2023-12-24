@@ -24,6 +24,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.transitions.SlideTransition
+import org.joseph.friendsync.add.post.impl.AddPostDestination
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
@@ -32,8 +33,7 @@ import org.joseph.friendsync.navigation.tabs.AddPostTab
 import org.joseph.friendsync.navigation.tabs.HomeTab
 import org.joseph.friendsync.navigation.tabs.NotificationTab
 import org.joseph.friendsync.navigation.tabs.SearchTab
-import org.joseph.friendsync.profile.impl.CurrentProfileScreenDestination
-import org.joseph.friendsync.screens.add_post.AddPostScreenDestination
+import org.joseph.friendsync.profile.impl.current.user.CurrentProfileScreenDestination
 import org.joseph.friendsync.screens.notification.NotificationScreenDestination
 import org.joseph.friendsync.search.impl.SearchScreenDestination
 
@@ -113,7 +113,7 @@ fun Tab.TabContent() {
     val startScreen = when (this) {
         is HomeTab -> HomeScreenDestination()
         is SearchTab -> SearchScreenDestination()
-        is AddPostTab -> AddPostScreenDestination()
+        is AddPostTab -> AddPostDestination()
         is NotificationTab -> NotificationScreenDestination()
         else -> CurrentProfileScreenDestination()
     }

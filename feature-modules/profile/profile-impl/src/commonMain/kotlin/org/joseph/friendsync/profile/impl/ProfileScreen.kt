@@ -13,12 +13,16 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -41,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -71,6 +76,7 @@ import org.joseph.friendsync.ui.components.models.user.UserDetail
 fun ProfileScreen(
     uiState: ProfileUiState,
     shouldCurrentUser: Boolean,
+    hasUserSubscription: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit
 ) {
     val modifier = Modifier
@@ -90,6 +96,7 @@ fun ProfileScreen(
             LoadedProfileScreen(
                 uiState = uiState,
                 shouldCurrentUser = shouldCurrentUser,
+                hasUserSubscription = hasUserSubscription,
                 modifier = modifier,
                 onEvent = onEvent
             )
@@ -102,9 +109,11 @@ fun ProfileScreen(
 fun LoadedProfileScreen(
     uiState: ProfileUiState.Content,
     shouldCurrentUser: Boolean,
+    hasUserSubscription: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val profileTabs = uiState.tabs
     val pagerState = rememberPagerState { profileTabs.size }
     val coroutineScope = rememberCoroutineScope()
@@ -123,6 +132,7 @@ fun LoadedProfileScreen(
             UserPersonalInfo(
                 userDetail = uiState.userDetail,
                 shouldCurrentUser = shouldCurrentUser,
+                hasUserSubscription = hasUserSubscription,
                 onEvent = onEvent
             )
             Column(modifier = Modifier.height(screenHeight)) {
@@ -135,8 +145,8 @@ fun LoadedProfileScreen(
                         TabRowDefaults.Indicator(
                             modifier = Modifier
                                 .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                                .clip(RoundedCornerShape(4.dp)),
-                            height = 3.dp,
+                                .clip(RoundedCornerShape(SmallSpacing)),
+                            height = FriendSyncTheme.dimens.dp2,
                             color = FriendSyncTheme.colors.primary
                         )
                     }
@@ -191,11 +201,12 @@ fun LoadedProfileScreen(
 private fun UserPersonalInfo(
     userDetail: UserDetail,
     shouldCurrentUser: Boolean,
+    hasUserSubscription: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val painter = rememberImagePainter(userDetail.profileBackground ?: String())
-
+    val placeholder = Placeholder()
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -204,11 +215,13 @@ private fun UserPersonalInfo(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .height(FriendSyncTheme.dimens.dp160)
+                .height(FriendSyncTheme.dimens.dp160 + 24.dp)
         ) {
             Image(
+                modifier = Modifier
+                    .height(FriendSyncTheme.dimens.dp150)
+                    .background(placeholder),
                 painter = painter,
-                modifier = Modifier.background(Placeholder()),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
             )
@@ -231,7 +244,7 @@ private fun UserPersonalInfo(
         ) {
             CircularImage(
                 imageUrl = userDetail.avatar,
-                modifier = Modifier.size(150.dp),
+                modifier = Modifier.size(FriendSyncTheme.dimens.dp150),
             )
             Spacer(modifier = Modifier.height(LargeSpacing))
             Text(
@@ -257,6 +270,7 @@ private fun UserPersonalInfo(
             if (userDetail != UserDetail.unknown) FollowingInfo(
                 userDetail = userDetail,
                 shouldCurrentUser = shouldCurrentUser,
+                hasUserSubscription = hasUserSubscription,
                 onEvent = onEvent
             )
         }
@@ -293,6 +307,7 @@ private fun BoxScope.ProfileIcon(
 private fun FollowingInfo(
     userDetail: UserDetail,
     shouldCurrentUser: Boolean,
+    hasUserSubscription: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -328,7 +343,10 @@ private fun FollowingInfo(
         if (shouldCurrentUser) OutlinedButton(
             modifier = Modifier,
             onClick = { onEvent(ProfileScreenEvent.OnEditProfile) },
-            border = BorderStroke(1.dp, FriendSyncTheme.colors.iconsSecondary),
+            border = BorderStroke(
+                FriendSyncTheme.dimens.dp1,
+                FriendSyncTheme.colors.iconsSecondary
+            ),
         ) {
             Text(
                 text = MainResStrings.edit_profile,
@@ -336,8 +354,11 @@ private fun FollowingInfo(
                 color = FriendSyncTheme.colors.textPrimary
             )
         } else FollowButton(
-            onClick = {},
-            modifier = Modifier,
+            modifier = Modifier.width(FriendSyncTheme.dimens.dp136),
+            isSubscribed = hasUserSubscription,
+            onClick = {
+                onEvent(ProfileScreenEvent.OnFollowButtonClick(it, userDetail.id))
+            },
         )
     }
 }

@@ -18,4 +18,9 @@ sealed class SearchScreenEvent {
     data class OnPostClick(val postId: Int) : SearchScreenEvent()
 
     data class OnProfileClick(val userId: Int) : SearchScreenEvent()
+
+    data class OnFollowButtonClick(
+        val userId: Int,
+        val isFollow: Boolean
+    ) : SearchScreenEvent()
 }

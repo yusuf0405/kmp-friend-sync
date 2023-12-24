@@ -1,5 +1,6 @@
 package org.joseph.friendsync.di
 
+import org.joseph.friendsync.add.post.impl.di.addPostModule
 import org.joseph.friendsync.app.CommonViewModel
 import org.joseph.friendsync.auth.impl.di.authScreenModule
 import org.joseph.friendsync.chat.impl.chat_list.ChatListViewModel
@@ -29,14 +30,15 @@ fun appModules() = listOf(
     homeScreenModule,
     profileScreenModule,
     searchModule,
-    uiComponentsModule
+    uiComponentsModule,
+    addPostModule
 )
 
 private val communicationModule = module {
     factory<NavigationScreenStateFlowCommunication> { NavigationScreenStateFlowCommunication.Default() }
     single<GlobalNavigationFlowCommunication> { GlobalNavigationFlowCommunication.Default() }
-    single<BooleanStateFlowCommunication> { BooleanStateFlowCommunication.Default() }
-    single<EventSharedFlowCommunication> { EventSharedFlowCommunication.Default() }
+    factory<BooleanStateFlowCommunication> { BooleanStateFlowCommunication.Default() }
+    factory<EventSharedFlowCommunication> { EventSharedFlowCommunication.Default() }
 }
 
 private val viewModelsModule = module {
