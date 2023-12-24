@@ -9,7 +9,6 @@ class SubscriptionsInteractor : KoinComponent {
 
     private val repository by inject<SubscriptionRepository>()
 
-
     suspend fun fetchSubscriptionUserIds(userId: Int): Result<List<Int>> {
         return repository.fetchSubscriptionUserIds(userId)
     }
@@ -21,4 +20,5 @@ class SubscriptionsInteractor : KoinComponent {
     suspend fun createSubscription(followerId: Int, followingId: Int): Result<Int> {
         return repository.createSubscription(followerId, followingId)
     }
+
 }

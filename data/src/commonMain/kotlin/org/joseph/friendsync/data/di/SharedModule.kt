@@ -1,5 +1,6 @@
 package org.joseph.friendsync.data.di
 
+import org.joseph.friendsync.common.util.ImageByteArrayProvider
 import org.joseph.friendsync.common.util.coroutines.provideDispatcher
 import org.joseph.friendsync.data.local.DatabaseDriverFactory
 import org.joseph.friendsync.data.mappers.AuthResponseDataToAuthResultDataMapper
@@ -24,6 +25,8 @@ import org.joseph.friendsync.data.service.PostService
 import org.joseph.friendsync.data.service.SubscriptionService
 import org.joseph.friendsync.data.service.UserService
 import org.joseph.friendsync.database.AppDatabase
+import org.joseph.friendsync.domain.managers.SubscriptionsManager
+import org.joseph.friendsync.domain.managers.SubscriptionsManagerImpl
 import org.joseph.friendsync.domain.repository.AuthRepository
 import org.joseph.friendsync.domain.repository.CategoryRepository
 import org.joseph.friendsync.domain.repository.CommentsRepository
@@ -43,6 +46,7 @@ import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
 import org.joseph.friendsync.domain.usecases.post.SearchPostsByQueryUseCase
 import org.joseph.friendsync.domain.usecases.signin.SignInUseCase
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
+import org.joseph.friendsync.domain.usecases.subscriptions.HasUserSubscriptionUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.domain.usecases.user.EditUserWithParamsUseCase
 import org.joseph.friendsync.domain.usecases.user.FetchUserByIdUseCase
@@ -120,8 +124,11 @@ private val subscriptionModule = module {
     single { SubscriptionService(get()) }
     factory { CommentCloudToCommentDomainMapper(get()) }
     factory { SubscriptionsInteractor() }
+    factory { HasUserSubscriptionUseCase() }
+    single<SubscriptionsManager> { SubscriptionsManagerImpl() }
 }
 
 private val factoryModule = module {
     factory { provideDispatcher() }
+    factory { ImageByteArrayProvider(get()) }
 }

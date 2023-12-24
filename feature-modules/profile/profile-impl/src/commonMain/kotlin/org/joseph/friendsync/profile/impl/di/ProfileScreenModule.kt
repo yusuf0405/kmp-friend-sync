@@ -4,6 +4,7 @@ import org.joseph.friendsync.profile.api.ProfileScreenProvider
 import org.joseph.friendsync.profile.impl.ProfileScreenProviderImpl
 import org.joseph.friendsync.profile.impl.ProfileViewModel
 import org.joseph.friendsync.profile.impl.communication.ProfilePostsUiStateCommunication
+import org.joseph.friendsync.profile.impl.current.user.CurrentUserViewModel
 import org.joseph.friendsync.profile.impl.edit_profile.EditProfileViewModel
 import org.joseph.friendsync.profile.impl.manager.CurrentUserManager
 import org.joseph.friendsync.profile.impl.manager.CurrentUserManagerImpl
@@ -14,8 +15,15 @@ val profileScreenModule = module {
     single<CurrentUserManager> { CurrentUserManagerImpl(get(), get()) }
     factory { params ->
         ProfileViewModel(
-            id = params.get(),
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
+            userId = params.get(),
+            get(), get(), get(), get(), get(), get(), get(), get(),
+            get(), get(), get(), get(), get()
+        )
+    }
+
+    factory {
+        CurrentUserViewModel(
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
 

@@ -8,4 +8,8 @@ sealed class ProfileScreenEvent {
 
     data object OnNavigateToBack : ProfileScreenEvent()
 
+    data class OnFollowButtonClick(
+        val isFollow: Boolean,
+        val userId: Int
+    ) : ProfileScreenEvent()
 }

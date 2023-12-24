@@ -5,96 +5,92 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
+import org.joseph.friendsync.common.util.coroutines.callSafe
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.core.ui.common.communication.BooleanStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.EventSharedFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.*
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.domain.managers.SubscriptionsManager
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
+import org.joseph.friendsync.domain.usecases.subscriptions.HasUserSubscriptionUseCase
+import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.domain.usecases.user.FetchUserByIdUseCase
 import org.joseph.friendsync.profile.impl.communication.ProfilePostsUiStateCommunication
-import org.joseph.friendsync.profile.impl.edit_profile.EditProfileScreenDestination
-import org.joseph.friendsync.profile.impl.manager.CurrentUserManager
 import org.joseph.friendsync.profile.impl.mappers.UserDetailDomainToUserDetailMapper
 import org.joseph.friendsync.profile.impl.models.ProfileTab
 import org.joseph.friendsync.profile.impl.tabs.posts.ProfilePostsUiState
 import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 import org.koin.core.component.KoinComponent
 
 const val UNKNOWN_USER_ID = -1
 
 class ProfileViewModel(
-    private val id: Int = UNKNOWN_USER_ID,
-    private val userDataStore: UserDataStore,
+    private val userId: Int = UNKNOWN_USER_ID,
     private val fetchUserPostsUseCase: FetchUserPostsUseCase,
     private val postDomainToPostMapper: PostDomainToPostMapper,
-    private val currentUserManager: CurrentUserManager,
+    private val userDataStore: UserDataStore,
     private val fetchUserByIdUseCase: FetchUserByIdUseCase,
     private val userDetailDomainToUserDetailMapper: UserDetailDomainToUserDetailMapper,
     private val snackbarDisplay: SnackbarDisplay,
     private val profilePostsUiStateCommunication: ProfilePostsUiStateCommunication,
     private val navigationScreenCommunication: NavigationScreenStateFlowCommunication,
     private val shouldCurrentUserFlowCommunication: BooleanStateFlowCommunication,
-    private val navigateBackEventFlowCommunication: EventSharedFlowCommunication
+    private val hasUserSubscriptionCommunication: BooleanStateFlowCommunication,
+    private val navigateBackEventFlowCommunication: EventSharedFlowCommunication,
+    private val hasUserSubscriptionUseCase: HasUserSubscriptionUseCase,
+    private val subscriptionsManager: SubscriptionsManager,
 ) : StateScreenModel<ProfileUiState>(ProfileUiState.Initial), KoinComponent {
 
     private val postsUiStateFlow = profilePostsUiStateCommunication.observe()
 
     val navigationScreenFlow = navigationScreenCommunication.observe()
     val shouldCurrentUserFlow = shouldCurrentUserFlowCommunication.observe()
+    val hasUserSubscriptionFlow = hasUserSubscriptionCommunication.observe()
     val navigateBackEventFlow = navigateBackEventFlowCommunication.observe()
 
     private val defaultErrorMessage = MainResStrings.default_error_message
-
-    private val currentUserFlow = currentUserManager.fetchCurrentUserFlow().onEach { user ->
-        val profileUiState = ProfileUiState.Content(
-            userDetail = user,
-            tabs = ProfileTab.fetchProfileTabs(postsUiStateFlow),
-        )
-        mutableState.tryEmit(profileUiState)
-    }
+    private var currentUserId: Int = UNKNOWN_USER_ID
 
     init {
         screenModelScope.launchSafe(
             onError = { showErrorSnackbar(null) }
         ) {
             mutableState.tryEmit(ProfileUiState.Loading)
-            val currentUserId = fetchCurrentUserId().await()
-            val userId = if (id == UNKNOWN_USER_ID) currentUserId else id
-            val isCurrentUser = userId == currentUserId
-            shouldCurrentUserFlowCommunication.emit(isCurrentUser)
-            if (isCurrentUser) startFetchCurrentUser(currentUserId)
-            else fetchUserInfo(id)
-            fetchUserPosts(userId)
+            shouldCurrentUserFlowCommunication.emit(false)
+            currentUserId = userDataStore.fetchCurrentUser().id
+            subscriptionsManager.fetchSubscriptionUserIds()
+            fetchUserInfo()
+            hasUserSubscriptionUseCase()
+            fetchUserPosts()
         }
+
+        subscriptionsManager.subscribeUserIdsFlow.onEach { userIds ->
+            hasUserSubscriptionCommunication.emit(userIds.contains(userId))
+        }.launchIn(screenModelScope)
     }
 
     fun onEvent(event: ProfileScreenEvent) {
         when (event) {
-            is ProfileScreenEvent.OnEditProfile -> navigateEditProfileScreen()
             is ProfileScreenEvent.OnNavigateToBack -> navigateToBack()
-            is ProfileScreenEvent.OnEditBackgroundImage -> {
-                val message = MainResStrings.function_is_temporarily_unavailable
-                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Sample(message))
-            }
+            is ProfileScreenEvent.OnFollowButtonClick -> doFollowButtonClick(event)
+            else -> Unit
         }
     }
 
-    private suspend fun startFetchCurrentUser(currentUserId: Int) {
-        currentUserManager.startFetchCurrentUser(currentUserId)
-        currentUserFlow.launchIn(screenModelScope)
+    private suspend fun hasUserSubscriptionUseCase() {
+        val subscription = hasUserSubscriptionUseCase(currentUserId, userId).data ?: false
+        hasUserSubscriptionCommunication.emit(subscription)
     }
 
-    private suspend fun fetchCurrentUserId() = asyncWithDefault(UNKNOWN_USER_ID) {
-        userDataStore.fetchCurrentUser().id
-    }
-
-    private suspend fun fetchUserInfo(userId: Int) {
+    private suspend fun fetchUserInfo() {
         when (val response = fetchUserByIdUseCase(userId)) {
             is Result.Success -> {
                 val userDomain = response.data
@@ -120,7 +116,7 @@ class ProfileViewModel(
         }
     }
 
-    private suspend fun fetchUserPosts(userId: Int) {
+    private suspend fun fetchUserPosts() {
         profilePostsUiStateCommunication.emit(ProfilePostsUiState.Loading)
         delay(2000)
         when (val response = fetchUserPostsUseCase(userId)) {
@@ -139,9 +135,17 @@ class ProfileViewModel(
         }
     }
 
-    private fun navigateEditProfileScreen() {
-        val state = mutableState.value as? ProfileUiState.Content ?: return
-        navigationScreenCommunication.emit(EditProfileScreenDestination(state.userDetail.id))
+    private fun doFollowButtonClick(event: ProfileScreenEvent.OnFollowButtonClick) {
+        screenModelScope.launchSafe {
+            if (event.isFollow) subscriptionsManager.cancelSubscription(
+                event.userId,
+                onError = { snackbarDisplay.showSnackbar(Error(it)) }
+            )
+            else subscriptionsManager.createSubscription(
+                event.userId,
+                onError = { snackbarDisplay.showSnackbar(Error(it)) }
+            )
+        }
     }
 
     private fun navigateToBack() {
@@ -149,6 +153,6 @@ class ProfileViewModel(
     }
 
     private fun showErrorSnackbar(message: String?) {
-        snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(message ?: defaultErrorMessage))
+        snackbarDisplay.showSnackbar(Error(message ?: defaultErrorMessage))
     }
 }

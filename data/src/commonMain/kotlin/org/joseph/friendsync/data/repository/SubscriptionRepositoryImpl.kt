@@ -52,4 +52,14 @@ internal class SubscriptionRepositoryImpl(
             }.filterNotNullOrError()
         }
     }
+
+    override suspend fun hasUserSubscription(
+        userId: Int, followingId: Int
+    ): Result<Boolean> = withContext(dispatcherProvider.io) {
+        callSafe {
+            service.hasUserSubscription(userId, followingId).map { response ->
+                response.data
+            }.filterNotNullOrError()
+        }
+    }
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -21,6 +22,7 @@ import org.joseph.friendsync.core.ui.common.extensions.createMutableSharedFlowAs
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.domain.managers.SubscriptionsManager
 import org.joseph.friendsync.domain.usecases.categories.FetchAllCategoriesUseCase
 import org.joseph.friendsync.domain.usecases.post.SearchPostsByQueryUseCase
 import org.joseph.friendsync.domain.usecases.user.SearchUsersByQueryUseCase
@@ -61,6 +63,7 @@ class SearchViewModel(
     private val snackbarDisplay: SnackbarDisplay,
     private val postScreenProvider: PostScreenProvider,
     private val profileScreenProvider: ProfileScreenProvider,
+    private val subscriptionsManager: SubscriptionsManager,
 ) : StateScreenModel<SearchUiState>(SearchUiState.Initial), KoinComponent {
 
     val postUiStateFlow = postUiStateCommunication.observe()
@@ -105,6 +108,16 @@ class SearchViewModel(
             .onEach(::handleSelectedCategory)
             .onError(::handleError)
             .launchIn(screenModelScope)
+
+        subscriptionsManager.subscribeUserIdsFlow.combine(userUiStateFlow, ::Pair)
+            .filter { (_, state) -> state is UsersUiState.Loaded }
+            .onEach { (userIds, _) ->
+                val currentState = userUiStateFlow.value as? UsersUiState.Loaded ?: return@onEach
+                val users = currentState.users.map { user ->
+                    user.copy(isSubscribed = userIds.contains(user.id))
+                }
+                userUiStateCommunication.emit(currentState.copy(users = users))
+            }.launchIn(screenModelScope)
     }
 
     private fun handlePostsState(params: Pair<List<Post>, CategoryType>) {
@@ -127,6 +140,7 @@ class SearchViewModel(
             is SearchScreenEvent.OnPostClick -> navigatePostScreen(event.postId)
             is SearchScreenEvent.OnCommentClick -> navigatePostScreen(event.postId, true)
             is SearchScreenEvent.OnProfileClick -> navigateProfileScreen(event.userId)
+            is SearchScreenEvent.OnFollowButtonClick -> doFollowButtonClick(event)
         }
     }
 
@@ -134,6 +148,7 @@ class SearchViewModel(
         onError = { setUiStateToError(MainResStrings.default_error_message) }
     ) {
         mutableState.tryEmit(SearchUiState.Loading)
+        subscriptionsManager.fetchSubscriptionUserIds()
         fetchAllCategories()
     }
 
@@ -202,6 +217,19 @@ class SearchViewModel(
                 setUiStateToError(message)
                 showErrorSnackbar(message)
             }
+        }
+    }
+
+    private fun doFollowButtonClick(event: SearchScreenEvent.OnFollowButtonClick) {
+        screenModelScope.launchSafe {
+            if (event.isFollow) subscriptionsManager.cancelSubscription(
+                event.userId,
+                onError = { snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(it)) }
+            )
+            else subscriptionsManager.createSubscription(
+                event.userId,
+                onError = { snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(it)) }
+            )
         }
     }
 

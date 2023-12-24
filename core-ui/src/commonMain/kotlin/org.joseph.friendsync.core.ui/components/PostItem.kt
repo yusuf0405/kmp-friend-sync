@@ -105,7 +105,7 @@ fun PostItem(
                 )
             }
         }
-        if (imageUrls.isEmpty() && post.text.isNotEmpty()) Text(
+        if (post.text.isNotEmpty()) Text(
             modifier = Modifier.padding(FriendSyncTheme.dimens.dp20),
             text = post.text,
             style = FriendSyncTheme.typography.bodyExtraMedium.medium,

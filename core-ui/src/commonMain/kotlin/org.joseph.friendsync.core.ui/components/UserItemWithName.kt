@@ -27,6 +27,7 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.ui.components.models.FollowsUser
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
 @Composable
 fun FollowsUserList(
@@ -80,12 +81,11 @@ fun UserItemWithName(
 }
 
 @Composable
-fun UserVerticalItem(
-    avatarUrl: String?,
-    name: String,
-    lastName: String,
+fun UserVerticalWithFollowItem(
+    userInfo: UserInfo,
     imageSize: Dp,
     onClick: () -> Unit,
+    onFollowButtonClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -100,21 +100,21 @@ fun UserVerticalItem(
     ) {
         CircularImage(
             modifier = Modifier.size(imageSize),
-            imageUrl = avatarUrl,
+            imageUrl = userInfo.avatar,
             onClick = onClick
         )
         SpacerWidth(ExtraMediumSpacing)
         Text(
             modifier = Modifier.weight(1f),
-            text = "$name $lastName",
+            text = "${userInfo.name} ${userInfo.lastName}",
             style = FriendSyncTheme.typography.bodyExtraMedium.medium,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
-        Icon(
-            modifier = Modifier.size(FriendSyncTheme.dimens.dp24),
-            imageVector = Icons.Default.MoreHoriz,
-            contentDescription = null
+        SpacerWidth(MediumSpacing)
+        FollowButton(
+            isSubscribed = userInfo.isSubscribed,
+            onClick = onFollowButtonClick
         )
     }
 }

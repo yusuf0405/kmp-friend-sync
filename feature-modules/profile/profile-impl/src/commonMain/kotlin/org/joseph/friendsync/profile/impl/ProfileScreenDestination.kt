@@ -20,6 +20,7 @@ class ProfileScreenDestination(
 
         val navigationScreen by viewModel.navigationScreenFlow.collectAsState(null)
         val shouldCurrentUser by viewModel.shouldCurrentUserFlow.collectAsState()
+        val hasUserSubscription by viewModel.hasUserSubscriptionFlow.collectAsState()
         val navigateBackEvent by viewModel.navigateBackEventFlow.collectAsState(null)
 
         LaunchedEffect(key1 = navigationScreen) {
@@ -34,6 +35,7 @@ class ProfileScreenDestination(
         ProfileScreen(
             uiState = uiState,
             shouldCurrentUser = shouldCurrentUser,
+            hasUserSubscription = hasUserSubscription,
             onEvent = viewModel::onEvent
         )
     }

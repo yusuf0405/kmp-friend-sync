@@ -69,6 +69,7 @@
     <string name="about_me">About me</string>
     <string name="education">Education</string>
     <string name="profile_has_been_successfully_updated">The profile has been successfully updated!</string>
+    <string name="post_has_been_successfully_added">The post has been successfully added!</string>
     <string name="function_is_temporarily_unavailable">The function is temporarily unavailable!</string>
     <string name="empty_data">Empty data</string>
 </resources>

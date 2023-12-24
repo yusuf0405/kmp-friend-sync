@@ -31,7 +31,7 @@ import org.joseph.friendsync.core.ui.components.CategoryItem
 import org.joseph.friendsync.core.ui.components.PostItem
 import org.joseph.friendsync.core.ui.components.SearchTextField
 import org.joseph.friendsync.core.ui.components.UserItemWithName
-import org.joseph.friendsync.core.ui.components.UserVerticalItem
+import org.joseph.friendsync.core.ui.components.UserVerticalWithFollowItem
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
@@ -170,12 +170,13 @@ private fun LazyListScope.showUsersContent(
                     items = userUiState.users,
                     key = { _, item -> item.id }
                 ) { index, user ->
-                    UserVerticalItem(
-                        avatarUrl = user.avatar,
-                        name = user.name,
-                        lastName = user.lastName,
+                    UserVerticalWithFollowItem(
+                        userInfo = user,
                         imageSize = FriendSyncTheme.dimens.dp80,
-                        onClick = { onEvent(SearchScreenEvent.OnProfileClick(user.id)) }
+                        onClick = { onEvent(SearchScreenEvent.OnProfileClick(user.id)) },
+                        onFollowButtonClick = {
+                            onEvent(SearchScreenEvent.OnFollowButtonClick(user.id, it))
+                        }
                     )
                     if (index >= userUiState.users.size - 1 && !userUiState.isPaging) {
                         LaunchedEffect(key1 = Unit, block = {})

@@ -11,7 +11,7 @@ import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.user.UserPreferences
 
 private const val CURRENT_USER_SETTING_KEY = "current_user"
-
+const val UNKNOWN_USER_ID = -1
 @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
 class UserDataStoreImpl(
     private val platformConfiguration: PlatformConfiguration
