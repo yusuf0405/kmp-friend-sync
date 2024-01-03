@@ -11,8 +11,8 @@ class UserInfoDomainToUserInfoMapper : Mapper<UserInfoDomain, UserInfo> {
             id = id,
             name = name,
             lastName = lastName,
-            avatar = avatar,
-            releaseDate = releaseDate.toLocalDate()
+            avatar = avatar ?: String(),
+            releaseDate = releaseDate.toLocalDate().toString()
         )
     }
 }

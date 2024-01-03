@@ -28,18 +28,15 @@ import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
+import org.joseph.friendsync.ui.components.models.Comment
 
 @Composable
-fun CommentsListItem(
-    name: String,
-    releaseDate: String,
-    commentText: String,
-    avatar: String?,
+fun CommentItem(
+    comment: Comment,
     onProfileClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isCurrentUserComment: Boolean,
 ) {
     var isExpandedDownMenu by remember { mutableStateOf(false) }
 
@@ -53,7 +50,7 @@ fun CommentsListItem(
 
         CircularImage(
             modifier = Modifier.size(FriendSyncTheme.dimens.dp30),
-            imageUrl = avatar
+            imageUrl = comment.user.avatar
         ) {
             onProfileClick()
         }
@@ -62,12 +59,12 @@ fun CommentsListItem(
             modifier = Modifier.weight(1f)
         ) {
             Row(
-                modifier = Modifier,
+                modifier = Modifier.clickable(onClick = onProfileClick),
                 horizontalArrangement = Arrangement.spacedBy(MediumSpacing)
             ) {
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = name,
+                    text = comment.user.avatar,
                     style = FriendSyncTheme.typography.bodyMedium.medium,
                     color = FriendSyncTheme.colors.textPrimary
                 )
@@ -75,12 +72,12 @@ fun CommentsListItem(
                     modifier = Modifier
                         .alignByBaseline()
                         .weight(1f),
-                    text = releaseDate,
+                    text = comment.releaseDate,
                     style = FriendSyncTheme.typography.bodySmall.regular,
                     color = FriendSyncTheme.colors.textSecondary
                 )
                 Column {
-                    if (isCurrentUserComment) {
+                    if (comment.isCurrentUserComment) {
                         Icon(
                             imageVector = FeatherIcons.MoreHorizontal,
                             contentDescription = null,
@@ -141,7 +138,7 @@ fun CommentsListItem(
 
             SpacerHeight(SmallSpacing)
             Text(
-                text = commentText,
+                text = comment.comment,
                 style = FriendSyncTheme.typography.bodyMedium.regular,
                 color = FriendSyncTheme.colors.textPrimary,
                 lineHeight = FriendSyncTheme.dimens.sp20

@@ -9,8 +9,17 @@ import org.joseph.friendsync.core.ui.common.communication.BooleanStateFlowCommun
 import org.joseph.friendsync.core.ui.common.communication.EventSharedFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.PostsStateFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
+import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
+import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManagerImpl
+import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksManager
+import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksManagerImpl
+import org.joseph.friendsync.core.ui.common.observers.post.PostsObservers
+import org.joseph.friendsync.core.ui.common.observers.post.PostsObserversImpl
+import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
-import org.joseph.friendsync.core.ui.snackbar.SnackbarManager
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayAdapter
 import org.joseph.friendsync.core.ui.snackbar.SnackbarQueue
 import org.joseph.friendsync.data.local.user.UserDataStoreImpl
 import org.joseph.friendsync.home.impl.di.homeScreenModule
@@ -24,6 +33,7 @@ import org.koin.dsl.module
 fun appModules() = listOf(
     communicationModule,
     managersModule,
+    useCasesModule,
     viewModelsModule,
     authScreenModule,
     postScreenModule,
@@ -39,6 +49,8 @@ private val communicationModule = module {
     single<GlobalNavigationFlowCommunication> { GlobalNavigationFlowCommunication.Default() }
     factory<BooleanStateFlowCommunication> { BooleanStateFlowCommunication.Default() }
     factory<EventSharedFlowCommunication> { EventSharedFlowCommunication.Default() }
+    factory<PostsStateFlowCommunication> { PostsStateFlowCommunication.Default() }
+    factory<UsersStateFlowCommunication> { UsersStateFlowCommunication.Default() }
 }
 
 private val viewModelsModule = module {
@@ -49,7 +61,15 @@ private val viewModelsModule = module {
 
 private val managersModule = module {
     single<UserDataStore> { UserDataStoreImpl(get()) }
-    single<SnackbarManager> { SnackbarManager }
-    single<SnackbarQueue> { SnackbarManager }
-    single<SnackbarDisplay> { SnackbarManager }
+    single<SnackbarDisplayAdapter> { SnackbarDisplayAdapter }
+    single<SnackbarQueue> { SnackbarDisplayAdapter }
+    single<SnackbarDisplay> { SnackbarDisplayAdapter }
+    factory<PostMarksManager> { PostMarksManagerImpl(get(), get(), get()) }
+    factory<UserMarksManager> { UserMarksManagerImpl(get(), get()) }
 }
+
+private val useCasesModule = module {
+    factory<PostLikeOrDislikeInteractor> { PostLikeOrDislikeInteractor() }
+    factory<PostsObservers> { PostsObserversImpl(get(), get()) }
+}
+

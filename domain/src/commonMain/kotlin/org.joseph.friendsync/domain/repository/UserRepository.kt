@@ -1,5 +1,6 @@
 package org.joseph.friendsync.domain.repository
 
+import kotlinx.coroutines.flow.Flow
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.domain.models.EditProfileParams
 import org.joseph.friendsync.domain.models.PostDomain
@@ -12,6 +13,8 @@ interface UserRepository {
     suspend fun fetchOnboardingUsers(userId: Int): Result<List<UserInfoDomain>>
 
     suspend fun fetchUserById(userId: Int): Result<UserDetailDomain>
+
+    fun observeUserById(userId: Int): Flow<UserDetailDomain?>
 
     suspend fun fetchUserPersonalInfoById(userId: Int): Result<UserPersonalInfoDomain>
 

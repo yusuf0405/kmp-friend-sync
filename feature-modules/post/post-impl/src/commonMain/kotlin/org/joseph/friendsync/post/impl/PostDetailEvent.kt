@@ -19,6 +19,8 @@ sealed class PostDetailEvent {
 
     data class OnProfileClick(val userId: Int) : PostDetailEvent()
 
+    data class OnLikeClick(val postId: Int, val isLiked: Boolean) : PostDetailEvent()
+
     data object OnAddCommentClick : PostDetailEvent()
 
     data object RefreshPostData : PostDetailEvent()

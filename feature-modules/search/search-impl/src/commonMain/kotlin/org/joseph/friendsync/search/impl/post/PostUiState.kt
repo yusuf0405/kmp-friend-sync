@@ -1,6 +1,6 @@
 package org.joseph.friendsync.search.impl.post
 
-import org.joseph.friendsync.ui.components.models.Post
+import org.joseph.friendsync.ui.components.models.PostMark
 
 sealed class PostUiState {
 
@@ -15,7 +15,7 @@ sealed class PostUiState {
     ) : PostUiState()
 
     data class Loaded(
-        val posts: List<Post>,
+        val posts: List<PostMark>,
         val isPaging: Boolean = false,
     ) : PostUiState()
 }

@@ -1,5 +1,6 @@
 package org.joseph.friendsync.domain.usecases.user
 
+import kotlinx.coroutines.flow.Flow
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.domain.models.UserDetailDomain
 import org.joseph.friendsync.domain.repository.UserRepository
@@ -10,7 +11,11 @@ class FetchUserByIdUseCase : KoinComponent {
 
     private val repository by inject<UserRepository>()
 
-    suspend operator fun invoke(userId: Int): Result<UserDetailDomain> {
+    suspend fun fetchUserById(userId: Int): Result<UserDetailDomain> {
         return repository.fetchUserById(userId)
+    }
+
+    fun observeUserById(userId: Int): Flow<UserDetailDomain?> {
+        return repository.observeUserById(userId)
     }
 }

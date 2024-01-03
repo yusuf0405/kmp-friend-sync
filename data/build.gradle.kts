@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     id("com.android.library")
@@ -80,6 +81,7 @@ sqldelight {
             packageName.set("org.joseph.friendsync.database")
         }
     }
+    linkSqlite = true
 }
 
 android {

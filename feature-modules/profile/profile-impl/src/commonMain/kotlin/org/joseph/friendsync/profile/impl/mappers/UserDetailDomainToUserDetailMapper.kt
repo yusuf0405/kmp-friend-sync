@@ -4,6 +4,7 @@ import org.joseph.friendsync.common.mapper.Mapper
 import org.joseph.friendsync.core.ui.common.extensions.toLocalDate
 import org.joseph.friendsync.domain.models.UserDetailDomain
 import org.joseph.friendsync.ui.components.models.user.UserDetail
+import org.joseph.friendsync.ui.components.models.user.UserInfo
 
 class UserDetailDomainToUserDetailMapper : Mapper<UserDetailDomain, UserDetail> {
 
@@ -12,13 +13,23 @@ class UserDetailDomainToUserDetailMapper : Mapper<UserDetailDomain, UserDetail> 
             id = id,
             name = name,
             lastName = lastName,
-            avatar = avatar,
-            releaseDate = releaseDate.toLocalDate(),
-            bio = bio,
-            profileBackground = profileBackground,
-            education = education,
+            avatar = avatar ?: String(),
+            releaseDate = releaseDate.toLocalDate().toString(),
+            bio = bio ?: String(),
+            profileBackground = profileBackground ?: String(),
+            education = education ?: String(),
             followersCount = followersCount,
             followingCount = followingCount
         )
     }
+}
+
+fun UserDetail.toUserInfo() = this.run {
+    UserInfo(
+        id = id,
+        name = name,
+        lastName = lastName,
+        avatar = avatar,
+        releaseDate = releaseDate,
+    )
 }

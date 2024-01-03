@@ -1,6 +1,6 @@
 package org.joseph.friendsync.post.impl
 
-import org.joseph.friendsync.ui.components.models.Post
+import org.joseph.friendsync.ui.components.models.PostMark
 
 
 sealed class PostDetailUiState {
@@ -12,7 +12,7 @@ sealed class PostDetailUiState {
     data class Error(val message: String) : PostDetailUiState()
 
     data class Content(
-        val post: Post
+        val postMark: PostMark
     ) : PostDetailUiState()
 
 }

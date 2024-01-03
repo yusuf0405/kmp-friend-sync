@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 class FriendSyncDimens(
+    val dp0: Dp = 0.dp,
     val dp1: Dp = 1.dp,
     val dp2: Dp = 2.dp,
     val dp4: Dp = 4.dp,
@@ -41,6 +42,9 @@ class FriendSyncDimens(
     val dp136: Dp = 136.dp,
     val dp150: Dp = 150.dp,
     val dp160: Dp = 160.dp,
+    val dp174: Dp = 174.dp,
+    val dp200: Dp = 200.dp,
+    val dp800: Dp = 800.dp,
 
     val sp10: TextUnit = 10.sp,
     val sp11: TextUnit = 11.sp,
@@ -53,6 +57,7 @@ class FriendSyncDimens(
     val sp28: TextUnit = 28.sp,
     val sp32: TextUnit = 32.sp,
     val sp36: TextUnit = 36.sp,
+    val sp38: TextUnit = 38.sp,
     val sp40: TextUnit = 40.sp,
     val sp48: TextUnit = 48.sp,
 

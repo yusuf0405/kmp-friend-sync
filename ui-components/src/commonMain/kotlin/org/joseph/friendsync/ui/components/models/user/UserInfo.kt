@@ -8,9 +8,8 @@ data class UserInfo(
     val id: Int,
     val name: String,
     val lastName: String,
-    val avatar: String?,
-    val releaseDate: LocalDate,
-    val isSubscribed: Boolean = false
+    val avatar: String,
+    val releaseDate: String,
 ) {
 
     companion object {
@@ -20,7 +19,7 @@ data class UserInfo(
             name = "Joseph",
             lastName = "Barbera",
             avatar = "https://clipart-library.com/images/pTqre6K8c.jpg",
-            releaseDate = LocalDate(1900, 1, 21)
+            releaseDate = LocalDate(1900, 1, 21).toString()
         )
     }
 }

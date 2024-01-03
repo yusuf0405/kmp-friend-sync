@@ -7,6 +7,15 @@ sealed class Result<T>(
     val message: String? = null
 ) {
 
+    fun isSuccess() = this is Success
+
+    fun isError() = this is Error
+
+    fun getOrThrow(): T {
+        if (this is Error) throw RuntimeException(defaultErrorMessage)
+        return this.data ?: throw RuntimeException(defaultErrorMessage)
+    }
+
     fun copy(data: T): Result<T> {
         return when (this) {
             is Error -> this
@@ -30,7 +39,7 @@ fun <T> Result<T?>.filterNotNullOrError(): Result<T> {
     else Result.Success(data)
 }
 
-fun <T, R> Result<T>.map(transform: (T) -> R): Result<R> {
+suspend fun <T, R> Result<T>.map(transform: (T) -> R): Result<R> {
     return when (this) {
         is Result.Error -> Result.Error(this.message.toString())
         is Result.Success -> {

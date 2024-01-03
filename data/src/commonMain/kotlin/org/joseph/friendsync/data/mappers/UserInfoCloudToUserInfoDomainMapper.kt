@@ -11,7 +11,8 @@ internal class UserInfoCloudToUserInfoDomainMapper : Mapper<UserInfoCloud, UserI
             id = id,
             name = name,
             lastName = lastName,
-            avatar = avatar,
+            avatar = avatar
+                ?: "https://images.squarespace-cdn.com/content/v1/5e6fed256e0cba537c99c528/1637793168253-DPBKX714RLKSFSCBE3D1/silhouette_2.png",
             releaseDate = releaseDate
         )
     }

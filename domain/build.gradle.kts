@@ -33,9 +33,6 @@ kotlin {
                 implementation(libs.ktor.serialization)
                 implementation(libs.ktor.content.negotiation)
 
-                implementation(libs.sqldelight.runtime)
-                implementation(libs.sqldelight.coroutines.extensions)
-
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.composeImageLoader)
                 implementation(libs.napier)
@@ -67,14 +64,6 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
-        }
-    }
-}
-
-sqldelight {
-    databases {
-        create("AppDatabase") {
-            packageName.set("org.joseph.friendsync.database")
         }
     }
 }

@@ -25,12 +25,13 @@ import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
 import org.joseph.friendsync.ui.components.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 
 @Composable
 fun OnboardingUserItem(
-    followUser: UserInfo,
-    onUserClick: (UserInfo) -> Unit,
-    onFollowButtonClick: (Boolean, UserInfo) -> Unit,
+    followUser: UserInfoMark,
+    onUserClick: (UserInfoMark) -> Unit,
+    onFollowButtonClick: (Boolean, UserInfoMark) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val buttonModifier = Modifier.fillMaxWidth().height(FriendSyncTheme.dimens.dp30)
@@ -57,13 +58,13 @@ fun OnboardingUserItem(
         ) {
             CircularImage(
                 modifier = modifier.size(FriendSyncTheme.dimens.dp50),
-                imageUrl = followUser.avatar,
+                imageUrl = followUser.userInfo.avatar,
             ) {
                 onUserClick(followUser)
             }
             Spacer(modifier = modifier.height(SmallSpacing))
             Text(
-                text = followUser.name,
+                text = followUser.userInfo.name,
                 style = FriendSyncTheme.typography.bodyExtraMedium.medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -88,6 +89,7 @@ fun OnboardingUserItem(
                 },
                 text = MainResStrings.follow_button_text,
                 textStyle = FriendSyncTheme.typography.bodySmall.medium,
+                shape = FriendSyncTheme.shapes.large
             )
         }
     }

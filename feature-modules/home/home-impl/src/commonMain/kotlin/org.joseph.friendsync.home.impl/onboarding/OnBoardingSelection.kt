@@ -21,12 +21,13 @@ import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.ui.components.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 
 @Composable
 fun OnBoardingSelection(
-    users: List<UserInfo>,
-    onUserClick: (UserInfo) -> Unit,
-    onFollowButtonClick: (Boolean, UserInfo) -> Unit,
+    users: List<UserInfoMark>,
+    onUserClick: (UserInfoMark) -> Unit,
+    onFollowButtonClick: (Boolean, UserInfoMark) -> Unit,
     onBoardingFinish: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -73,7 +74,7 @@ fun OnBoardingSelection(
                 .fillMaxWidth(fraction = 0.5f)
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = LargeSpacing),
-            shape = RoundedCornerShape(percent = 50),
+            shape = FriendSyncTheme.shapes.extraLarge,
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = FriendSyncTheme.colors.backgroundModal,
             )

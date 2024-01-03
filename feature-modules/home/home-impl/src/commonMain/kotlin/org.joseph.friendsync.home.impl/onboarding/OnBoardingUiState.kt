@@ -1,8 +1,8 @@
 package org.joseph.friendsync.home.impl.onboarding
 
-import org.joseph.friendsync.ui.components.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 
 data class OnBoardingUiState(
-    val users: List<UserInfo> = emptyList(),
+    val users: List<UserInfoMark> = emptyList(),
     val shouldShowOnBoarding: Boolean = false
 )
