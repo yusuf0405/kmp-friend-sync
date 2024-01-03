@@ -33,7 +33,7 @@ import org.joseph.friendsync.navigation.tabs.AddPostTab
 import org.joseph.friendsync.navigation.tabs.HomeTab
 import org.joseph.friendsync.navigation.tabs.NotificationTab
 import org.joseph.friendsync.navigation.tabs.SearchTab
-import org.joseph.friendsync.profile.impl.current.user.CurrentProfileScreenDestination
+import org.joseph.friendsync.profile.impl.screens.current.user.CurrentUserScreenDestination
 import org.joseph.friendsync.screens.notification.NotificationScreenDestination
 import org.joseph.friendsync.search.impl.SearchScreenDestination
 
@@ -115,7 +115,7 @@ fun Tab.TabContent() {
         is SearchTab -> SearchScreenDestination()
         is AddPostTab -> AddPostDestination()
         is NotificationTab -> NotificationScreenDestination()
-        else -> CurrentProfileScreenDestination()
+        else -> CurrentUserScreenDestination()
     }
 
     Navigator(startScreen) { navigator ->

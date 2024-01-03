@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Chat
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -49,18 +50,16 @@ import org.joseph.friendsync.ui.components.models.Post
 @Composable
 fun PostItem(
     post: Post,
-    likesCount: Int,
-    commentCount: Int,
-    imageUrls: List<String> = emptyList(),
+    isLiked: Boolean,
     onPostClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onLikeClick: () -> Unit,
+    onCommentClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onProfileClick: () -> Unit = {},
-    onLikeClick: () -> Unit = {},
-    onCommentClick: () -> Unit = {},
     isDetailScreen: Boolean = false
 ) {
     val pagerState = rememberPagerState {
-        imageUrls.size
+        post.imageUrls.size
     }
 
     Column(
@@ -76,10 +75,10 @@ fun PostItem(
             date = post.createdAt,
             onProfileClick = { onProfileClick() }
         )
-        if (imageUrls.isNotEmpty()) HorizontalPager(
+        if (post.imageUrls.isNotEmpty()) HorizontalPager(
             state = pagerState
         ) { index ->
-            val painter = rememberImagePainter(imageUrls[index])
+            val painter = rememberImagePainter(post.imageUrls[index])
             Image(
                 painter = painter,
                 contentDescription = null,
@@ -93,7 +92,7 @@ fun PostItem(
                 contentScale = ContentScale.Crop,
             )
         }
-        if (imageUrls.size > 1) {
+        if (post.imageUrls.size > 1) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -101,7 +100,7 @@ fun PostItem(
                 HorizontalPagerIndicator(
                     modifier = Modifier,
                     pagerState = pagerState,
-                    pageCount = imageUrls.size,
+                    pageCount = post.imageUrls.size,
                 )
             }
         }
@@ -115,8 +114,9 @@ fun PostItem(
         )
         PostLikesRow(
             modifier = Modifier.padding(horizontal = LargeSpacing),
-            likesCount = likesCount,
-            commentsCount = commentCount,
+            likesCount = post.likedCount,
+            isLiked = isLiked,
+            commentsCount = post.commentCount,
             onLikeClick = onLikeClick,
             onCommentClick = { onCommentClick() }
         )
@@ -180,11 +180,12 @@ fun PostItemHeader(
 
 @Composable
 fun PostLikesRow(
-    modifier: Modifier = Modifier,
     likesCount: Int,
     commentsCount: Int,
+    isLiked: Boolean,
     onLikeClick: () -> Unit,
     onCommentClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -192,10 +193,12 @@ fun PostLikesRow(
     ) {
         IconButton(onClick = onLikeClick) {
             Icon(
-                modifier = Modifier.size(24.dp),
-                imageVector = Icons.Outlined.FavoriteBorder,
+                modifier = Modifier.size(FriendSyncTheme.dimens.dp24),
+                imageVector = if (isLiked) Icons.Outlined.Favorite
+                else Icons.Outlined.FavoriteBorder,
                 contentDescription = null,
-                tint = FriendSyncTheme.colors.iconsSecondary
+                tint = if (isLiked) FriendSyncTheme.colors.accentNegative else
+                    FriendSyncTheme.colors.iconsSecondary
             )
         }
         Text(

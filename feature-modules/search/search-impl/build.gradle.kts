@@ -61,3 +61,6 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }
+dependencies {
+    implementation(project(":feature-modules:profile:profile-impl"))
+}

@@ -1,5 +1,6 @@
 package org.joseph.friendsync.core.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -73,6 +74,7 @@ fun AppBarIcon(
     imageVector: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    background: Color = Color.Transparent,
     isVisibility: Boolean = true
 ) {
     Box(
@@ -85,7 +87,8 @@ fun AppBarIcon(
             )
             .size(FriendSyncTheme.dimens.dp32)
             .clip(CircleShape)
-            .alpha(if (isVisibility) 1f else 0f),
+            .alpha(if (isVisibility) 1f else 0f)
+            .background(background),
         contentAlignment = Alignment.Center
     ) {
         IconButton(

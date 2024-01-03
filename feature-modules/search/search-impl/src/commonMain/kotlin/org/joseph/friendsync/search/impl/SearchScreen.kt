@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import org.joseph.friendsync.core.ui.common.EmptyScreen
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.components.CategoryItem
@@ -39,11 +40,15 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
+import org.joseph.friendsync.search.impl.SearchScreenEvent.OnCommentClick
+import org.joseph.friendsync.search.impl.SearchScreenEvent.OnLikeClick
+import org.joseph.friendsync.search.impl.SearchScreenEvent.OnPostClick
+import org.joseph.friendsync.search.impl.SearchScreenEvent.OnProfileClick
 import org.joseph.friendsync.search.impl.category.CategoryType
 import org.joseph.friendsync.search.impl.post.PostUiState
 import org.joseph.friendsync.search.impl.user.UsersUiState
 import org.joseph.friendsync.ui.components.models.Category
-import org.joseph.friendsync.ui.components.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 
 @Composable
 fun SearchScreen(
@@ -159,7 +164,7 @@ private fun LazyListScope.showUsersContent(
                     if (userUiState.users.isNotEmpty()) {
                         UserInfoHorizontalList(
                             users = userUiState.users,
-                            onClick = { onEvent(SearchScreenEvent.OnProfileClick(it)) }
+                            onClick = { onEvent(OnProfileClick(it)) }
                         )
                     }
                 }
@@ -168,15 +173,16 @@ private fun LazyListScope.showUsersContent(
             if (selectedCategoryType == CategoryType.PROFILES) {
                 itemsIndexed(
                     items = userUiState.users,
-                    key = { _, item -> item.id }
+                    key = { _, item -> item.userInfo.id }
                 ) { index, user ->
                     UserVerticalWithFollowItem(
-                        userInfo = user,
+                        userMark = user,
                         imageSize = FriendSyncTheme.dimens.dp80,
-                        onClick = { onEvent(SearchScreenEvent.OnProfileClick(user.id)) },
+                        onClick = { onEvent(OnProfileClick(user.userInfo.id)) },
                         onFollowButtonClick = {
-                            onEvent(SearchScreenEvent.OnFollowButtonClick(user.id, it))
-                        }
+                            onEvent(SearchScreenEvent.OnFollowButtonClick(user.userInfo.id, it))
+                        },
+                        onEditClick = { onEvent(SearchScreenEvent.OnEditProfile) }
                     )
                     if (index >= userUiState.users.size - 1 && !userUiState.isPaging) {
                         LaunchedEffect(key1 = Unit, block = {})
@@ -233,17 +239,16 @@ private fun LazyListScope.showPostsContent(
         is PostUiState.Loaded -> {
             itemsIndexed(
                 items = postUiState.posts,
-                key = { _, item -> item.id }
-            ) { index, post ->
+                key = { _, item -> item.post.id }
+            ) { index, postMark ->
+                val post = postMark.post
                 PostItem(
                     post = post,
-                    imageUrls = post.imageUrls,
-                    commentCount = post.commentCount,
-                    likesCount = post.likedCount,
-                    onPostClick = { onEvent(SearchScreenEvent.OnPostClick(post.id)) },
-                    onProfileClick = { onEvent(SearchScreenEvent.OnProfileClick(post.authorId)) },
-                    onLikeClick = { },
-                    onCommentClick = { onEvent(SearchScreenEvent.OnCommentClick(post.id)) },
+                    isLiked = postMark.isLiked,
+                    onPostClick = { onEvent(OnPostClick(post.id)) },
+                    onProfileClick = { onEvent(OnProfileClick(post.authorId)) },
+                    onLikeClick = { onEvent(OnLikeClick(post.id, postMark.isLiked)) },
+                    onCommentClick = { onEvent(OnCommentClick(post.id)) },
                 )
                 if (index >= postUiState.posts.size - 1 && !postUiState.isPaging) {
                     LaunchedEffect(key1 = Unit, block = {})
@@ -263,32 +268,6 @@ private fun LazyListScope.showPostsContent(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun EmptyScreen(
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .padding(FriendSyncTheme.dimens.dp36)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            modifier = Modifier.size(FriendSyncTheme.dimens.dp68),
-            imageVector = Icons.Default.AllInbox,
-            contentDescription = null,
-            tint = FriendSyncTheme.colors.iconsSecondary
-        )
-        SpacerHeight(LargeSpacing)
-        Text(
-            text = MainResStrings.empty_data,
-            style = FriendSyncTheme.typography.titleMedium.extraBold,
-            color = FriendSyncTheme.colors.textSecondary
-        )
     }
 }
 
@@ -320,7 +299,7 @@ private fun CategoryList(
 
 @Composable
 private fun UserInfoHorizontalList(
-    users: List<UserInfo>,
+    users: List<UserInfoMark>,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -336,13 +315,13 @@ private fun UserInfoHorizontalList(
     ) {
         items(
             items = users,
-            key = { item -> item.id }
+            key = { item -> item.userInfo.id }
         ) { user ->
             UserItemWithName(
-                avatarUrl = user.avatar,
-                name = user.name,
+                avatarUrl = user.userInfo.avatar,
+                name = user.userInfo.name,
                 imageSize = FriendSyncTheme.dimens.dp68,
-                onClick = { onClick(user.id) }
+                onClick = { onClick(user.userInfo.id) }
             )
         }
     }

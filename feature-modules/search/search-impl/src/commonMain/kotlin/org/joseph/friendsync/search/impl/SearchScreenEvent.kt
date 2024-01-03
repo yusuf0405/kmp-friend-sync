@@ -19,8 +19,12 @@ sealed class SearchScreenEvent {
 
     data class OnProfileClick(val userId: Int) : SearchScreenEvent()
 
-    data class OnFollowButtonClick(
-        val userId: Int,
-        val isFollow: Boolean
+    data object OnEditProfile : SearchScreenEvent()
+
+    data class OnFollowButtonClick(val userId: Int, val isFollow: Boolean) : SearchScreenEvent()
+
+    data class OnLikeClick(
+        val postId: Int,
+        val isLiked: Boolean
     ) : SearchScreenEvent()
 }

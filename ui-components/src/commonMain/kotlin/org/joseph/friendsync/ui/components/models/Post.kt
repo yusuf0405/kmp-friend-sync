@@ -14,8 +14,6 @@ data class Post(
     val authorName: String,
     val authorLastName: String,
     val authorImage: String,
-    val isLiked: Boolean = false,
-    val isOwnPost: Boolean = false
 )
 
 fun List<Post>.filterPhotoPosts(): List<Post> {
@@ -23,7 +21,7 @@ fun List<Post>.filterPhotoPosts(): List<Post> {
 }
 
 fun List<Post>.filterTextPosts(): List<Post> {
-   return this.filter { post -> post.text.isNotEmpty() && post.imageUrls.isEmpty() }
+    return this.filter { post -> post.text.isNotEmpty() && post.imageUrls.isEmpty() }
 }
 
 val sampleTextPosts = listOf(

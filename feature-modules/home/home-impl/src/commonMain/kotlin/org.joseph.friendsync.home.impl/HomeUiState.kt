@@ -1,8 +1,10 @@
 package org.joseph.friendsync.home.impl
 
+import androidx.compose.runtime.Immutable
 import org.joseph.friendsync.ui.components.models.Post
+import org.joseph.friendsync.ui.components.models.PostMark
 
-
+@Immutable
 sealed class HomeUiState {
 
     data object Initial : HomeUiState()
@@ -11,16 +13,17 @@ sealed class HomeUiState {
 
     data class Error(val message: String) : HomeUiState()
 
+    @Immutable
     data class Content(
         val isPaging: Boolean,
-        val posts: List<Post>
+        val postMarks: List<PostMark>
     ) : HomeUiState() {
 
         companion object {
 
             val unknown = Content(
                 isPaging = false,
-                posts = emptyList()
+                postMarks = emptyList()
             )
         }
     }

@@ -1,0 +1,48 @@
+CREATE TABLE recomended_posts (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    message TEXT,
+    release_date INTEGER NOT NULL,
+    likes_count INTEGER NOT NULL,
+    comments_count INTEGER NOT NULL,
+    saved_count INTEGER NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    user_name TEXT NOT NULL,
+    user_lastname TEXT NOT NULL,
+    user_avatar TEXT,
+    user_release_date INTEGER NOT NULL
+);
+
+-- query to get all posts
+ allPosts:
+  SELECT * FROM recomended_posts ORDER BY release_date DESC;
+
+-- query to get all posts reactively
+ reactiveAllPosts:
+  SELECT * FROM recomended_posts ORDER BY release_date DESC;
+
+-- query to get post by ID
+ postById:
+  SELECT * FROM recomended_posts WHERE id = ?;
+
+-- New query to delete post by ID
+ deletePostById:
+  DELETE FROM recomended_posts WHERE id = ?;
+
+-- query to increment or decrement likes count for a post
+incrementDecrementLikesCount:
+  UPDATE recomended_posts SET likes_count = likes_count + ? WHERE id = ?;
+
+-- query to increment or decrement comments count for a post
+incrementDecrementCommentsCount:
+  UPDATE recomended_posts SET comments_count = comments_count + ? WHERE id = ?;
+
+-- query to insert or update a post
+ insertOrUpdatePost:
+  INSERT OR REPLACE INTO recomended_posts (
+    id, message, release_date, likes_count, comments_count, saved_count, user_id,user_name,user_lastname,
+    user_avatar,user_release_date
+) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?);
+
+-- query to remove all recomended posts
+removeAllPosts:
+  DELETE FROM recomended_posts;

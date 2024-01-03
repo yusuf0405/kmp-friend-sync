@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +24,7 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.ui.components.models.FollowsUser
-import org.joseph.friendsync.ui.components.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 
 @Composable
 fun FollowsUserList(
@@ -82,10 +79,11 @@ fun UserItemWithName(
 
 @Composable
 fun UserVerticalWithFollowItem(
-    userInfo: UserInfo,
+    userMark: UserInfoMark,
     imageSize: Dp,
     onClick: () -> Unit,
     onFollowButtonClick: (Boolean) -> Unit,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -100,21 +98,23 @@ fun UserVerticalWithFollowItem(
     ) {
         CircularImage(
             modifier = Modifier.size(imageSize),
-            imageUrl = userInfo.avatar,
+            imageUrl = userMark.userInfo.avatar,
             onClick = onClick
         )
         SpacerWidth(ExtraMediumSpacing)
         Text(
             modifier = Modifier.weight(1f),
-            text = "${userInfo.name} ${userInfo.lastName}",
+            text = "${userMark.userInfo.name} ${userMark.userInfo.lastName}",
             style = FriendSyncTheme.typography.bodyExtraMedium.medium,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
         SpacerWidth(MediumSpacing)
         FollowButton(
-            isSubscribed = userInfo.isSubscribed,
-            onClick = onFollowButtonClick
+            isSubscribed = userMark.isSubscribed,
+            onClick = onFollowButtonClick,
+            onEditClick = onEditClick,
+            isOwnUser = userMark.isCurrentUser
         )
     }
 }

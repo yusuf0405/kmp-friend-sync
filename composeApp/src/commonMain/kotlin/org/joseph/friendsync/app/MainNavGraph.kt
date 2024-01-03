@@ -3,8 +3,8 @@ package org.joseph.friendsync.app
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -16,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
+import cafe.adriel.voyager.core.registry.ScreenRegistry
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.TabDisposable
@@ -32,6 +33,8 @@ import org.joseph.friendsync.navigation.tabs.HomeTab
 import org.joseph.friendsync.navigation.tabs.NotificationTab
 import org.joseph.friendsync.navigation.tabs.ProfileTab
 import org.joseph.friendsync.navigation.tabs.SearchTab
+import org.joseph.friendsync.post.impl.navigation.featurePostScreenModule
+import org.joseph.friendsync.profile.impl.navigation.featureProfileScreenModule
 import org.koin.compose.koinInject
 
 class MainNavGraph : Screen {
@@ -63,11 +66,16 @@ class MainNavGraph : Screen {
                 )
             }
         ) {
+
+            ScreenRegistry {
+                featurePostScreenModule()
+                featureProfileScreenModule()
+            }
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(FriendSyncTheme.colors.backgroundModal)
-                    .systemBarsPadding(),
+                    .navigationBarsPadding(),
                 snackbarHost = {
                     SnackbarHost(
                         hostState = snackbarHostState,

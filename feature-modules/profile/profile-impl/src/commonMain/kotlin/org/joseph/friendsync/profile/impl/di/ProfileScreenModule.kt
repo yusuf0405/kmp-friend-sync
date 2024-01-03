@@ -1,23 +1,20 @@
 package org.joseph.friendsync.profile.impl.di
 
-import org.joseph.friendsync.profile.api.ProfileScreenProvider
-import org.joseph.friendsync.profile.impl.ProfileScreenProviderImpl
-import org.joseph.friendsync.profile.impl.ProfileViewModel
-import org.joseph.friendsync.profile.impl.communication.ProfilePostsUiStateCommunication
-import org.joseph.friendsync.profile.impl.current.user.CurrentUserViewModel
-import org.joseph.friendsync.profile.impl.edit_profile.EditProfileViewModel
-import org.joseph.friendsync.profile.impl.manager.CurrentUserManager
-import org.joseph.friendsync.profile.impl.manager.CurrentUserManagerImpl
+import org.joseph.friendsync.profile.impl.communication.CurrentUserPostsStateCommunication
+import org.joseph.friendsync.profile.impl.communication.ProfilePostsStateCommunication
 import org.joseph.friendsync.profile.impl.mappers.UserDetailDomainToUserDetailMapper
+import org.joseph.friendsync.profile.impl.navigation.ProfileNavigationFlowCommunication
+import org.joseph.friendsync.profile.impl.screens.current.user.CurrentUserViewModel
+import org.joseph.friendsync.profile.impl.screens.edit.profile.EditProfileViewModel
+import org.joseph.friendsync.profile.impl.screens.profile.ProfileViewModel
 import org.koin.dsl.module
 
 val profileScreenModule = module {
-    single<CurrentUserManager> { CurrentUserManagerImpl(get(), get()) }
     factory { params ->
         ProfileViewModel(
             userId = params.get(),
             get(), get(), get(), get(), get(), get(), get(), get(),
-            get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get()
         )
     }
 
@@ -27,13 +24,14 @@ val profileScreenModule = module {
         )
     }
 
-    factory { params ->
+    factory {
         EditProfileViewModel(
-            userId = params.get(), get(), get(), get(), get(), get(), get(),
+            get(), get(), get(), get(), get(), get(),
         )
     }
 
-    factory<ProfilePostsUiStateCommunication> { ProfilePostsUiStateCommunication.Default() }
-    factory<ProfileScreenProvider> { ProfileScreenProviderImpl() }
+    factory<ProfilePostsStateCommunication> { ProfilePostsStateCommunication.Default() }
+    factory<CurrentUserPostsStateCommunication> { CurrentUserPostsStateCommunication.Default() }
     factory<UserDetailDomainToUserDetailMapper> { UserDetailDomainToUserDetailMapper() }
+    factory<ProfileNavigationFlowCommunication> { ProfileNavigationFlowCommunication.Default() }
 }

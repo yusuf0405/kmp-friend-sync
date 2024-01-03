@@ -8,11 +8,11 @@ data class UserDetail(
     val id: Int,
     val name: String,
     val lastName: String,
-    val bio: String?,
-    val avatar: String?,
-    val profileBackground: String?,
-    val education: String?,
-    val releaseDate: LocalDate,
+    val bio: String,
+    val avatar: String,
+    val profileBackground: String,
+    val education: String,
+    val releaseDate: String,
     val followersCount: Int,
     val followingCount: Int
 ) {
@@ -28,7 +28,7 @@ data class UserDetail(
             avatar = "",
             profileBackground = "",
             education = "",
-            releaseDate = LocalDate(1900, 1, 21),
+            releaseDate = LocalDate(1900, 1, 21).toString(),
             followersCount = 0,
             followingCount = 0
         )

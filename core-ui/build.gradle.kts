@@ -24,6 +24,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":domain"))
             implementation(project(":ui-components"))
 
             implementation(compose.runtime)

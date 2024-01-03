@@ -82,46 +82,46 @@ fun LoadedHomeScreen(
             AnimateFade(isVisible = onBoardingUiState.shouldShowOnBoarding) {
                 OnBoardingSelection(
                     users = onBoardingUiState.users,
-                    onUserClick = { user -> onEvent(HomeScreenEvent.OnUserClick(user)) },
+                    onUserClick = { user -> onEvent(HomeScreenEvent.OnUserClick(user.userInfo)) },
                     onBoardingFinish = { onEvent(HomeScreenEvent.OnBoardingFinish) },
                     onFollowButtonClick = { isFollow, user ->
-                        onEvent(HomeScreenEvent.OnFollowButtonClick(isFollow, user))
-                    },
+                        onEvent(HomeScreenEvent.OnFollowButtonClick(isFollow, user.userInfo))
+                    }
                 )
             }
         }
 
-        if (uiState.posts.isEmpty()) {
+        if (uiState.postMarks.isEmpty()) {
             item {
                 Spacer(Modifier.height(ExtraLargeSpacing))
                 ErrorScreen(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .background(FriendSyncTheme.colors.onBackgroundPrimary),
                     errorMessage = MainResStrings.posts_empty_title,
                     onClick = { onEvent(HomeScreenEvent.RefreshAllData) }
                 )
             }
         } else itemsIndexed(
-            items = uiState.posts,
-            key = { _, item -> item.id }
-        ) { index, post ->
+            items = uiState.postMarks,
+            key = { _, item -> item.post.id }
+        ) { index, postMark ->
+            val post = postMark.post
             PostItem(
                 post = post,
-                imageUrls = post.imageUrls,
-                commentCount = post.commentCount,
-                likesCount = post.likedCount,
+                isLiked = postMark.isLiked,
                 onPostClick = { onEvent(HomeScreenEvent.OnPostClick(post.id)) },
                 onProfileClick = { onEvent(HomeScreenEvent.OnProfileClick(post.authorId)) },
-                onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick) },
+                onLikeClick = { onEvent(HomeScreenEvent.OnLikeClick(post.id, postMark.isLiked)) },
                 onCommentClick = { onEvent(HomeScreenEvent.OnCommentClick(post.authorId)) }
             )
-            if (index >= uiState.posts.size - 1
+            if (index >= uiState.postMarks.size - 1
                 && !uiState.isPaging
             ) {
                 LaunchedEffect(key1 = Unit, block = { onEvent(HomeScreenEvent.FetchMorePosts) })
             }
         }
-        if (uiState.isPaging && uiState.posts.isNotEmpty()) {
+        if (uiState.isPaging && uiState.postMarks.isNotEmpty()) {
             item {
                 Row(
                     modifier = Modifier

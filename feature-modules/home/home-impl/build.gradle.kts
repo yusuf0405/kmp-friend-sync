@@ -27,6 +27,8 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(libs.composeIcons.featherIcons)
 
+            implementation(libs.moko.paging)
+
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.koin)
