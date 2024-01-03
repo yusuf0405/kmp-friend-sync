@@ -9,7 +9,7 @@ class DeleteCommentByIdUseCase : KoinComponent {
 
     private val repository by inject<CommentsRepository>()
 
-    suspend operator fun invoke(commentId: Int): Result<Int> {
-        return repository.deleteCommentById(commentId)
+    suspend operator fun invoke(postId: Int, commentId: Int): Result<Int> {
+        return repository.deleteCommentById(postId, commentId)
     }
 }

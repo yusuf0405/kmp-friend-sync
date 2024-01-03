@@ -2,21 +2,21 @@ package org.joseph.friendsync.post.impl
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import cafe.adriel.voyager.core.screen.Screen
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.user.UserPreferences
-import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
+import org.joseph.friendsync.common.util.coroutines.onError
+import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
+import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
+import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
+import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
-import org.joseph.friendsync.domain.models.CommentDomain
-import org.joseph.friendsync.domain.models.PostDomain
 import org.joseph.friendsync.domain.usecases.comments.AddCommentToPostUseCase
 import org.joseph.friendsync.domain.usecases.comments.DeleteCommentByIdUseCase
 import org.joseph.friendsync.domain.usecases.comments.EditCommentUseCase
@@ -24,12 +24,12 @@ import org.joseph.friendsync.domain.usecases.comments.FetchPostCommentsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
 import org.joseph.friendsync.post.impl.comment.CommentsStateStateFlowCommunication
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
-import org.joseph.friendsync.profile.api.ProfileScreenProvider
+import org.joseph.friendsync.post.impl.navigation.PostNavigationFlowCommunication
+import org.joseph.friendsync.post.impl.navigation.PostScreenRouter
 import org.joseph.friendsync.ui.components.mappers.CommentDomainToCommentMapper
-import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
 import org.koin.core.component.KoinComponent
 
-class PostDetailViewModel(
+internal class PostDetailViewModel(
     private val postId: Int,
     private val shouldShowAddCommentDialog: Boolean,
     private val userDataStore: UserDataStore,
@@ -38,15 +38,16 @@ class PostDetailViewModel(
     private val addCommentToPostUseCase: AddCommentToPostUseCase,
     private val editCommentUseCase: EditCommentUseCase,
     private val deleteCommentByIdUseCase: DeleteCommentByIdUseCase,
-    private val postDomainToPostMapper: PostDomainToPostMapper,
+    private val postLikeOrDislikeInteractor: PostLikeOrDislikeInteractor,
+    private val postMarksManager: PostMarksManager,
     private val commentDomainToCommentMapper: CommentDomainToCommentMapper,
     private val commentsStateCommunication: CommentsStateStateFlowCommunication,
-    private val navigationScreenCommunication: NavigationScreenStateFlowCommunication,
-    private val profileScreenProvider: ProfileScreenProvider,
+    private val navigationRouterFlowCommunication: PostNavigationFlowCommunication,
+    private val snackbarDisplay: SnackbarDisplay,
 ) : StateScreenModel<PostDetailUiState>(PostDetailUiState.Initial), KoinComponent {
 
     val commentsUiState: StateFlow<CommentsUiState> = commentsStateCommunication.observe()
-    val navigationScreenFlow: SharedFlow<Screen?> = navigationScreenCommunication.observe()
+    val navigationRouterFlow = navigationRouterFlowCommunication.observe()
 
     private var currentUser = UserPreferences.unknown
 
@@ -61,6 +62,23 @@ class PostDetailViewModel(
             postDataJob = fetchPostById()
             commentsDataJob = fetchPostComments()
         }
+
+        postMarksManager.observePostWithMarks(PostsObserver.Post(postId)).onEach { postMarks ->
+            val postMark = postMarks.firstOrNull()
+            val state = if (postMark != null) PostDetailUiState.Content(postMark)
+            else PostDetailUiState.Error(defaultErrorMessage)
+            mutableState.tryEmit(state)
+        }.launchIn(screenModelScope)
+
+        fetchPostCommentsUseCase.observeAllPostComments(postId).onEach { commentsDomain ->
+            commentsStateCommunication.emit(
+                CommentsUiState.Content(
+                    comments = commentsDomain.map(commentDomainToCommentMapper::map),
+                    shouldShowAddCommentDialog = shouldShowAddCommentDialog
+                )
+            )
+        }.onError { commentsStateCommunication.emit(CommentsUiState.Error(defaultErrorMessage)) }
+            .launchIn(screenModelScope)
     }
 
     private fun refreshPostData() {
@@ -85,6 +103,7 @@ class PostDetailViewModel(
             is PostDetailEvent.OnAddDialogChange -> doAddDialogChange(event)
             is PostDetailEvent.OnEditDialogChange -> doEditDialogChange(event)
             is PostDetailEvent.OnDeleteCommentClick -> doDeleteCommentClick(event)
+            is PostDetailEvent.OnLikeClick -> doLikeButtonClick(event)
         }
     }
 
@@ -92,47 +111,32 @@ class PostDetailViewModel(
         userDataStore.fetchCurrentUser()
     }
 
-
     private fun fetchPostById() = screenModelScope.launchSafe {
         mutableState.tryEmit(PostDetailUiState.Loading)
-        delay(1000)
-        val state = when (val response = fetchPostByIdUseCase(postId)) {
-            is Result.Success -> fetchStateForSuccessfulPostRequest(response)
-            is Result.Error -> PostDetailUiState.Error(response.message ?: defaultErrorMessage)
+        val response = fetchPostByIdUseCase(postId)
+        if (response.isError()) {
+            mutableState.tryEmit(PostDetailUiState.Error(response.message ?: defaultErrorMessage))
         }
-
-        mutableState.tryEmit(state)
     }
 
     private fun fetchPostComments() = screenModelScope.launchSafe {
         commentsStateCommunication.emit(CommentsUiState.Loading)
-        val state = when (val response = fetchPostCommentsUseCase(postId)) {
-            is Result.Error -> CommentsUiState.Error(response.message ?: defaultErrorMessage)
-            is Result.Success -> fetchStateForSuccessfulCommentsRequest(response)
-        }
-        commentsStateCommunication.emit(state)
-    }
-
-    private fun fetchStateForSuccessfulCommentsRequest(
-        response: Result<List<CommentDomain>>,
-    ): CommentsUiState {
-        val postsDomain = response.data
-        return if (postsDomain != null) {
-            CommentsUiState.Content(postsDomain.map(commentDomainToCommentMapper::map))
-                .copy(shouldShowAddCommentDialog = shouldShowAddCommentDialog)
-        } else {
+        val response = fetchPostCommentsUseCase(postId)
+        if (response.isError()) commentsStateCommunication.emit(
             CommentsUiState.Error(response.message ?: defaultErrorMessage)
-        }
+        )
     }
 
-    private fun fetchStateForSuccessfulPostRequest(
-        response: Result<PostDomain>,
-    ): PostDetailUiState {
-        val postDomain = response.data
-        return if (postDomain != null) {
-            PostDetailUiState.Content(postDomainToPostMapper.map(postDomain, currentUser.id))
-        } else {
-            PostDetailUiState.Error(response.message ?: defaultErrorMessage)
+    private fun doLikeButtonClick(event: PostDetailEvent.OnLikeClick) {
+        screenModelScope.launchSafe {
+            if (event.isLiked) postLikeOrDislikeInteractor.unlikePost(
+                currentUser.id,
+                event.postId
+            )
+            else postLikeOrDislikeInteractor.likePost(
+                currentUser.id,
+                event.postId
+            )
         }
     }
 
@@ -150,23 +154,7 @@ class PostDetailViewModel(
                 commentId = state.editComment?.id ?: return@launchSafe,
                 commentText = state.editCommentValue
             )
-            handleEditCommentResult(result, state.editCommentValue)
-        }
-    }
-
-    private fun handleEditCommentResult(
-        result: Result<Int>,
-        newComment: String
-    ) {
-        if (result is Result.Error) {
-            return
-        }
-        commentsStateCommunication.update { currentState ->
-            if (currentState !is CommentsUiState.Content) return@update currentState
-            val comments = currentState.comments.toMutableList()
-            val editedCommentIndex = comments.indexOfFirst { it.id == result.data }
-            comments[editedCommentIndex] = comments[editedCommentIndex].copy(comment = newComment)
-            currentState.copy(comments = comments)
+            if (result.isError()) handleError(result.message)
         }
     }
 
@@ -178,51 +166,20 @@ class PostDetailViewModel(
                 postId = postId,
                 commentText = state.newCommentValue
             )
-            handleAddCommentResult(result)
+            if (result.isError()) handleError(result.message)
         }
         commentsStateCommunication.update { state.copy(newCommentValue = String()) }
     }
 
-    private fun handleAddCommentResult(result: Result<CommentDomain?>) {
-        if (result is Result.Error) {
-            return
-        }
-        val comment = commentDomainToCommentMapper.map(result.data ?: return)
-        commentsStateCommunication.update { currentState ->
-            val commentState = currentState as CommentsUiState.Content
-            val comments = commentState.comments.toMutableList()
-            comments.add(0, comment)
-            updateCommentCount(comments.size)
-            commentState.copy(comments = comments)
-        }
-    }
-
     private fun doDeleteCommentClick(event: PostDetailEvent.OnDeleteCommentClick) {
         screenModelScope.launchSafe {
-            val result = deleteCommentByIdUseCase(event.commentId)
-            if (result is Result.Error) {
-                return@launchSafe
-            }
-            commentsStateCommunication.update { currentState ->
-                val commentState = currentState as CommentsUiState.Content
-                val comments = commentState.comments.toMutableList()
-                val deletedCommentIndex = comments.indexOfFirst { it.id == result.data }
-                comments.removeAt(deletedCommentIndex)
-                updateCommentCount(comments.size)
-                commentState.copy(comments = comments)
-            }
-        }
-    }
-
-    private fun updateCommentCount(commentsCount: Int) {
-        mutableState.update { currentState ->
-            val postState = currentState as PostDetailUiState.Content
-            postState.copy(post = postState.post.copy(commentCount = commentsCount))
+            val result = deleteCommentByIdUseCase(postId, event.commentId)
+            if (result.isError()) handleError(result.message)
         }
     }
 
     private fun navigateProfileScreen(userId: Int) {
-        navigationScreenCommunication.emit(profileScreenProvider.profileScreen(userId))
+        navigationRouterFlowCommunication.emit(PostScreenRouter.UserProfile(userId))
     }
 
     private fun doOnCommentValueChange(event: PostDetailEvent.OnNewCommentValueChange) {
@@ -248,6 +205,11 @@ class PostDetailViewModel(
         commentsStateCommunication.emit(
             state.copy(shouldShowAddCommentDialog = event.isShow)
         )
+    }
+
+    private fun handleError(message: String?) {
+        val errorMessage = message ?: defaultErrorMessage
+        snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
     }
 
     override fun onDispose() {

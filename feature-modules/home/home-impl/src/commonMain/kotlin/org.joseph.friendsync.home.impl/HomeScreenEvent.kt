@@ -22,7 +22,10 @@ sealed class HomeScreenEvent {
 
     data object OnStoriesClick : HomeScreenEvent()
 
-    data object OnLikeClick : HomeScreenEvent()
+    data class OnLikeClick(
+        val postId: Int,
+        val isLiked: Boolean
+    ) : HomeScreenEvent()
 
     data class OnCommentClick(val postId: Int) : HomeScreenEvent()
 

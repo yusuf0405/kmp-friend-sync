@@ -7,6 +7,7 @@ import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.ImageByteArrayProvider
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Error
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Success
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
 import org.joseph.friendsync.core.ui.strings.MainResStrings
@@ -43,7 +44,7 @@ class AddPostViewModel(
 
     private fun addPost() {
         if (imageByteArrays.isEmpty() && mutableState.value.message == null) {
-            snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(MainResStrings.fill_in_at_least_one_field))
+            snackbarDisplay.showSnackbar(Error(MainResStrings.fill_in_at_least_one_field))
             return
         }
 
@@ -56,18 +57,19 @@ class AddPostViewModel(
                 userId = uiState.user.id
             )
             if (response.data != null) {
-                val result = postDomainToPostMapper.map(response.data!!)
-                println(result)
                 snackbarDisplay.showSnackbar(Success(MainResStrings.post_has_been_successfully_added))
                 clearData()
                 return@launchSafe
             }
-
+            if (response.isError()) {
+                snackbarDisplay.showSnackbar(Error(MainResStrings.default_error_message))
+            }
             setLoadingState(false)
         }
     }
 
-   private fun clearData() {
+    private fun clearData() {
+        imageByteArrays.clear()
         mutableState.update { state ->
             state.copy(
                 images = emptyList(),

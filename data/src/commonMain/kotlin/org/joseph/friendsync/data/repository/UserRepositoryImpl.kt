@@ -1,14 +1,19 @@
 package org.joseph.friendsync.data.repository
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
 import org.joseph.friendsync.common.util.filterNotNullOrError
 import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.data.local.dao.user.UserDao
 import org.joseph.friendsync.data.mappers.ProfileParamsCloudToProfileParamsDomainMapper
 import org.joseph.friendsync.data.mappers.ProfileParamsDomainToProfileParamsCloudMapper
 import org.joseph.friendsync.data.mappers.UserDetailCloudToUserDetailDomainMapper
+import org.joseph.friendsync.data.mappers.UserDetailLocalToUserDetailDomainMapper
 import org.joseph.friendsync.data.mappers.UserInfoCloudToUserInfoDomainMapper
 import org.joseph.friendsync.data.mappers.UserPersonalInfoCloudToUserPersonalInfoDomainMapper
 import org.joseph.friendsync.data.service.UserService
@@ -20,12 +25,14 @@ import org.joseph.friendsync.domain.repository.UserRepository
 
 internal class UserRepositoryImpl(
     private val userService: UserService,
+    private val userDao: UserDao,
+    private val dispatcherProvider: DispatcherProvider,
     private val userInfoCloudToUserInfoDomainMapper: UserInfoCloudToUserInfoDomainMapper,
     private val userDetailCloudToUserDetailDomainMapper: UserDetailCloudToUserDetailDomainMapper,
     private val userPersonalInfoCloudToUserPersonalInfoDomainMapper: UserPersonalInfoCloudToUserPersonalInfoDomainMapper,
     private val profileParamsCloudToProfileParamsDomainMapper: ProfileParamsCloudToProfileParamsDomainMapper,
     private val profileParamsDomainToProfileParamsCloudMapper: ProfileParamsDomainToProfileParamsCloudMapper,
-    private val dispatcherProvider: DispatcherProvider,
+    private val userDetailLocalToUserDetailDomainMapper: UserDetailLocalToUserDetailDomainMapper,
 ) : UserRepository {
 
     override suspend fun fetchOnboardingUsers(
@@ -42,9 +49,21 @@ internal class UserRepositoryImpl(
         userId: Int
     ): Result<UserDetailDomain> = withContext(dispatcherProvider.io) {
         callSafe {
-            userService.fetchUserById(userId).map { response ->
-                response.data?.let(userDetailCloudToUserDetailDomainMapper::map)
+            val response = userService.fetchUserById(userId).map { response ->
+                response.data
             }.filterNotNullOrError()
+
+            if (response.isSuccess()) {
+                response.data?.let { userDao.insertOrUpdateUser(it) }
+            }
+            response.map { it.let(userDetailCloudToUserDetailDomainMapper::map) }
+        }
+    }
+
+    override fun observeUserById(userId: Int): Flow<UserDetailDomain?> {
+        return userDao.getUserReactive(userId).map { userLocal ->
+            if (userLocal == null) return@map null
+            userDetailLocalToUserDetailDomainMapper.map(userLocal)
         }
     }
 

@@ -15,6 +15,7 @@ class FetchRecommendedPostsUseCase : KoinComponent {
         pageSize: Int,
         userId: Int
     ): Result<List<PostDomain>> {
+        repository.removeAllRecommendedPostsInLocalDb()
         return repository.fetchRecommendedPosts(page, pageSize, userId)
     }
 }

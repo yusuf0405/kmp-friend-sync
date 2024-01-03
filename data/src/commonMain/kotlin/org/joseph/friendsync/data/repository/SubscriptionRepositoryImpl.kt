@@ -1,44 +1,108 @@
 package org.joseph.friendsync.data.repository
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.common.util.Result.Companion.defaultError
 import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.callSafe
 import org.joseph.friendsync.common.util.filterNotNullOrError
 import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.data.local.dao.subscriptions.SubscriptionsDao
+import org.joseph.friendsync.data.local.dao.user.UserDao
+import org.joseph.friendsync.data.local.dao.user.current.CurrentUserDao
+import org.joseph.friendsync.data.mappers.SubscriptionCloudToSubscriptionDomainMapper
+import org.joseph.friendsync.data.mappers.SubscriptionLocalToSubscriptionDomainMapper
+import org.joseph.friendsync.data.models.subscription.SubscriptionCloud
 import org.joseph.friendsync.data.service.SubscriptionService
+import org.joseph.friendsync.domain.models.SubscriptionDomain
 import org.joseph.friendsync.domain.repository.SubscriptionRepository
+
+private const val UNKNOWN_USER_ID = -1
 
 internal class SubscriptionRepositoryImpl(
     private val service: SubscriptionService,
+    private val subscriptionsDao: SubscriptionsDao,
+    private val userDao: UserDao,
+    private val currentUserDao: CurrentUserDao,
     private val dispatcherProvider: DispatcherProvider,
+    private val subscriptionCloudToDomainMapper: SubscriptionCloudToSubscriptionDomainMapper,
+    private val subscriptionLocalToDomainMapper: SubscriptionLocalToSubscriptionDomainMapper
 ) : SubscriptionRepository {
 
     override suspend fun createSubscription(
         followerId: Int,
         followingId: Int
-    ): Result<Int> = withContext(dispatcherProvider.io) {
+    ): Result<Unit> = withContext(dispatcherProvider.io) {
         callSafe {
-            service.createSubscription(
+            val response = service.createSubscription(
                 followerId = followerId,
                 followingId = followingId
-            ).map { response ->
-                response.data?.followingCount
-            }.filterNotNullOrError()
+            )
+            if (response.isSuccess()) {
+                val postId = response.data?.data?.subscriptionId ?: return@callSafe defaultError()
+                if (postId == UNKNOWN_USER_ID) return@callSafe defaultError()
+                subscriptionsDao.insertOrUpdateSubscription(
+                    id = postId,
+                    followerId = followerId,
+                    followingId = followingId
+                )
+                userDao.incrementDecrementFollowersCount(followingId, true)
+                currentUserDao.incrementDecrementFollowingCount(followerId, true)
+            }
+            response.map {}
         }
     }
 
     override suspend fun cancelSubscription(
         followerId: Int,
         followingId: Int
-    ): Result<Int> = withContext(dispatcherProvider.io) {
+    ): Result<Unit> = withContext(dispatcherProvider.io) {
         callSafe {
-            service.cancelSubscription(
+            val response = service.cancelSubscription(
                 followerId = followerId,
                 followingId = followingId
-            ).map { response ->
-                response.data?.followingCount
-            }.filterNotNullOrError()
+            )
+            if (response.isSuccess()) {
+                val postId = response.data?.data?.subscriptionId ?: return@callSafe defaultError()
+                if (postId == UNKNOWN_USER_ID) return@callSafe defaultError()
+                subscriptionsDao.deleteSubscriptionById(id = postId.toLong())
+                userDao.incrementDecrementFollowersCount(followingId, false)
+                currentUserDao.incrementDecrementFollowingCount(followerId, false)
+            }
+            response.map {}
+        }
+    }
+
+    override suspend fun fetchUserSubscriptions(
+        userId: Int
+    ): Result<List<SubscriptionDomain>> = withContext(dispatcherProvider.io) {
+        callSafe {
+            when (val response = service.fetchUserSubscriptions(userId)) {
+                is Result.Success -> {
+                    val subscriptionsCloud = response.data?.data ?: emptyList()
+                    subscriptionsDao.insertOrUpdateSubscriptions(subscriptionsCloud)
+                    val subscriptions = subscriptionsCloud.map(subscriptionCloudToDomainMapper::map)
+                    Result.Success(subscriptions)
+                }
+
+                is Result.Error -> {
+                    defaultError()
+                }
+            }
+        }
+    }
+
+    override suspend fun removeAllSubscriptionsInLocalDB() {
+        subscriptionsDao.removeAllSubscriptions()
+    }
+
+    override fun observeUserSubscriptions(
+        userId: Int
+    ): Flow<List<SubscriptionDomain>> {
+        return subscriptionsDao.reactiveAllSubscriptions(userId.toLong()).map { subscriptions ->
+            subscriptions.map(subscriptionLocalToDomainMapper::map)
         }
     }
 
@@ -48,7 +112,6 @@ internal class SubscriptionRepositoryImpl(
         callSafe {
             service.fetchSubscriptionUserIds(userId).map { response ->
                 response.data?.userIds
-
             }.filterNotNullOrError()
         }
     }

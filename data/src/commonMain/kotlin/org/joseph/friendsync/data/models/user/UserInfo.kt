@@ -22,5 +22,5 @@ data class UserInfoCloud(
     @SerialName("avatar")
     val avatar: String?,
     @SerialName("releaseDate")
-    val releaseDate: Long,
+    val releaseDate: Long
 )

@@ -1,5 +1,6 @@
 package org.joseph.friendsync.post.impl
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
-import org.joseph.friendsync.core.ui.components.CommentsListItem
+import org.joseph.friendsync.core.ui.components.CommentItem
 import org.joseph.friendsync.core.ui.components.PostItem
 import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
@@ -39,7 +40,7 @@ import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.ui.components.models.Comment
 
 @Composable
-fun PostDetailScreen(
+internal fun PostDetailScreen(
     uiState: PostDetailUiState,
     commentsUiState: CommentsUiState,
     onEvent: (PostDetailEvent) -> Unit,
@@ -65,7 +66,7 @@ fun PostDetailScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun LoadedPostDetailScreen(
     uiState: PostDetailUiState.Content,
@@ -81,16 +82,16 @@ fun LoadedPostDetailScreen(
             .background(FriendSyncTheme.colors.backgroundPrimary),
     ) {
         item {
-            val post = uiState.post
+            val post = uiState.postMark.post
+            val isLiked = uiState.postMark.isLiked
             PostItem(
                 post = post,
-                imageUrls = post.imageUrls,
-                commentCount = post.commentCount,
-                likesCount = post.likedCount,
+                isLiked = isLiked,
                 onPostClick = {},
+                onLikeClick = { onEvent(PostDetailEvent.OnLikeClick(post.id, isLiked)) },
                 onProfileClick = { onEvent(PostDetailEvent.OnProfileClick(post.authorId)) },
+                onCommentClick = {},
                 isDetailScreen = true
-
             )
         }
         when (commentsUiState) {
@@ -114,12 +115,9 @@ fun LoadedPostDetailScreen(
                     key = { comment -> comment.id },
                 ) { comment ->
                     Divider()
-                    CommentsListItem(
-                        avatar = comment.user.avatar,
-                        name = comment.user.name,
-                        releaseDate = comment.releaseDate,
-                        commentText = comment.comment,
-                        isCurrentUserComment = comment.isCurrentUserComment,
+                    CommentItem(
+                        modifier = Modifier.animateItemPlacement(),
+                        comment = comment,
                         onProfileClick = { onEvent(PostDetailEvent.OnProfileClick(comment.user.id)) },
                         onEditClick = {
                             onEvent(PostDetailEvent.OnEditDialogChange(true, comment))

@@ -2,15 +2,18 @@ package org.joseph.friendsync.domain.usecases.user
 
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.domain.models.EditProfileParams
+import org.joseph.friendsync.domain.repository.CurrentUserRepository
 import org.joseph.friendsync.domain.repository.UserRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class EditUserWithParamsUseCase : KoinComponent {
 
-    private val repository by inject<UserRepository>()
+    private val userRepository by inject<UserRepository>()
+    private val currentUserRepository by inject<CurrentUserRepository>()
 
     suspend operator fun invoke(params: EditProfileParams): Result<EditProfileParams> {
-        return repository.editUserWithParams(params)
+        currentUserRepository.editUserWithParams(params)
+        return userRepository.editUserWithParams(params)
     }
 }

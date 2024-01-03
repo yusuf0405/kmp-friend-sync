@@ -1,0 +1,59 @@
+CREATE TABLE current_users (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    release_date INTEGER NOT NULL,
+    bio TEXT,
+    avatar TEXT,
+    profile_background TEXT,
+    education TEXT,
+    email TEXT,
+    followers_count INTEGER NOT NULL,
+    following_count INTEGER NOT NULL
+);
+
+-- query to get all users
+ allUsers:
+  SELECT * FROM current_users ORDER BY release_date DESC;
+
+-- query to get all users reactively
+ reactiveAllUsers:
+  SELECT * FROM current_users ORDER BY release_date DESC;
+
+-- query to get all users with a search condition
+searchUsers:
+  SELECT * FROM current_users WHERE first_name LIKE '%' || ? || '%' AND last_name LIKE '%' || ? || '%';
+
+-- query to get user by ID
+ userById:
+  SELECT * FROM current_users WHERE id = ?;
+
+-- New query to delete user by ID
+ deleteUserById:
+  DELETE FROM current_users WHERE id = ?;
+
+-- query to update user information by ID
+updateUserById:
+  UPDATE current_users SET
+    first_name = ?,
+    last_name = ?,
+    email = ?,
+    bio = ?,
+    education = ?,
+    avatar = ?
+  WHERE id = ?;
+
+-- query to increment or decrement followers count for a user
+incrementDecrementFollowersCount:
+  UPDATE current_users SET followers_count = followers_count + ? WHERE id = ?;
+
+-- query to increment or decrement following count for a user
+incrementDecrementFollowingCount:
+  UPDATE current_users SET following_count = following_count + ? WHERE id = ?;
+
+-- query to insert or update a user
+ insertOrUpdateUser:
+  INSERT OR REPLACE INTO current_users (
+    id, first_name,last_name, release_date, followers_count, following_count, bio,
+    avatar, profile_background, education, email
+  ) VALUES (?, ?, ?, ?,?, ?, ?,?,?,?,?);

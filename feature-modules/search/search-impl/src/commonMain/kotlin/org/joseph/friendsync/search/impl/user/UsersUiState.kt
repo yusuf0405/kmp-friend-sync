@@ -1,6 +1,7 @@
 package org.joseph.friendsync.search.impl.user
 
 import org.joseph.friendsync.ui.components.models.user.UserInfo
+import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 
 sealed class UsersUiState {
 
@@ -15,7 +16,7 @@ sealed class UsersUiState {
     ) : UsersUiState()
 
     data class Loaded(
-        val users: List<UserInfo>,
+        val users: List<UserInfoMark>,
         val isPaging: Boolean = false,
     ) : UsersUiState()
 }
