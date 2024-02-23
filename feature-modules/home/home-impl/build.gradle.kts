@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
-    id("com.android.library")
+    alias(libs.plugins.android.library)
 }
 
 kotlin {

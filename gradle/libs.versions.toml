@@ -1,17 +1,17 @@
 [versions]
-
 android-minSdk = "24"
 android-compileSdk = "34"
 android-targetSdk = "34"
 kotlinCompilerExtensionVersion = "1.5.4"
+jvmTarget = "17"
 
 coreSplashscreen = "1.0.1"
-kotlin = "1.9.21"
-agp = "8.2.0"
-compose = "1.5.11"
+kotlin = "1.9.22"
+agp = "8.2.2"
+compose = "1.5.12"
 androidx-appcompat = "1.6.1"
 androidx-activityCompose = "1.8.2"
-compose-uitooling = "1.5.4"
+compose-uitooling = "1.6.2"
 libres = "1.2.1"
 voyager = "1.0.0-rc09"
 composeImageLoader = "1.7.0"
@@ -22,8 +22,8 @@ moko-mvvm = "0.16.1"
 moko-paging = "0.7.1"
 ktor = "2.3.7"
 composeIcons = "1.1.0"
-kotlinx-serialization = "1.6.1"
-kotlinx-datetime = "0.4.0"
+kotlinx-serialization = "1.6.2"
+kotlinx-datetime = "0.5.0"
 multiplatformSettings = "1.1.0"
 koin = "3.5.0"
 koinCompose = "1.1.0"
@@ -33,7 +33,6 @@ androidx-espresso-core = "3.5.1"
 sql-delight = "2.0.0"
 
 [libraries]
-
 # Test
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -61,6 +60,8 @@ multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", vers
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatformSettings" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
+
+cupertino = { module = "io.github.alexzhirkevich:cupertino-adaptive", version = "0.1.0-alpha03" }
 
 #Navigation
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
@@ -94,13 +95,11 @@ koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComp
 paging_compose_common = { module = "app.cash.paging:paging-compose-common", version = "3.3.0-alpha02-0.4.0" }
 paging_common = { module = "app.cash.paging:paging-common", version = "3.3.0-alpha02-0.4.0" }
 
-kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
-
 [plugins]
-
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 libres = { id = "io.github.skeptick.libres", version.ref = "libres" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
