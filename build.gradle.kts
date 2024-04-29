@@ -1,22 +1,10 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     alias(libs.plugins.multiplatform).apply(false)
     alias(libs.plugins.compose).apply(false)
     alias(libs.plugins.android.application).apply(false)
     alias(libs.plugins.android.library).apply(false)
     alias(libs.plugins.libres).apply(false)
-    alias(libs.plugins.buildConfig).apply(false)
     alias(libs.plugins.kotlinx.serialization).apply(false)
     alias(libs.plugins.sqldelight).apply(false)
-}
-
-subprojects {
-    afterEvaluate {
-        tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17.toString()
-            }
-        }
-    }
+    alias(libs.plugins.buildkonfig).apply(false)
 }

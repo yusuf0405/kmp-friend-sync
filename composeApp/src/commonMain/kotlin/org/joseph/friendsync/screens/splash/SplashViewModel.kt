@@ -1,32 +1,36 @@
 package org.joseph.friendsync.screens.splash
 
-import cafe.adriel.voyager.core.screen.Screen
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharedFlow
-import org.joseph.friendsync.app.LoginNavGraph
-import org.joseph.friendsync.app.MainNavGraph
 import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.navigationParams
+import org.joseph.friendsync.di.DependencyProvider.authFeature
+import org.joseph.friendsync.di.DependencyProvider.homeFeature
+import org.joseph.friendsync.screens.splash.SplashScreenDestination.splashRoute
 
 private const val DEFAULT_SPLASH_SCREEN_DELAY_TIME = 5_000L
 
 class SplashViewModel(
     private val userDataStore: UserDataStore,
-    private val navigationScreenCommunication: NavigationScreenStateFlowCommunication
+    private val navigationScreenCommunication: NavigationRouteFlowCommunication
 ) : ViewModel() {
-
-    val navigationScreenFlow: SharedFlow<Screen?> = navigationScreenCommunication.observe()
 
     init {
         viewModelScope.launchSafe {
             val isUserAuthorized = userDataStore.isUserAuthorized()
             delay(DEFAULT_SPLASH_SCREEN_DELAY_TIME)
             if (isUserAuthorized) {
-                navigationScreenCommunication.emit(MainNavGraph())
+                val navigationParams = navigationParams(homeFeature()) {
+                    popUpTo(splashRoute) { inclusive = true }
+                }
+                navigationScreenCommunication.emit(navigationParams)
             } else {
-                navigationScreenCommunication.emit(LoginNavGraph())
+                val navigationParams = navigationParams(authFeature()) {
+                    popUpTo(splashRoute) { inclusive = true }
+                }
+                navigationScreenCommunication.emit(navigationParams)
             }
         }
     }

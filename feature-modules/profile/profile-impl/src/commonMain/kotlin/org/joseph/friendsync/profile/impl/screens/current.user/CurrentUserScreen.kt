@@ -20,6 +20,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,34 +40,36 @@ import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
 import org.joseph.friendsync.profile.impl.models.ProfileTab
 import org.joseph.friendsync.profile.impl.screens.current.user.tabs.posts.CurrentUserPostsUiState
 import org.joseph.friendsync.profile.impl.screens.current.user.tabs.posts.CurrentUserPostsScreen
+import org.joseph.friendsync.core.ui.extensions.collectStateWithLifecycle
 
 @Composable
-fun CurrentUserScreen(
-    uiState: CurrentUserUiState,
-    postsUiState: CurrentUserPostsUiState,
+internal fun CurrentUserScreen(
+    viewModel: CurrentUserViewModel,
     hasUserSubscription: Boolean,
-    onEvent: (CurrentUserEvent) -> Unit
 ) {
     val modifier = Modifier
         .fillMaxSize()
         .background(FriendSyncTheme.colors.backgroundPrimary)
+
+    val uiState by viewModel.state.collectStateWithLifecycle()
+    val postsUiState by viewModel.postsUiStateFlow.collectStateWithLifecycle()
 
     when (uiState) {
         is CurrentUserUiState.Initial -> Unit
         is CurrentUserUiState.Loading -> LoadingScreen(modifier = modifier)
         is CurrentUserUiState.Error -> ErrorScreen(
             modifier = modifier,
-            errorMessage = uiState.errorMessage,
+            errorMessage = (uiState as CurrentUserUiState.Error).errorMessage,
             onClick = {}
         )
 
         is CurrentUserUiState.Content -> {
             LoadedCurrentUserScreen(
-                uiState = uiState,
+                uiState = uiState as CurrentUserUiState.Content,
                 postsUiState = postsUiState,
                 hasUserSubscription = hasUserSubscription,
                 modifier = modifier,
-                onEvent = onEvent
+                onEvent = viewModel::onEvent
             )
         }
     }

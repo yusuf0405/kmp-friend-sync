@@ -5,7 +5,7 @@ import org.joseph.friendsync.ui.components.models.Post
 import org.joseph.friendsync.ui.components.models.PostMark
 
 @Immutable
-sealed class HomeUiState {
+internal sealed class HomeUiState {
 
     data object Initial : HomeUiState()
 

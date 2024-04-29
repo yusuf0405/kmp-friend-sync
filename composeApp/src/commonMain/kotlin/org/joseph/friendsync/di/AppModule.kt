@@ -1,14 +1,12 @@
 package org.joseph.friendsync.di
 
 import org.joseph.friendsync.add.post.impl.di.addPostModule
-import org.joseph.friendsync.app.CommonViewModel
+import org.joseph.friendsync.app.ApplicationViewModel
 import org.joseph.friendsync.auth.impl.di.authScreenModule
-import org.joseph.friendsync.chat.impl.chat_list.ChatListViewModel
+import org.joseph.friendsync.chat.impl.list.ChatListViewModel
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.core.ui.common.communication.BooleanStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.EventSharedFlowCommunication
-import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
-import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.PostsStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
@@ -18,8 +16,8 @@ import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksMana
 import org.joseph.friendsync.core.ui.common.observers.post.PostsObservers
 import org.joseph.friendsync.core.ui.common.observers.post.PostsObserversImpl
 import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayAdapter
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayerAdapter
 import org.joseph.friendsync.core.ui.snackbar.SnackbarQueue
 import org.joseph.friendsync.data.local.user.UserDataStoreImpl
 import org.joseph.friendsync.home.impl.di.homeScreenModule
@@ -41,12 +39,12 @@ fun appModules() = listOf(
     profileScreenModule,
     searchModule,
     uiComponentsModule,
-    addPostModule
+    addPostModule,
+    featureApiModule,
+    featureDependencyModule
 )
 
 private val communicationModule = module {
-    factory<NavigationScreenStateFlowCommunication> { NavigationScreenStateFlowCommunication.Default() }
-    single<GlobalNavigationFlowCommunication> { GlobalNavigationFlowCommunication.Default() }
     factory<BooleanStateFlowCommunication> { BooleanStateFlowCommunication.Default() }
     factory<EventSharedFlowCommunication> { EventSharedFlowCommunication.Default() }
     factory<PostsStateFlowCommunication> { PostsStateFlowCommunication.Default() }
@@ -54,16 +52,16 @@ private val communicationModule = module {
 }
 
 private val viewModelsModule = module {
-    single { CommonViewModel(get(), get()) }
-    single { ChatListViewModel(get()) }
+    single { ApplicationViewModel(get(), get()) }
+    single { ChatListViewModel() }
     factory { SplashViewModel(get(), get()) }
 }
 
 private val managersModule = module {
     single<UserDataStore> { UserDataStoreImpl(get()) }
-    single<SnackbarDisplayAdapter> { SnackbarDisplayAdapter }
-    single<SnackbarQueue> { SnackbarDisplayAdapter }
-    single<SnackbarDisplay> { SnackbarDisplayAdapter }
+    single<SnackbarDisplayerAdapter> { SnackbarDisplayerAdapter }
+    single<SnackbarQueue> { SnackbarDisplayerAdapter }
+    single<SnackbarDisplayer> { SnackbarDisplayerAdapter }
     factory<PostMarksManager> { PostMarksManagerImpl(get(), get(), get()) }
     factory<UserMarksManager> { UserMarksManagerImpl(get(), get()) }
 }
@@ -72,4 +70,3 @@ private val useCasesModule = module {
     factory<PostLikeOrDislikeInteractor> { PostLikeOrDislikeInteractor() }
     factory<PostsObservers> { PostsObserversImpl(get(), get()) }
 }
-

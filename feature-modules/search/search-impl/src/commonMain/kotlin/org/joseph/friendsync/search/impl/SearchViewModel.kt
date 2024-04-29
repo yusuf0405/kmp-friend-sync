@@ -1,14 +1,13 @@
 package org.joseph.friendsync.search.impl
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -20,14 +19,17 @@ import org.joseph.friendsync.common.user.UserPreferences
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.common.util.coroutines.onError
+import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.common.extensions.createMutableSharedFlowAsLiveData
 import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
 import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksManager
 import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
 import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.domain.usecases.categories.FetchAllCategoriesUseCase
 import org.joseph.friendsync.domain.usecases.post.SearchPostsByQueryUseCase
@@ -36,8 +38,7 @@ import org.joseph.friendsync.domain.usecases.user.SearchUsersByQueryUseCase
 import org.joseph.friendsync.search.impl.category.CategoryType
 import org.joseph.friendsync.search.impl.category.CategoryType.Companion.findCategoryTypeByValue
 import org.joseph.friendsync.search.impl.category.CategoryTypeCommunication
-import org.joseph.friendsync.search.impl.navigation.SearchNavigationFlowCommunication
-import org.joseph.friendsync.search.impl.navigation.SearchScreenRouter
+import org.joseph.friendsync.search.impl.di.SearchFeatureDependencies
 import org.joseph.friendsync.search.impl.post.PostUiState
 import org.joseph.friendsync.search.impl.post.PostUiStateCommunication
 import org.joseph.friendsync.search.impl.user.UserUiStateCommunication
@@ -57,6 +58,7 @@ private const val PAGE = 1
 private const val PAGE_SIZE = 100
 
 internal class SearchViewModel(
+    private val dependencies: SearchFeatureDependencies,
     private val userDataStore: UserDataStore,
     private val searchPostsByQueryUseCase: SearchPostsByQueryUseCase,
     private val searchUsersByQueryUseCase: SearchUsersByQueryUseCase,
@@ -67,18 +69,17 @@ internal class SearchViewModel(
     private val postLikeOrDislikeInteractor: PostLikeOrDislikeInteractor,
     private val categoryDomainToCategoryMapper: CategoryDomainToCategoryMapper,
     private val userInfoMapper: UserInfoDomainToUserInfoMapper,
-    private val snackbarDisplay: SnackbarDisplay,
+    private val snackbarDisplayer: SnackbarDisplayer,
     private val postUiStateCommunication: PostUiStateCommunication,
     private val userUiStateCommunication: UserUiStateCommunication,
     private val categoryTypeCommunication: CategoryTypeCommunication,
     private val usersStateFlowCommunication: UsersStateFlowCommunication,
-    private val navigationRouterFlowCommunication: SearchNavigationFlowCommunication,
-) : StateScreenModel<SearchUiState>(SearchUiState.Initial), KoinComponent {
+    private val navigationCommunication: NavigationRouteFlowCommunication,
+) : FriendSyncViewModel<SearchUiState>(SearchUiState.Initial), KoinComponent {
 
-    val postUiStateFlow = postUiStateCommunication.observe()
-    val userUiStateFlow = userUiStateCommunication.observe()
-    val categoryTypeFlow = categoryTypeCommunication.observe()
-    val navigationRouterFlow = navigationRouterFlowCommunication.observe().distinctUntilChanged()
+    val postUiStateFlow: StateFlow<PostUiState> = postUiStateCommunication.observe()
+    val userUiStateFlow: StateFlow<UsersUiState> = userUiStateCommunication.observe()
+    val categoryTypeFlow: StateFlow<CategoryType> = categoryTypeCommunication.observe()
 
     private val postsFlow = createMutableSharedFlowAsLiveData<List<Post>>()
     private val usersFlow = usersStateFlowCommunication.observe()
@@ -86,11 +87,11 @@ internal class SearchViewModel(
 
     private val searchQueryFlow = loadedUiStateFlow
         .map { it.searchQueryValue }
-        .stateIn(screenModelScope, SharingStarted.Lazily, String())
+        .stateIn(viewModelScope, SharingStarted.Lazily, String())
 
     private val selectedCategoryFlow = loadedUiStateFlow
         .map { it.selectedCategory }
-        .stateIn(screenModelScope, SharingStarted.Lazily, Category.unknown)
+        .stateIn(viewModelScope, SharingStarted.Lazily, Category.unknown)
 
     private var allDataJob: Job? = null
     private var searchDataJob: Job? = null
@@ -103,17 +104,17 @@ internal class SearchViewModel(
         usersFlow.flatMapLatest { userMarksManager.observeUsersWithMarks(it) }
             .onEach(::handleUsersState)
             .onError(::handleError)
-            .launchIn(screenModelScope)
+            .launchIn(viewModelScope)
 
         searchQueryFlow.debounce(SEARCH_DEBOUNCE)
             .onEach(::startSearchItems)
             .onError(::handleError)
-            .launchIn(screenModelScope)
+            .launchIn(viewModelScope)
 
         selectedCategoryFlow
             .onEach(::handleSelectedCategory)
             .onError(::handleError)
-            .launchIn(screenModelScope)
+            .launchIn(viewModelScope)
 
         combine(
             searchQueryFlow.debounce(SEARCH_DEBOUNCE),
@@ -125,7 +126,7 @@ internal class SearchViewModel(
             handlePostsState(postMarks, category)
         }.onError {
             mutableState.tryEmit(SearchUiState.Error(defaultErrorMessage))
-        }.launchIn(screenModelScope)
+        }.launchIn(viewModelScope)
     }
 
 
@@ -154,7 +155,7 @@ internal class SearchViewModel(
         }
     }
 
-    private fun loadAllData(): Job = screenModelScope.launchSafe(
+    private fun loadAllData(): Job = viewModelScope.launchSafe(
         onError = { setUiStateToError(MainResStrings.default_error_message) }
     ) {
         fetchCurrentUser()
@@ -174,7 +175,7 @@ internal class SearchViewModel(
     private fun startSearchItems(query: String) {
         cancelSearchJobs()
         if (query.isNotEmpty()) {
-            searchDataJob = screenModelScope.launchSafe {
+            searchDataJob = viewModelScope.launchSafe {
                 val usersDeferred = async { searchUsersByQuery(query) }
                 val postsDeferred = async { searchPostsByQuery(query) }
                 usersDeferred.await()
@@ -221,7 +222,6 @@ internal class SearchViewModel(
             is Result.Error -> {
                 val message = response.message
                 setUiStateToError(message)
-                showErrorSnackbar(message)
             }
         }
     }
@@ -229,8 +229,7 @@ internal class SearchViewModel(
     private fun doFollowButtonClick(event: SearchScreenEvent.OnFollowButtonClick) {
         val followerId = currentUser.id
         val followingId = event.userId
-        println("event.isFollow = ${event.isFollow}")
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             if (event.isFollow) subscriptionsInteractor.cancelSubscription(
                 followerId, followingId
             ).apply { if (isError()) showErrorSnackbar(message) }
@@ -247,20 +246,17 @@ internal class SearchViewModel(
     }
 
     private fun navigatePostScreen(postId: Int, shouldShowAddCommentDialog: Boolean = false) {
-        navigationRouterFlowCommunication.emit(
-            SearchScreenRouter.PostDetails(
-                postId,
-                shouldShowAddCommentDialog
-            )
+        navigationCommunication.emit(
+            navigationParams(dependencies.getPostRoute(postId, shouldShowAddCommentDialog))
         )
     }
 
     private fun navigateProfileScreen(userId: Int) {
-        navigationRouterFlowCommunication.emit(SearchScreenRouter.UserProfile(userId))
+        navigationCommunication.emit(navigationParams(dependencies.getProfileRoute(userId)))
     }
 
     private fun doLikeButtonClick(event: SearchScreenEvent.OnLikeClick) {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             if (event.isLiked) postLikeOrDislikeInteractor.unlikePost(
                 currentUser.id,
                 event.postId
@@ -280,7 +276,7 @@ internal class SearchViewModel(
 
     private fun showErrorSnackbar(message: String?) {
         val errorMessage = message ?: MainResStrings.default_error_message
-        snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
     }
 
     private fun setUiStateByReceivedCategories(categories: List<Category>) {
@@ -295,7 +291,7 @@ internal class SearchViewModel(
     }
 
     private fun navigateEditProfile() {
-        navigationRouterFlowCommunication.emit(SearchScreenRouter.EditProfile)
+        navigationCommunication.emit(navigationParams(dependencies.getEditProfileRoute()))
     }
 
     private fun handleUsersState(users: List<UserInfoMark>) {
@@ -318,9 +314,9 @@ internal class SearchViewModel(
         mutableState.tryEmit(SearchUiState.Error(errorMessage))
     }
 
-    override fun onDispose() {
+    override fun onCleared() {
         allDataJob = null
         searchDataJob = null
-        super.onDispose()
+        super.onCleared()
     }
 }

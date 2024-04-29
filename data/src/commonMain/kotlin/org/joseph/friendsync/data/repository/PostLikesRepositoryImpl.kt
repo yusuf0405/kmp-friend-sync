@@ -51,30 +51,28 @@ internal class PostLikesRepositoryImpl(
         posts.map(likedPostLocalToLikedPostDomainMapper::map)
     }
 
-    override suspend fun likePost(
-        userId: Int,
-        postId: Int
-    ): Result<Unit> = withContext(dispatcherProvider.io) {
-        val result = callSafe { likePostService.likePost(userId, postId) }
-        val likedPostCloud = result.data?.data
-        if (result.isSuccess() && likedPostCloud != null) {
-            recommendedPostDao.incrementDecrementLikesCount(postId, true)
-            postDao.incrementDecrementLikesCount(postId, true)
-            likePostDao.insertOrUpdateLikesPost(likedPostCloud)
+    override suspend fun likePost(userId: Int, postId: Int): Result<Unit> {
+        return withContext(dispatcherProvider.io) {
+            val result = callSafe { likePostService.likePost(userId, postId) }
+            val likedPostCloud = result.data?.data
+            if (result.isSuccess() && likedPostCloud != null) {
+                recommendedPostDao.incrementDecrementLikesCount(postId, true)
+                postDao.incrementDecrementLikesCount(postId, true)
+                likePostDao.insertOrUpdateLikesPost(likedPostCloud)
+            }
+            result.map { }
         }
-        result.map { }
     }
 
-    override suspend fun unlikePost(
-        userId: Int,
-        postId: Int
-    ): Result<Unit> = withContext(dispatcherProvider.io) {
-        val result = callSafe { likePostService.unlikePost(userId, postId) }
-        if (result.isSuccess()) {
-            recommendedPostDao.incrementDecrementLikesCount(postId, false)
-            postDao.incrementDecrementLikesCount(postId, false)
-            likePostDao.deleteLikesPostById(postId.toLong())
+    override suspend fun unlikePost(userId: Int, postId: Int): Result<Unit> {
+        return withContext(dispatcherProvider.io) {
+            val result = callSafe { likePostService.unlikePost(userId, postId) }
+            if (result.isSuccess()) {
+                recommendedPostDao.incrementDecrementLikesCount(postId, false)
+                postDao.incrementDecrementLikesCount(postId, false)
+                likePostDao.deleteLikesPostById(postId.toLong())
+            }
+            result.map { }
         }
-        result.map { }
     }
 }

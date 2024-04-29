@@ -22,9 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
@@ -41,11 +43,11 @@ import org.joseph.friendsync.ui.components.models.Comment
 
 @Composable
 internal fun PostDetailScreen(
-    uiState: PostDetailUiState,
-    commentsUiState: CommentsUiState,
-    onEvent: (PostDetailEvent) -> Unit,
+    viewModel: PostDetailViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val commentsUiState by viewModel.commentsUiState.collectAsStateWithLifecycle()
 
     when (uiState) {
         is PostDetailUiState.Initial -> Unit
@@ -53,14 +55,14 @@ internal fun PostDetailScreen(
         is PostDetailUiState.Loading -> LoadingScreen()
 
         is PostDetailUiState.Error -> ErrorScreen(
-            errorMessage = uiState.message,
-            onClick = { onEvent(PostDetailEvent.RefreshPostData) }
+            errorMessage = (uiState as PostDetailUiState.Error).message,
+            onClick = { viewModel.onEvent(PostDetailEvent.RefreshPostData) }
         )
 
         is PostDetailUiState.Content -> LoadedPostDetailScreen(
-            uiState = uiState,
+            uiState = uiState as PostDetailUiState.Content,
             commentsUiState = commentsUiState,
-            onEvent = onEvent,
+            onEvent = viewModel::onEvent,
             modifier = modifier,
         )
     }

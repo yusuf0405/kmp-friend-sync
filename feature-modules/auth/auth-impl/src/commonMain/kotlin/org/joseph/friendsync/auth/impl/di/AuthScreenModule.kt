@@ -12,11 +12,11 @@ val authScreenModule = module {
     factory { LoginWithEmailViewModel(get(), get()) }
     factory { params ->
         LoginViewModel(
-            email = params.get(), get(), get(), get(), get(), get(), get()
+            email = params.get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
     factory { params ->
-        SignUpViewModel(email = params.get(), get(), get(), get(), get(), get(), get(), get())
+        SignUpViewModel(email = params.get(), get(), get(), get(), get(), get(), get(), get(), get())
     }
 
     factory<EmailValidation> { EmailValidation.Default() }

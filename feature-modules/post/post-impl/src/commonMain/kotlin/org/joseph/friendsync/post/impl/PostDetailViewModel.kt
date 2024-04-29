@@ -1,7 +1,6 @@
 package org.joseph.friendsync.post.impl
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -11,11 +10,15 @@ import org.joseph.friendsync.common.user.UserPreferences
 import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.common.util.coroutines.onError
+import org.joseph.friendsync.common.util.onFailure
+import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
 import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
 import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.domain.usecases.comments.AddCommentToPostUseCase
 import org.joseph.friendsync.domain.usecases.comments.DeleteCommentByIdUseCase
@@ -24,14 +27,14 @@ import org.joseph.friendsync.domain.usecases.comments.FetchPostCommentsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
 import org.joseph.friendsync.post.impl.comment.CommentsStateStateFlowCommunication
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
-import org.joseph.friendsync.post.impl.navigation.PostNavigationFlowCommunication
-import org.joseph.friendsync.post.impl.navigation.PostScreenRouter
+import org.joseph.friendsync.post.impl.di.PostFeatureDependencies
 import org.joseph.friendsync.ui.components.mappers.CommentDomainToCommentMapper
 import org.koin.core.component.KoinComponent
 
 internal class PostDetailViewModel(
     private val postId: Int,
     private val shouldShowAddCommentDialog: Boolean,
+    private val postFeatureDependencies: PostFeatureDependencies,
     private val userDataStore: UserDataStore,
     private val fetchPostByIdUseCase: FetchPostByIdUseCase,
     private val fetchPostCommentsUseCase: FetchPostCommentsUseCase,
@@ -42,22 +45,20 @@ internal class PostDetailViewModel(
     private val postMarksManager: PostMarksManager,
     private val commentDomainToCommentMapper: CommentDomainToCommentMapper,
     private val commentsStateCommunication: CommentsStateStateFlowCommunication,
-    private val navigationRouterFlowCommunication: PostNavigationFlowCommunication,
-    private val snackbarDisplay: SnackbarDisplay,
-) : StateScreenModel<PostDetailUiState>(PostDetailUiState.Initial), KoinComponent {
+    private val navigationCommunication: NavigationRouteFlowCommunication,
+    private val snackbarDisplayer: SnackbarDisplayer,
+) : FriendSyncViewModel<PostDetailUiState>(PostDetailUiState.Initial), KoinComponent {
 
     val commentsUiState: StateFlow<CommentsUiState> = commentsStateCommunication.observe()
-    val navigationRouterFlow = navigationRouterFlowCommunication.observe()
 
     private var currentUser = UserPreferences.unknown
-
     private var defaultErrorMessage = MainResStrings.default_error_message
 
     private var postDataJob: Job? = null
     private var commentsDataJob: Job? = null
 
     init {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             currentUser = awaitFetchCurrentUser().await()
             postDataJob = fetchPostById()
             commentsDataJob = fetchPostComments()
@@ -68,7 +69,7 @@ internal class PostDetailViewModel(
             val state = if (postMark != null) PostDetailUiState.Content(postMark)
             else PostDetailUiState.Error(defaultErrorMessage)
             mutableState.tryEmit(state)
-        }.launchIn(screenModelScope)
+        }.launchIn(viewModelScope)
 
         fetchPostCommentsUseCase.observeAllPostComments(postId).onEach { commentsDomain ->
             commentsStateCommunication.emit(
@@ -78,7 +79,7 @@ internal class PostDetailViewModel(
                 )
             )
         }.onError { commentsStateCommunication.emit(CommentsUiState.Error(defaultErrorMessage)) }
-            .launchIn(screenModelScope)
+            .launchIn(viewModelScope)
     }
 
     private fun refreshPostData() {
@@ -111,7 +112,7 @@ internal class PostDetailViewModel(
         userDataStore.fetchCurrentUser()
     }
 
-    private fun fetchPostById() = screenModelScope.launchSafe {
+    private fun fetchPostById(): Job = viewModelScope.launchSafe {
         mutableState.tryEmit(PostDetailUiState.Loading)
         val response = fetchPostByIdUseCase(postId)
         if (response.isError()) {
@@ -119,7 +120,7 @@ internal class PostDetailViewModel(
         }
     }
 
-    private fun fetchPostComments() = screenModelScope.launchSafe {
+    private fun fetchPostComments() = viewModelScope.launchSafe {
         commentsStateCommunication.emit(CommentsUiState.Loading)
         val response = fetchPostCommentsUseCase(postId)
         if (response.isError()) commentsStateCommunication.emit(
@@ -128,15 +129,18 @@ internal class PostDetailViewModel(
     }
 
     private fun doLikeButtonClick(event: PostDetailEvent.OnLikeClick) {
-        screenModelScope.launchSafe {
-            if (event.isLiked) postLikeOrDislikeInteractor.unlikePost(
-                currentUser.id,
-                event.postId
-            )
-            else postLikeOrDislikeInteractor.likePost(
-                currentUser.id,
-                event.postId
-            )
+        viewModelScope.launchSafe(onError = { handleError(null) }) {
+            if (event.isLiked) {
+                postLikeOrDislikeInteractor.unlikePost(
+                    currentUser.id,
+                    event.postId
+                ).onFailure { handleError(null) }
+            } else {
+                postLikeOrDislikeInteractor.likePost(
+                    currentUser.id,
+                    event.postId
+                ).onFailure { handleError(null) }
+            }
         }
     }
 
@@ -149,7 +153,7 @@ internal class PostDetailViewModel(
 
     private fun doEditCommentClick() {
         val state = commentsUiState.value as? CommentsUiState.Content ?: return
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             val result = editCommentUseCase(
                 commentId = state.editComment?.id ?: return@launchSafe,
                 commentText = state.editCommentValue
@@ -160,7 +164,7 @@ internal class PostDetailViewModel(
 
     private fun doAddCommentClick() {
         val state = commentsUiState.value as? CommentsUiState.Content ?: return
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             val result = addCommentToPostUseCase(
                 userId = currentUser.id,
                 postId = postId,
@@ -172,14 +176,14 @@ internal class PostDetailViewModel(
     }
 
     private fun doDeleteCommentClick(event: PostDetailEvent.OnDeleteCommentClick) {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             val result = deleteCommentByIdUseCase(postId, event.commentId)
             if (result.isError()) handleError(result.message)
         }
     }
 
     private fun navigateProfileScreen(userId: Int) {
-        navigationRouterFlowCommunication.emit(PostScreenRouter.UserProfile(userId))
+        navigationCommunication.emit(navigationParams(postFeatureDependencies.getProfileRoute(userId)))
     }
 
     private fun doOnCommentValueChange(event: PostDetailEvent.OnNewCommentValueChange) {
@@ -209,12 +213,12 @@ internal class PostDetailViewModel(
 
     private fun handleError(message: String?) {
         val errorMessage = message ?: defaultErrorMessage
-        snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
     }
 
-    override fun onDispose() {
+    override fun onCleared() {
         commentsDataJob?.cancel()
         postDataJob?.cancel()
-        super.onDispose()
+        super.onCleared()
     }
 }

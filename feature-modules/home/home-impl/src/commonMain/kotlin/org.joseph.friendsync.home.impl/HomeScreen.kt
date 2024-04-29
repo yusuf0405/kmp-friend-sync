@@ -15,7 +15,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.common.animation.AnimateFade
@@ -32,33 +34,34 @@ import org.joseph.friendsync.ui.components.models.Stories
 import org.joseph.friendsync.ui.components.models.fakeStories
 
 @Composable
-fun HomeScreen(
-    uiState: HomeUiState,
-    onBoardingUiState: OnBoardingUiState,
-    onEvent: (HomeScreenEvent) -> Unit,
+internal fun HomeScreen(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val onBoardingUiState: OnBoardingUiState by viewModel.onBoardingUiState.collectAsStateWithLifecycle()
+    val uiState: HomeUiState by viewModel.state.collectAsStateWithLifecycle()
+
     when (uiState) {
         is HomeUiState.Initial -> LoadingScreen()
 
         is HomeUiState.Loading -> LoadingScreen()
 
         is HomeUiState.Error -> ErrorScreen(
-            errorMessage = uiState.message,
-            onClick = { onEvent(HomeScreenEvent.RefreshAllData) }
+            errorMessage = (uiState as HomeUiState.Error).message,
+            onClick = { viewModel.onEvent(HomeScreenEvent.RefreshAllData) }
         )
 
         is HomeUiState.Content -> LoadedHomeScreen(
-            uiState = uiState,
+            uiState = uiState as HomeUiState.Content,
             onBoardingUiState = onBoardingUiState,
-            onEvent = onEvent,
+            onEvent = viewModel::onEvent,
             modifier = modifier
         )
     }
 }
 
 @Composable
-fun LoadedHomeScreen(
+internal fun LoadedHomeScreen(
     uiState: HomeUiState.Content,
     onBoardingUiState: OnBoardingUiState,
     onEvent: (HomeScreenEvent) -> Unit,
@@ -137,7 +140,7 @@ fun LoadedHomeScreen(
 }
 
 @Composable
-fun StoriesList(
+internal fun StoriesList(
     storiesList: List<Stories>,
     onStoriesClick: () -> Unit,
     modifier: Modifier = Modifier

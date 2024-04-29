@@ -1,5 +1,9 @@
 package org.joseph.friendsync.common.util
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
 val defaultErrorMessage = "Oops, we could not send your request, try later!"
 
 sealed class Result<T>(
@@ -23,6 +27,11 @@ sealed class Result<T>(
         }
     }
 
+    fun exceptionMessageOrNull(): String? = when (this) {
+        is Error -> this.message
+        else -> null
+    }
+
     class Error<T>(message: String) : Result<T>(data = null, message = message)
 
     class Success<T>(data: T) : Result<T>(data = data, message = null)
@@ -31,6 +40,13 @@ sealed class Result<T>(
 
         fun <T> defaultError(): Error<T> = Error(defaultErrorMessage)
     }
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun <T> Result<T>.onFailure(action: (message: String) -> Unit): Result<T> {
+    contract { callsInPlace(action, InvocationKind.AT_MOST_ONCE) }
+    exceptionMessageOrNull()?.let { action(it) }
+    return this
 }
 
 fun <T> Result<T?>.filterNotNullOrError(): Result<T> {

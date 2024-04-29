@@ -50,21 +50,26 @@ fun AppTopBar(
                 .fillMaxWidth(),
             contentAlignment = contentAlignment
         ) {
-            if (startIcon != null) AppBarIcon(
-                modifier = Modifier.align(Alignment.CenterStart),
-                imageVector = startIcon,
-                onClick = onStartClick
-            )
+            startIcon?.apply {
+                AppBarIcon(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    imageVector = startIcon,
+                    onClick = onStartClick
+                )
+            }
+
             Text(
                 text = title,
                 style = FriendSyncTheme.typography.titleExtraMedium.medium,
                 textAlign = TextAlign.Center
             )
-            if (endIcon != null && endIconVisible) AppBarIcon(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                imageVector = endIcon,
-                onClick = onEndClick
-            )
+            if (endIcon != null && endIconVisible) {
+                AppBarIcon(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    imageVector = endIcon,
+                    onClick = onEndClick
+                )
+            }
         }
     }
 }

@@ -35,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -54,6 +55,7 @@ import org.joseph.friendsync.core.ui.components.Placeholder
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.extensions.SpacerWidth
 import org.joseph.friendsync.core.ui.extensions.clickableNoRipple
+import org.joseph.friendsync.core.ui.extensions.collectStateWithLifecycle
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
@@ -65,34 +67,37 @@ import org.joseph.friendsync.ui.components.models.Post
 import org.joseph.friendsync.ui.components.models.user.UserDetail
 
 @Composable
-fun ProfileScreen(
-    uiState: ProfileUiState,
-    postsUiState: ProfilePostsUiState,
-    shouldCurrentUser: Boolean,
-    hasUserSubscription: Boolean,
-    onEvent: (ProfileScreenEvent) -> Unit
+internal fun ProfileScreen(
+    viewModel: ProfileViewModel,
+    onNavigateUp: () -> Unit,
 ) {
     val modifier = Modifier
         .fillMaxSize()
         .background(FriendSyncTheme.colors.backgroundPrimary)
+
+    val uiState: ProfileUiState by viewModel.state.collectStateWithLifecycle()
+    val postsUiState by viewModel.postsUiStateFlow.collectStateWithLifecycle()
+    val shouldCurrentUser by viewModel.shouldCurrentUserFlow.collectStateWithLifecycle()
+    val hasUserSubscription by viewModel.hasUserSubscriptionFlow.collectStateWithLifecycle()
 
     when (uiState) {
         is ProfileUiState.Initial -> Unit
         is ProfileUiState.Loading -> LoadingScreen(modifier = modifier)
         is ProfileUiState.Error -> ErrorScreen(
             modifier = modifier,
-            errorMessage = uiState.errorMessage,
+            errorMessage = (uiState as ProfileUiState.Error).errorMessage,
             onClick = {}
         )
 
         is ProfileUiState.Content -> {
             LoadedProfileScreen(
-                uiState = uiState,
+                uiState = uiState as ProfileUiState.Content,
                 postsUiState = postsUiState,
                 shouldCurrentUser = shouldCurrentUser,
                 hasUserSubscription = hasUserSubscription,
                 modifier = modifier,
-                onEvent = onEvent
+                onEvent = viewModel::onEvent,
+                onNavigateUp = onNavigateUp
             )
         }
     }
@@ -105,6 +110,7 @@ private fun LoadedProfileScreen(
     shouldCurrentUser: Boolean,
     hasUserSubscription: Boolean,
     onEvent: (ProfileScreenEvent) -> Unit,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyStaggeredGridState()
@@ -122,6 +128,7 @@ private fun LoadedProfileScreen(
                     hasUserSubscription = hasUserSubscription,
                     shouldCurrentUser = shouldCurrentUser,
                     onEvent = onEvent,
+                    onNavigateUp = onNavigateUp,
                 )
             }
 
@@ -152,7 +159,7 @@ private fun LoadedProfileScreen(
             title = uiState.user.fullName(),
             statusBarHeight = statusBarHeight,
             lazyScrollState = lazyListState,
-            onNavigateUp = { onEvent(ProfileScreenEvent.OnNavigateToBack) }
+            onNavigateUp = onNavigateUp
         )
     }
 }
@@ -208,7 +215,9 @@ private fun UserImageWithInfo(
     shouldCurrentUser: Boolean,
     statusBarHeight: Dp,
     onEvent: (ProfileScreenEvent) -> Unit,
+    onNavigateUp: () -> Unit,
 ) {
+    println("user.avatar ${user.avatar}")
     val painter = rememberImagePainter(user.avatar)
 
     Column {
@@ -222,7 +231,7 @@ private fun UserImageWithInfo(
                 modifier = Modifier.fillMaxSize(),
                 painter = painter,
                 contentDescription = null,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
 
             AppBarIcon(
@@ -233,7 +242,7 @@ private fun UserImageWithInfo(
                     )
                     .align(Alignment.TopStart),
                 imageVector = Icons.Filled.ArrowBack,
-                onClick = { onEvent(ProfileScreenEvent.OnNavigateToBack) },
+                onClick = onNavigateUp,
                 background = FriendSyncTheme.colors.backgroundPrimary
             )
 

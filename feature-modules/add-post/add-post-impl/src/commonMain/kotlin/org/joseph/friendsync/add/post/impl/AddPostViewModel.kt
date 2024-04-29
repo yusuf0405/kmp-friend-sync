@@ -1,15 +1,14 @@
 package org.joseph.friendsync.add.post.impl
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.update
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.ImageByteArrayProvider
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
+import org.joseph.friendsync.core.FriendSyncViewModel
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Error
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Success
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.domain.usecases.post.AddPostUseCase
 import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
@@ -19,14 +18,14 @@ class AddPostViewModel(
     private val addPostUseCase: AddPostUseCase,
     private val postDomainToPostMapper: PostDomainToPostMapper,
     private val userDataStore: UserDataStore,
-    private val snackbarDisplay: SnackbarDisplay,
+    private val snackbarDisplayer: SnackbarDisplayer,
     private val imageByteArrayProvider: ImageByteArrayProvider,
-) : StateScreenModel<AddPostUiState>(AddPostUiState()), KoinComponent {
+) : FriendSyncViewModel<AddPostUiState>(AddPostUiState()), KoinComponent {
 
     private val imageByteArrays = mutableListOf<ByteArray>()
 
     init {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             mutableState.update { state ->
                 state.copy(user = userDataStore.fetchCurrentUser())
             }
@@ -44,11 +43,11 @@ class AddPostViewModel(
 
     private fun addPost() {
         if (imageByteArrays.isEmpty() && mutableState.value.message == null) {
-            snackbarDisplay.showSnackbar(Error(MainResStrings.fill_in_at_least_one_field))
+            snackbarDisplayer.showSnackbar(Error(MainResStrings.fill_in_at_least_one_field))
             return
         }
 
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             setLoadingState(true)
             val uiState = mutableState.value
             val response = addPostUseCase(
@@ -57,12 +56,12 @@ class AddPostViewModel(
                 userId = uiState.user.id
             )
             if (response.data != null) {
-                snackbarDisplay.showSnackbar(Success(MainResStrings.post_has_been_successfully_added))
+                snackbarDisplayer.showSnackbar(Success(MainResStrings.post_has_been_successfully_added))
                 clearData()
                 return@launchSafe
             }
             if (response.isError()) {
-                snackbarDisplay.showSnackbar(Error(MainResStrings.default_error_message))
+                snackbarDisplayer.showSnackbar(Error(MainResStrings.default_error_message))
             }
             setLoadingState(false)
         }

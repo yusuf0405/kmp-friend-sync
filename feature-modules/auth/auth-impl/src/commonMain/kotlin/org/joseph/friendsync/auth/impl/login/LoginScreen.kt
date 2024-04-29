@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import org.joseph.friendsync.core.ui.components.LoginTextField
@@ -31,14 +33,15 @@ import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 
 @Composable
 fun LoginScreen(
-    uiState: LoginScreenUiState,
-    passwordValidationStatus: LoginValidationStatus,
-    shouldButtonEnabled: Boolean,
-    onEvent: (LoginEvent) -> Unit,
+    viewModel: LoginViewModel,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val passwordValidationStatus by viewModel.passwordValidationStatusFlow.collectAsStateWithLifecycle()
+    val shouldButtonEnabled by viewModel.shouldButtonEnabledFlow.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -69,7 +72,7 @@ fun LoginScreen(
             title = MainResStrings.your_password.toUpperCase(Locale.current),
             value = uiState.password,
             onValueChange = { password ->
-                onEvent(LoginEvent.OnPasswordChanged(password))
+                viewModel.onEvent(LoginEvent.OnPasswordChanged(password))
             },
             keyboardType = KeyboardType.Password,
             isPasswordTextField = true,
@@ -83,7 +86,7 @@ fun LoginScreen(
             modifier = Modifier,
             onClick = {
                 focusManager.clearFocus()
-                onEvent(LoginEvent.OnLogin)
+                viewModel.onEvent(LoginEvent.OnLogin)
             },
             text = MainResStrings.sign_in,
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,

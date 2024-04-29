@@ -1,57 +1,59 @@
 package org.joseph.friendsync.auth.impl.sign
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import org.joseph.friendsync.auth.impl.AuthFeatureDependencies
 import org.joseph.friendsync.common.user.UserDataStore
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.domain.validations.NameValidation
-import org.joseph.friendsync.domain.validations.PasswordValidation
-import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
-import org.joseph.friendsync.core.ui.common.communication.NavCommand
+import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.common.extensions.firstLetterIsCapitalizedRestSmall
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.domain.models.AuthResultData
 import org.joseph.friendsync.domain.usecases.signup.SignUpUseCase
+import org.joseph.friendsync.domain.validations.NameValidation
+import org.joseph.friendsync.domain.validations.PasswordValidation
 import org.joseph.friendsync.ui.components.mappers.AuthResultDataToUserPreferencesMapper
 import org.koin.core.component.KoinComponent
 
 class SignUpViewModel(
     private val email: String,
+    private val authFeatureDependencies: AuthFeatureDependencies,
     private val passwordValidation: PasswordValidation,
     private val nameValidation: NameValidation,
     private val signUpUseCase: SignUpUseCase,
     private val userDataStore: UserDataStore,
-    private val snackbarDisplay: SnackbarDisplay,
+    private val snackbarDisplayer: SnackbarDisplayer,
     private val authResultDataToUserPreferencesMapper: AuthResultDataToUserPreferencesMapper,
-    private val globalNavigationFlowCommunication: GlobalNavigationFlowCommunication,
-) : StateScreenModel<SignUpUiState>(SignUpUiState(email = email)), KoinComponent {
+    private val navigationCommunication: NavigationRouteFlowCommunication,
+) : FriendSyncViewModel<SignUpUiState>(SignUpUiState(email = email)), KoinComponent {
 
     val nameValidationStatusFlow = mutableState.map { it.name }.map { name ->
         if (name.isEmpty()) LoginValidationStatus.DEFAULT
         else if (nameValidation.validate(name)) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val lastnameValidationStatusFlow = mutableState.map { it.lastName }.map { lastName ->
         if (lastName.isEmpty()) LoginValidationStatus.DEFAULT
         else if (nameValidation.validate(lastName)) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val passwordValidationStatusFlow = mutableState.map { it.password }.map { email ->
         if (email.isEmpty()) LoginValidationStatus.DEFAULT
         else if (passwordValidation.validate(email)) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val shouldButtonEnabledFlow = combine(
         nameValidationStatusFlow,
@@ -60,7 +62,7 @@ class SignUpViewModel(
     ) { nameValidationStatus, lastnameValidationStatus, passwordValidationStatus ->
         listOf(nameValidationStatus, lastnameValidationStatus, passwordValidationStatus)
     }.map { it.all { status -> status == LoginValidationStatus.SUCCESS } }
-        .stateIn(screenModelScope, SharingStarted.Lazily, false)
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun onEvent(event: SignUpEvent) {
         when (event) {
@@ -72,7 +74,7 @@ class SignUpViewModel(
     }
 
     private fun doSignUp() {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             setStateToAuthenticating()
             delay(3000)
             val result = signUpUseCase(
@@ -111,13 +113,13 @@ class SignUpViewModel(
         val user = authResultDataToUserPreferencesMapper.map(authResultData)
         userDataStore.saveCurrentUser(user)
         setStateToAuthenticatingEnd()
-        globalNavigationFlowCommunication.emit(NavCommand.Main)
+        navigationCommunication.emit(navigationParams(authFeatureDependencies.getHomeRoute()))
     }
 
     private fun handleSignUpErrorResult(message: String?) {
         setStateToAuthenticatingEnd()
         val snackbarMessage = message ?: return
-        snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(snackbarMessage))
+        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(snackbarMessage))
     }
 
     private fun setStateToAuthenticating() {

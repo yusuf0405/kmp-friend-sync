@@ -1,11 +1,9 @@
 package org.joseph.friendsync.home.impl
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
-import cafe.adriel.voyager.core.screen.Screen
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -20,16 +18,16 @@ import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
 import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
 import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.common.util.coroutines.onError
-import org.joseph.friendsync.core.ui.common.communication.GlobalNavigationFlowCommunication
-import org.joseph.friendsync.core.ui.common.communication.NavCommand
-import org.joseph.friendsync.core.ui.common.communication.NavigationScreenStateFlowCommunication
+import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
+import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
 import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksManager
 import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
 import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Error
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.domain.models.PostDomain
 import org.joseph.friendsync.domain.usecases.likes.FetchLikedPostsUseCase
@@ -37,8 +35,7 @@ import org.joseph.friendsync.domain.usecases.onboarding.FetchOnboardingUsersUseC
 import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.FetchUserSubscriptionsInteractor
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
-import org.joseph.friendsync.home.impl.navigation.HomeNavigationFlowCommunication
-import org.joseph.friendsync.home.impl.navigation.HomeScreenRouter
+import org.joseph.friendsync.home.impl.di.HomeFeatureDependencies
 import org.joseph.friendsync.home.impl.onboarding.OnBoardingUiState
 import org.joseph.friendsync.home.impl.onboarding.OnboardingStateStateFlowCommunication
 import org.joseph.friendsync.ui.components.mappers.UserInfoDomainToUserInfoMapper
@@ -48,6 +45,7 @@ private const val DEFAULT_PAGE = 1
 private const val DEFAULT_PAGE_SIZE = 5
 
 internal class HomeViewModel(
+    private val homeFeatureDependencies: HomeFeatureDependencies,
     private val userDataStore: UserDataStore,
     private val dispatcherProvider: DispatcherProvider,
     private val fetchOnboardingUsersUseCase: FetchOnboardingUsersUseCase,
@@ -59,12 +57,11 @@ internal class HomeViewModel(
     private val subscriptionsInteractor: SubscriptionsInteractor,
     private val userMarksManager: UserMarksManager,
     private val postMarksManager: PostMarksManager,
-    private val snackbarDisplay: SnackbarDisplay,
+    private val snackbarDisplayer: SnackbarDisplayer,
     private val onboardingCommunication: OnboardingStateStateFlowCommunication,
-    private val globalNavigationFlowCommunication: GlobalNavigationFlowCommunication,
     private val usersStateFlowCommunication: UsersStateFlowCommunication,
-    private val navigationRouterFlowCommunication: HomeNavigationFlowCommunication,
-) : StateScreenModel<HomeUiState>(HomeUiState.Initial), KoinComponent {
+    private val navigationCommunication: NavigationRouteFlowCommunication,
+) : FriendSyncViewModel<HomeUiState>(HomeUiState.Initial), KoinComponent {
 
     private var currentPage = DEFAULT_PAGE
     private var currentUser: UserPreferences = UserPreferences.unknown
@@ -75,8 +72,6 @@ internal class HomeViewModel(
     private var allDataJob: Job? = null
 
     val onBoardingUiState: StateFlow<OnBoardingUiState> = onboardingCommunication.observe()
-    val navigationRouterFlow: SharedFlow<HomeScreenRouter> =
-        navigationRouterFlowCommunication.observe()
 
     private var usersFlow = usersStateFlowCommunication.observe()
 
@@ -86,12 +81,10 @@ internal class HomeViewModel(
         allDataJob = startLoadAllData()
     }
 
-    private fun startLoadAllData() = screenModelScope.launchSafe(
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun startLoadAllData() = viewModelScope.launchSafe(
         dispatcherProvider.io,
-        onError = {
-            snackbarDisplay.showSnackbar(Error(defaultErrorMessage))
-            mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
-        }
+        onError = { mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage)) }
     ) {
         mutableState.tryEmit(HomeUiState.Loading)
         awaitAll(
@@ -107,7 +100,7 @@ internal class HomeViewModel(
             mutableState.tryEmit(state.copy(postMarks = postMarks, isPaging = false))
         }.onError {
             mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
-        }.launchIn(screenModelScope)
+        }.launchIn(viewModelScope)
 
         usersFlow.flatMapLatest { userMarksManager.observeUsersWithMarks(it) }.onEach { users ->
             val onboardingState = onboardingCommunication.value()
@@ -117,7 +110,7 @@ internal class HomeViewModel(
                     shouldShowOnBoarding = users.isNotEmpty()
                 )
             )
-        }.launchIn(screenModelScope)
+        }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: HomeScreenEvent) {
@@ -143,7 +136,7 @@ internal class HomeViewModel(
     }
 
     private fun fetchMorePosts() {
-        screenModelScope.launchSafe(dispatcherProvider.io) { asyncFetchPosts().await() }
+        viewModelScope.launchSafe(dispatcherProvider.io) { asyncFetchPosts().await() }
     }
 
     private suspend fun asyncFetchCurrentUser() = asyncWithDefault(Unit) {
@@ -186,31 +179,27 @@ internal class HomeViewModel(
             }
 
             is Result.Error -> {
-                val message = result.message ?: defaultErrorMessage
-                snackbarDisplay.showSnackbar(Error(message))
+                // handle error
             }
         }
     }
 
     fun navigateChatScreen() {
-        globalNavigationFlowCommunication.emit(NavCommand.Chat)
+        val params = navigationParams(homeFeatureDependencies.getChatRoute())
+        navigationCommunication.emit(params)
     }
 
     private fun navigatePostScreen(postId: Int, shouldShowAddCommentDialog: Boolean = false) {
-        navigationRouterFlowCommunication.emit(
-            HomeScreenRouter.PostDetails(
-                postId,
-                shouldShowAddCommentDialog
-            )
-        )
+        val route = homeFeatureDependencies.getPostRoute(postId, shouldShowAddCommentDialog)
+        navigationCommunication.emit(navigationParams(route))
     }
 
     private fun navigateProfileScreen(userId: Int) {
-        navigationRouterFlowCommunication.emit(HomeScreenRouter.UserProfile(userId))
+        navigationCommunication.emit(navigationParams(homeFeatureDependencies.getProfileRoute(userId)))
     }
 
     private fun doLikeButtonClick(event: HomeScreenEvent.OnLikeClick) {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             if (event.isLiked) postLikeOrDislikeInteractor.unlikePost(
                 currentUser.id,
                 event.postId
@@ -225,10 +214,10 @@ internal class HomeViewModel(
     private fun doFollowButtonClick(event: HomeScreenEvent.OnFollowButtonClick) {
         val followerId = currentUser.id
         val followingId = event.user.id
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             if (event.isFollow) subscriptionsInteractor.cancelSubscription(
                 followerId, followingId
-            ).apply { if (isError()) showErrorSnackbar(message) }
+            )
             else subscriptionsInteractor.createSubscription(
                 followerId, followingId
             ).apply { if (isError()) showErrorSnackbar(message) }
@@ -242,11 +231,11 @@ internal class HomeViewModel(
     }
 
     private fun showErrorSnackbar(message: String? = null) {
-        snackbarDisplay.showSnackbar(Error(message ?: defaultErrorMessage))
+        snackbarDisplayer.showSnackbar(Error(message ?: defaultErrorMessage))
     }
 
-    override fun onDispose() {
+    override fun onCleared() {
         allDataJob?.cancel()
-        super.onDispose()
+        super.onCleared()
     }
 }

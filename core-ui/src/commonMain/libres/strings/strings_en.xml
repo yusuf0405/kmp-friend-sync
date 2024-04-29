@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="home_screen_route">home_screen_route</string>
+    <string name="search_screen_route">search_screen_route</string>
+    <string name="add_post_screen_route">add_post_screen_route</string>
+    <string name="notification_screen_route">notification_screen_route</string>
+    <string name="current_user_screen_route">current_user_screen_route</string>
+
     <string name="username_hint">Name</string>
     <string name="default_error_message">Oops, we could not send your request, try later!</string>
 
@@ -68,8 +74,11 @@
     <string name="enter_with_email_screen_title">What’s your\nemail\naddress?</string>
     <string name="about_me">About me</string>
     <string name="education">Education</string>
-    <string name="profile_has_been_successfully_updated">The profile has been successfully updated!</string>
+    <string name="profile_has_been_successfully_updated">The profile has been successfully
+        updated!
+    </string>
     <string name="post_has_been_successfully_added">The post has been successfully added!</string>
-    <string name="function_is_temporarily_unavailable">The function is temporarily unavailable!</string>
+    <string name="function_is_temporarily_unavailable">The function is temporarily unavailable!
+    </string>
     <string name="empty_data">Empty data</string>
 </resources>

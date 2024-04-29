@@ -15,6 +15,4 @@ sealed class EditProfileEvent {
     data class OnEducationChanged(val value: String) : EditProfileEvent()
 
     data class OnAboutMeChanged(val value: String) : EditProfileEvent()
-
-
 }

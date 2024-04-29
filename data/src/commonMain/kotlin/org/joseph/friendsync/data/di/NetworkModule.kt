@@ -1,8 +1,10 @@
 package org.joseph.friendsync.data.di
 
+import org.joseph.friendsync.data.BuildKonfig
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -15,8 +17,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
-private const val CURRENT_CONFIG = "192.168.160.243"
-const val BASE_URL = "http://$CURRENT_CONFIG:8080"
+private val CURRENT_CONFIG = BuildKonfig.CURRENT_CONFIG.removeSuffix("\"").removePrefix("\"")
+val BASE_URL = "http://$CURRENT_CONFIG:8080"
 
 private const val DEFAULT_REQUEST_TIMEOUT_MILLS = 10_000L
 
@@ -27,6 +29,8 @@ val networkModule = module {
                 url.takeFrom(BASE_URL)
                 contentType(Json)
             }
+            install(HttpCache)
+
             install(HttpTimeout) {
                 requestTimeoutMillis = DEFAULT_REQUEST_TIMEOUT_MILLS
             }

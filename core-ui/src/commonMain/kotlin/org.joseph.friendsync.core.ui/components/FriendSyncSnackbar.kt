@@ -10,6 +10,7 @@ import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
 import org.joseph.friendsync.core.ui.snackbar.SnackbarType
+import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 
 @Composable
 fun FriendSyncSnackbar(
@@ -18,14 +19,14 @@ fun FriendSyncSnackbar(
     modifier: Modifier = Modifier,
 ) {
     Snackbar(
-        modifier = modifier.padding(LargeSpacing),
+        modifier = modifier.padding(MediumSpacing),
         containerColor = FriendSyncTheme.colors.backgroundModal,
         shape = FriendSyncTheme.shapes.large
     ) {
         Text(
-            modifier = modifier.padding(SmallSpacing),
+            modifier = modifier.padding(FriendSyncTheme.dimens.dp2),
             text = message,
-            style = FriendSyncTheme.typography.bodyMedium.bold,
+            style = FriendSyncTheme.typography.bodyExtraSmall.bold,
             color = fetchActualColor(type),
         )
     }

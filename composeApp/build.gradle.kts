@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
     alias(libs.plugins.libres)
-    alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
 }
 
@@ -11,11 +10,10 @@ kotlin {
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "17"
+                jvmTarget = libs.versions.jvmTarget.get()
             }
         }
     }
-
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,37 +27,47 @@ kotlin {
     }
 
     sourceSets {
+        all {
+            languageSettings {
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+            }
+        }
+
         commonMain.dependencies {
-            implementation(project(":data"))
-            implementation(project(":domain"))
-            implementation(project(":core-ui"))
-            implementation(project(":ui-components"))
+            implementation(projects.core)
+            implementation(projects.coreUi)
+            implementation(projects.data)
+            implementation(projects.domain)
+            implementation(projects.uiComponents)
 
-            implementation(project(":feature-modules:auth:auth-api"))
-            implementation(project(":feature-modules:auth:auth-impl"))
+            implementation(projects.featureModules.auth.authApi)
+            implementation(projects.featureModules.auth.authImpl)
 
-            implementation(project(":feature-modules:home:home-api"))
-            implementation(project(":feature-modules:home:home-impl"))
+            implementation(projects.featureModules.home.homeApi)
+            implementation(projects.featureModules.home.homeImpl)
 
-            implementation(project(":feature-modules:chat:chat-api"))
-            implementation(project(":feature-modules:chat:chat-impl"))
+            implementation(projects.featureModules.chat.chatApi)
+            implementation(projects.featureModules.chat.chatImpl)
 
-            implementation(project(":feature-modules:post:post-api"))
-            implementation(project(":feature-modules:post:post-impl"))
+            implementation(projects.featureModules.post.postApi)
+            implementation(projects.featureModules.post.postImpl)
 
-            implementation(project(":feature-modules:profile:profile-api"))
-            implementation(project(":feature-modules:profile:profile-impl"))
+            implementation(projects.featureModules.profile.profileApi)
+            implementation(projects.featureModules.profile.profileImpl)
 
-            implementation(project(":feature-modules:search:search-api"))
-            implementation(project(":feature-modules:search:search-impl"))
+            implementation(projects.featureModules.search.searchApi)
+            implementation(projects.featureModules.search.searchImpl)
 
-            implementation(project(":feature-modules:add-post:add-post-api"))
-            implementation(project(":feature-modules:add-post:add-post-impl"))
+            implementation(projects.featureModules.addPost.addPostApi)
+            implementation(projects.featureModules.addPost.addPostImpl)
 
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.composeIcons.featherIcons)
+            implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.navigation.compose)
 
             implementation(libs.composeImageLoader)
             implementation(libs.napier)
@@ -67,13 +75,6 @@ kotlin {
             implementation(libs.moko.mvvm)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.napier)
-
-            // Voyager
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.tab.navigator)
-            implementation(libs.voyager.transitions)
-            implementation(libs.voyager.koin)
 
             // Koin
             implementation(libs.koin.core)
@@ -95,6 +96,7 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
     }
+
 }
 
 android {
@@ -141,9 +143,4 @@ libres {
     generateNamedArguments = true
     baseLocaleLanguageCode = "en"
     camelCaseNamesForAppleFramework = false
-}
-
-buildConfig {
-    // BuildConfig configuration here.
-    // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
 }

@@ -1,7 +1,6 @@
 package org.joseph.friendsync.profile.impl.screens.edit.profile
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -11,16 +10,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.joseph.friendsync.common.util.Result
 import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.domain.validations.EmailValidation
-import org.joseph.friendsync.domain.validations.NameValidation
+import org.joseph.friendsync.core.FriendSyncViewModel
 import org.joseph.friendsync.core.ui.common.extensions.firstLetterIsCapitalizedRestSmall
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
-import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplay
+import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.domain.models.EditProfileParams
 import org.joseph.friendsync.domain.usecases.current.user.FetchCurrentUserFlowUseCase
 import org.joseph.friendsync.domain.usecases.user.EditUserWithParamsUseCase
+import org.joseph.friendsync.domain.validations.EmailValidation
+import org.joseph.friendsync.domain.validations.NameValidation
 import org.joseph.friendsync.ui.components.mappers.CurrentUserDomainToCurrentUserMapper
 import org.joseph.friendsync.ui.components.models.user.CurrentUser
 
@@ -29,9 +29,9 @@ class EditProfileViewModel(
     private val editUserWithParamsUseCase: EditUserWithParamsUseCase,
     private val nameValidation: NameValidation,
     private val emailValidation: EmailValidation,
-    private val snackbarDisplay: SnackbarDisplay,
+    private val snackbarDisplayer: SnackbarDisplayer,
     private val currentUserMapper: CurrentUserDomainToCurrentUserMapper,
-) : StateScreenModel<EditProfileUiState>(EditProfileUiState()) {
+) : FriendSyncViewModel<EditProfileUiState>(EditProfileUiState()) {
 
     private val userDetailFlow = fetchCurrentUserFlowUseCase.fetchCurrentUserFlow()
         .map { currentUserMapper.map(it ?: return@map CurrentUser.unknown) }
@@ -43,7 +43,7 @@ class EditProfileViewModel(
         if (email == personalInfo.email) LoginValidationStatus.DEFAULT
         else if (emailValidation.validate(email)) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val nameValidationStatusFlow = combine(
         mutableState.map { it.name },
@@ -52,7 +52,7 @@ class EditProfileViewModel(
         if (name == user.name) LoginValidationStatus.DEFAULT
         else if (nameValidation.validate(name)) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val lastnameValidationStatusFlow = combine(
         mutableState.map { it.lastName },
@@ -61,7 +61,7 @@ class EditProfileViewModel(
         if (lastName == user.lastName) LoginValidationStatus.DEFAULT
         else if (nameValidation.validate(lastName)) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val educationValidationStatusFlow = combine(
         mutableState.map { it.education },
@@ -70,7 +70,7 @@ class EditProfileViewModel(
         if (education == user.education) LoginValidationStatus.DEFAULT
         else if (education.isNotBlank()) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val aboutMeValidationStatusFlow = combine(
         mutableState.map { it.aboutMe },
@@ -79,7 +79,7 @@ class EditProfileViewModel(
         if (aboutMe == user.bio) LoginValidationStatus.DEFAULT
         else if (aboutMe.isNotBlank()) LoginValidationStatus.SUCCESS
         else LoginValidationStatus.ERROR
-    }.stateIn(screenModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, LoginValidationStatus.DEFAULT)
 
     val saveIconVisibleFlow = combine(
         emailValidationStatusFlow,
@@ -91,10 +91,10 @@ class EditProfileViewModel(
         listOf(email, name, lastName, education, aboutMe)
     }.map {
         it.all { status -> status != LoginValidationStatus.ERROR }
-    }.stateIn(screenModelScope, SharingStarted.Lazily, false)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     init {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             userDetailFlow.onEach { user ->
                 mutableState.tryEmit(user.toEditProfileUiState().copy(isLoading = false))
             }.launchIn(this)
@@ -112,18 +112,18 @@ class EditProfileViewModel(
             is EditProfileEvent.OnEmailChanged -> doEmailChanged(event.value)
             is EditProfileEvent.OnEditAvatar -> {
                 val message = MainResStrings.function_is_temporarily_unavailable
-                snackbarDisplay.showSnackbar(FriendSyncSnackbar.Sample(message))
+                snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Sample(message))
             }
         }
     }
 
     private fun doSaveClick(id: Int) {
-        screenModelScope.launchSafe {
+        viewModelScope.launchSafe {
             val params = createParamsByState(id)
             when (val result = editUserWithParamsUseCase(params)) {
                 is Result.Success -> {
                     val message = MainResStrings.profile_has_been_successfully_updated
-                    snackbarDisplay.showSnackbar(FriendSyncSnackbar.Success(message))
+                    snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Success(message))
                 }
 
                 is Result.Error -> showErrorSnackbar(result.message)
@@ -173,6 +173,6 @@ class EditProfileViewModel(
 
     private fun showErrorSnackbar(message: String?) {
         val errorMessage = message ?: MainResStrings.default_error_message
-        snackbarDisplay.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
     }
 }

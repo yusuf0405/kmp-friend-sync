@@ -20,29 +20,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
-import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
-import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
-import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.components.AppBarIcon
+import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.components.PrimaryButton
+import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
+import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnterWithEmailScreen(
-    uiState: LoginWithEmailUiState,
-    emailValidationStatus: LoginValidationStatus,
-    shouldButtonEnabled: Boolean,
+    viewModel: LoginWithEmailViewModel,
     onNavigateBack: () -> Unit,
-    onEvent: (LoginWithEmailEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val sheetState = rememberModalBottomSheetState()
     val focusManager = LocalFocusManager.current
+    val uiState: LoginWithEmailUiState by viewModel.state.collectAsStateWithLifecycle()
+    val emailValidationStatus: LoginValidationStatus by viewModel.emailValidationStatusFlow.collectAsStateWithLifecycle()
+    val shouldButtonEnabled: Boolean by viewModel.shouldButtonEnabledFlow.collectAsStateWithLifecycle()
 
     var shouldShowEnterTypeDialog by remember { mutableStateOf(false) }
     Column(
@@ -69,7 +70,7 @@ fun EnterWithEmailScreen(
         LoginTextField(
             title = MainResStrings.your_email.toUpperCase(Locale.current),
             value = uiState.email,
-            onValueChange = { onEvent(LoginWithEmailEvent.OnEmailChanged(it)) },
+            onValueChange = { viewModel.onEvent(LoginWithEmailEvent.OnEmailChanged(it)) },
             hint = MainResStrings.email_hint,
             validationStatus = emailValidationStatus
         )
@@ -97,11 +98,11 @@ fun EnterWithEmailScreen(
             onDismissRequest = { shouldShowEnterTypeDialog = false },
             onNavigateToLogin = {
                 shouldShowEnterTypeDialog = false
-                onEvent(LoginWithEmailEvent.OnNavigateToLogin)
+                viewModel.onEvent(LoginWithEmailEvent.OnNavigateToLogin)
             },
             onNavigateToSignUp = {
                 shouldShowEnterTypeDialog = false
-                onEvent(LoginWithEmailEvent.OnNavigateToSignUp)
+                viewModel.onEvent(LoginWithEmailEvent.OnNavigateToSignUp)
             }
         )
     }

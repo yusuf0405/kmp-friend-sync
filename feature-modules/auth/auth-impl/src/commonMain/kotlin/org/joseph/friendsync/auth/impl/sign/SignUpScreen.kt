@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
@@ -28,15 +32,16 @@ import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 
 @Composable
 fun SignUpScreen(
-    uiState: SignUpUiState,
-    passwordValidationStatus: LoginValidationStatus,
-    nameValidationStatus: LoginValidationStatus,
-    lastnameValidationStatus: LoginValidationStatus,
-    shouldButtonEnabled: Boolean,
-    onEvent: (SignUpEvent) -> Unit,
+    viewModel: SignUpViewModel,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val passwordValidationStatus by viewModel.passwordValidationStatusFlow.collectAsStateWithLifecycle()
+    val nameValidationStatus by viewModel.nameValidationStatusFlow.collectAsStateWithLifecycle()
+    val lastnameValidationStatus by viewModel.lastnameValidationStatusFlow.collectAsStateWithLifecycle()
+    val shouldButtonEnabled by viewModel.shouldButtonEnabledFlow.collectAsStateWithLifecycle()
+
     val focusManager = LocalFocusManager.current
     Column(
         modifier = modifier
@@ -68,7 +73,7 @@ fun SignUpScreen(
             title = MainResStrings.your_name.toUpperCase(Locale.current),
             value = uiState.name,
             onValueChange = { name ->
-                onEvent(SignUpEvent.OnNameChanged(name))
+                viewModel.onEvent(SignUpEvent.OnNameChanged(name))
             },
             hint = MainResStrings.username_hint,
             validationStatus = nameValidationStatus,
@@ -80,7 +85,7 @@ fun SignUpScreen(
             title = MainResStrings.your_lastname.toUpperCase(Locale.current),
             value = uiState.lastName,
             onValueChange = { lastname ->
-                onEvent(SignUpEvent.OnLastNameChanged(lastname))
+                viewModel.onEvent(SignUpEvent.OnLastNameChanged(lastname))
             },
             hint = MainResStrings.last_name_hint,
             validationStatus = lastnameValidationStatus,
@@ -92,7 +97,7 @@ fun SignUpScreen(
             title = MainResStrings.your_password.toUpperCase(Locale.current),
             value = uiState.password,
             onValueChange = { password ->
-                onEvent(SignUpEvent.OnPasswordChanged(password))
+                viewModel.onEvent(SignUpEvent.OnPasswordChanged(password))
             },
             keyboardType = KeyboardType.Password,
             isPasswordTextField = true,
@@ -106,7 +111,7 @@ fun SignUpScreen(
             modifier = Modifier,
             onClick = {
                 focusManager.clearFocus()
-                onEvent(SignUpEvent.OnSignUp)
+                viewModel.onEvent(SignUpEvent.OnSignUp)
             },
             text = MainResStrings.signup_button_hint,
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,

@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         gradlePluginPortal()
@@ -16,33 +17,29 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "kmp-friend-sync"
-include(":composeApp")
-include(":domain")
-include(":data")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include(":core-ui")
-include(":ui-components")
-
-include(":feature-modules:auth:auth-api")
-include(":feature-modules:auth:auth-impl")
-
-include(":feature-modules:home:home-api")
-include(":feature-modules:home:home-impl")
-
-include(":feature-modules:chat:chat-api")
-include(":feature-modules:chat:chat-impl")
-
-include(":feature-modules:search:search-api")
-include(":feature-modules:search:search-impl")
-
-include(":feature-modules:add-post:add-post-api")
-include(":feature-modules:add-post:add-post-impl")
-
-include(":feature-modules:notification:notification-api")
-include(":feature-modules:notification:notification-impl")
-
-include(":feature-modules:profile:profile-api")
-include(":feature-modules:profile:profile-impl")
-
-include(":feature-modules:post:post-api")
-include(":feature-modules:post:post-impl")
+include(
+    ":composeApp",
+    ":domain",
+    ":data",
+    ":core",
+    ":core-ui",
+    ":ui-components",
+    ":feature-modules:auth:auth-api",
+    ":feature-modules:auth:auth-impl",
+    ":feature-modules:home:home-api",
+    ":feature-modules:home:home-impl",
+    ":feature-modules:chat:chat-api",
+    ":feature-modules:chat:chat-impl",
+    ":feature-modules:search:search-api",
+    ":feature-modules:search:search-impl",
+    ":feature-modules:add-post:add-post-api",
+    ":feature-modules:add-post:add-post-impl",
+    ":feature-modules:notification:notification-api",
+    ":feature-modules:notification:notification-impl",
+    ":feature-modules:profile:profile-api",
+    ":feature-modules:profile:profile-impl",
+    ":feature-modules:post:post-api",
+    ":feature-modules:post:post-impl"
+)

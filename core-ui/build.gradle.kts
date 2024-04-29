@@ -1,40 +1,30 @@
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.friendsync.android.library)
+    alias(libs.plugins.friendsync.android.compose)
     alias(libs.plugins.compose)
-    alias(libs.plugins.multiplatform)
-    alias(libs.plugins.buildConfig)
-    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.libres)
 }
 
 kotlin {
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    )
-
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
+    sourceSets {
+        all {
+            languageSettings {
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
             }
         }
-    }
-
-    sourceSets {
         commonMain.dependencies {
-            implementation(project(":domain"))
-            implementation(project(":ui-components"))
+            implementation(projects.domain)
+            implementation(projects.uiComponents)
 
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.composeIcons.featherIcons)
+            implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.navigation.compose)
 
-            implementation(libs.voyager.navigator)
             implementation(libs.kotlinx.datetime)
-
             implementation(libs.libres)
             implementation(libs.composeImageLoader)
         }
@@ -49,22 +39,6 @@ kotlin {
 
 android {
     namespace = "org.joseph.friendsync.core.ui"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
-    }
 }
 
 libres {

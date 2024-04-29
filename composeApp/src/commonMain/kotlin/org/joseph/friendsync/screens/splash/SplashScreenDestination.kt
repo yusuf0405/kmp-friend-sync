@@ -6,33 +6,35 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
+import org.joseph.friendsync.core.FeatureApi
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.colors.Blue
 import org.joseph.friendsync.core.ui.theme.colors.LightCranberry
 import org.koin.compose.koinInject
 
-class SplashScreenDestination : Screen {
+object SplashScreenDestination : FeatureApi {
 
-    @Composable
-    override fun Content() {
-        val viewModel: SplashViewModel = koinInject()
-        val navigator = LocalNavigator.current
-        val navigationScreen by viewModel.navigationScreenFlow.collectAsState(null)
-        LaunchedEffect(key1 = navigationScreen) {
-            if (navigationScreen != null) navigator?.push(navigationScreen!!)
+    const val splashRoute: String = "splash_Screen"
+
+    override fun registerGraph(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        modifier: Modifier
+    ) {
+        navGraphBuilder.composable(route = splashRoute) {
+            val viewModel: SplashViewModel = koinInject()
+            viewModel.toString()
+            SplashScreen()
         }
-        SplashScreen()
     }
 }
 

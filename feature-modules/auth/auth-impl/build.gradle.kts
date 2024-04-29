@@ -1,33 +1,23 @@
 plugins {
-    alias(libs.plugins.multiplatform)
-    alias(libs.plugins.compose)
-    alias(libs.plugins.buildConfig)
-    alias(libs.plugins.kotlinx.serialization)
-    id("com.android.library")
+    alias(libs.plugins.friendsync.android.library)
+    alias(libs.plugins.friendsync.android.compose)
 }
 
 kotlin {
-    androidTarget()
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    )
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":domain"))
-            implementation(project(":core-ui"))
-            implementation(project(":ui-components"))
+            implementation(projects.core)
+            implementation(projects.coreUi)
+            implementation(projects.domain)
+            implementation(projects.uiComponents)
+            implementation(projects.featureModules.auth.authApi)
 
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.composeIcons.featherIcons)
-
-            // Voyager
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.transitions)
-            implementation(libs.voyager.koin)
+            implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.navigation.compose)
 
             // Koin
             implementation(libs.koin.core)
@@ -38,20 +28,4 @@ kotlin {
 
 android {
     namespace = "org.joseph.friendsync.auth.impl"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
-    }
 }

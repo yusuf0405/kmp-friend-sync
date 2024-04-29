@@ -23,8 +23,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.joseph.friendsync.core.ui.common.EmptyScreen
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
@@ -51,19 +53,20 @@ import org.joseph.friendsync.ui.components.models.Category
 import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 
 @Composable
-fun SearchScreen(
-    uiState: SearchUiState,
-    postUiState: PostUiState,
-    userUiState: UsersUiState,
-    selectedCategoryType: CategoryType,
-    onEvent: (SearchScreenEvent) -> Unit,
+internal fun SearchScreen(
+    viewModel: SearchViewModel,
     modifier: Modifier = Modifier
 ) {
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val postUiState by viewModel.postUiStateFlow.collectAsStateWithLifecycle()
+    val userUiState by viewModel.userUiStateFlow.collectAsStateWithLifecycle()
+    val selectedCategoryType by viewModel.categoryTypeFlow.collectAsStateWithLifecycle()
+
     when (uiState) {
         is SearchUiState.Initial -> Unit
         is SearchUiState.Error -> ErrorScreen(
-            errorMessage = uiState.message,
-            onClick = { onEvent(SearchScreenEvent.RefreshAllData) }
+            errorMessage = (uiState as SearchUiState.Error).message,
+            onClick = { viewModel.onEvent(SearchScreenEvent.RefreshAllData) }
         )
 
         is SearchUiState.Loading, is SearchUiState.Loaded -> SearchScreenContent(
@@ -71,7 +74,7 @@ fun SearchScreen(
             postUiState = postUiState,
             userUiState = userUiState,
             selectedCategoryType = selectedCategoryType,
-            onEvent = onEvent,
+            onEvent = viewModel::onEvent,
             modifier = modifier
         )
     }
