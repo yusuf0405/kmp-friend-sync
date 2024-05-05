@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -39,6 +40,8 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.post.impl.components.AddCommentBottomDialog
+import org.joseph.friendsync.post.impl.components.CommentsSelectionHeader
 import org.joseph.friendsync.ui.components.models.Comment
 
 @Composable
@@ -116,7 +119,7 @@ fun LoadedPostDetailScreen(
                     items = commentsUiState.comments,
                     key = { comment -> comment.id },
                 ) { comment ->
-                    Divider()
+                    HorizontalDivider()
                     CommentItem(
                         modifier = Modifier.animateItemPlacement(),
                         comment = comment,
@@ -178,90 +181,3 @@ fun LoadedPostDetailScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddCommentBottomDialog(
-    value: String,
-    sheetState: SheetState,
-    comment: Comment? = null,
-    isEditComment: Boolean = false,
-    onDismissRequest: () -> Unit,
-    onButtonComment: () -> Unit,
-    onValueChange: (String) -> Unit,
-) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        containerColor = FriendSyncTheme.colors.backgroundModal
-    ) {
-        Column(
-            modifier = Modifier.padding(horizontal = LargeSpacing),
-            verticalArrangement = Arrangement.spacedBy(LargeSpacing)
-        ) {
-            Text(
-                text = if (isEditComment) MainResStrings.edit_comment
-                else MainResStrings.add_new_string,
-                style = FriendSyncTheme.typography.titleMedium.medium,
-                color = FriendSyncTheme.colors.textPrimary
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = value,
-                onValueChange = onValueChange,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = FriendSyncTheme.colors.primary,
-                    focusedContainerColor = FriendSyncTheme.colors.backgroundSecondary,
-                    unfocusedContainerColor = FriendSyncTheme.colors.backgroundSecondary,
-                ),
-                shape = FriendSyncTheme.shapes.medium,
-                textStyle = FriendSyncTheme.typography.bodyMedium.medium.copy(
-                    lineHeight = FriendSyncTheme.dimens.sp20
-                ),
-                placeholder = {
-                    Text(
-                        text = MainResStrings.enter_something,
-                        style = FriendSyncTheme.typography.bodyMedium.regular,
-                        color = FriendSyncTheme.colors.textSecondary,
-                    )
-                }
-            )
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onButtonComment,
-                text = if (isEditComment) MainResStrings.edit
-                else MainResStrings.create_destination_title,
-                enabled = if (isEditComment) comment?.comment != value else value.isNotEmpty(),
-                shape = FriendSyncTheme.shapes.extraLarge
-            )
-            SpacerHeight(ExtraLargeSpacing)
-        }
-    }
-}
-
-@Composable
-fun CommentsSelectionHeader(
-    modifier: Modifier = Modifier,
-    onAddCommentClick: () -> Unit,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = LargeSpacing),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = MainResStrings.commnts_header_label,
-            style = FriendSyncTheme.typography.bodyLarge.medium
-        )
-
-        OutlinedButton(
-            onClick = onAddCommentClick
-        ) {
-            Text(
-                text = MainResStrings.new_comment_button_label,
-                style = FriendSyncTheme.typography.bodyMedium.medium
-            )
-        }
-    }
-}

@@ -13,13 +13,13 @@ val profileScreenModule = module {
         ProfileViewModel(
             userId = params.get(),
             get(), get(), get(), get(), get(), get(), get(), get(),
-            get(), get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
 
     factory {
         CurrentUserViewModel(
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
 

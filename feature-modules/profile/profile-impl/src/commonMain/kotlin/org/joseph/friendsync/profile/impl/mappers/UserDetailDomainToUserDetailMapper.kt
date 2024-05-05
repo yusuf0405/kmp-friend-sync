@@ -1,7 +1,7 @@
 package org.joseph.friendsync.profile.impl.mappers
 
-import org.joseph.friendsync.common.mapper.Mapper
-import org.joseph.friendsync.core.ui.common.extensions.toLocalDate
+import org.joseph.friendsync.core.Mapper
+import org.joseph.friendsync.core.extensions.toLocalDate
 import org.joseph.friendsync.domain.models.UserDetailDomain
 import org.joseph.friendsync.ui.components.models.user.UserDetail
 import org.joseph.friendsync.ui.components.models.user.UserInfo

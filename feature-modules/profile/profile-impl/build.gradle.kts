@@ -20,6 +20,7 @@ kotlin {
             implementation(libs.composeIcons.featherIcons)
             implementation(libs.composeImageLoader)
             implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.lifecycle.runtime.compose)
             implementation(libs.navigation.compose)
 
             implementation(libs.koin.core)

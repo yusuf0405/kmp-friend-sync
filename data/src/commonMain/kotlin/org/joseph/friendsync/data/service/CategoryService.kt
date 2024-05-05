@@ -3,7 +3,7 @@ package org.joseph.friendsync.data.service
 import io.ktor.client.HttpClient
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpMethod
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.data.models.category.CategoriesResponse
 import org.joseph.friendsync.data.models.category.CategoryResponse
 import org.joseph.friendsync.data.request

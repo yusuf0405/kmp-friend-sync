@@ -23,6 +23,7 @@ import compose.icons.feathericons.Edit
 import compose.icons.feathericons.MoreHorizontal
 import compose.icons.feathericons.Trash
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
+import org.joseph.friendsync.core.ui.extensions.SpacerWidth
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
@@ -54,28 +55,24 @@ fun CommentItem(
         ) {
             onProfileClick()
         }
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Row(
                 modifier = Modifier.clickable(onClick = onProfileClick),
                 horizontalArrangement = Arrangement.spacedBy(MediumSpacing)
             ) {
-                Text(
-                    modifier = Modifier.alignByBaseline(),
-                    text = comment.user.avatar,
-                    style = FriendSyncTheme.typography.bodyMedium.medium,
-                    color = FriendSyncTheme.colors.textPrimary
-                )
-                Text(
-                    modifier = Modifier
-                        .alignByBaseline()
-                        .weight(1f),
-                    text = comment.releaseDate,
-                    style = FriendSyncTheme.typography.bodySmall.regular,
-                    color = FriendSyncTheme.colors.textSecondary
-                )
+                Row(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = comment.user.name,
+                        style = FriendSyncTheme.typography.bodyMedium.medium,
+                        color = FriendSyncTheme.colors.textPrimary
+                    )
+                    SpacerWidth(LargeSpacing)
+                    Text(
+                        text = comment.releaseDate,
+                        style = FriendSyncTheme.typography.bodySmall.regular,
+                        color = FriendSyncTheme.colors.textSecondary
+                    )
+                }
                 Column {
                     if (comment.isCurrentUserComment) {
                         Icon(
@@ -135,7 +132,6 @@ fun CommentItem(
                     }
                 }
             }
-
             SpacerHeight(SmallSpacing)
             Text(
                 text = comment.comment,

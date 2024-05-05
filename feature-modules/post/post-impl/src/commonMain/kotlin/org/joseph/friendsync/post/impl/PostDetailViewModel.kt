@@ -4,31 +4,33 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.user.UserPreferences
-import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
-import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.common.util.coroutines.onError
-import org.joseph.friendsync.common.util.onFailure
 import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.extensions.asyncWithDefault
+import org.joseph.friendsync.core.extensions.launchSafe
+import org.joseph.friendsync.core.extensions.onError
+import org.joseph.friendsync.core.onFailure
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
-import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
-import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
-import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.domain.markers.post.PostMarksManager
+import org.joseph.friendsync.domain.models.UserPreferences
+import org.joseph.friendsync.domain.post.PostsObserveType
 import org.joseph.friendsync.domain.usecases.comments.AddCommentToPostUseCase
 import org.joseph.friendsync.domain.usecases.comments.DeleteCommentByIdUseCase
 import org.joseph.friendsync.domain.usecases.comments.EditCommentUseCase
 import org.joseph.friendsync.domain.usecases.comments.FetchPostCommentsUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
+import org.joseph.friendsync.domain.usecases.post.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.post.impl.comment.CommentsStateStateFlowCommunication
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
 import org.joseph.friendsync.post.impl.di.PostFeatureDependencies
 import org.joseph.friendsync.ui.components.mappers.CommentDomainToCommentMapper
+import org.joseph.friendsync.ui.components.mappers.PostMarkDomainToUiMapper
 import org.koin.core.component.KoinComponent
 
 internal class PostDetailViewModel(
@@ -44,6 +46,7 @@ internal class PostDetailViewModel(
     private val postLikeOrDislikeInteractor: PostLikeOrDislikeInteractor,
     private val postMarksManager: PostMarksManager,
     private val commentDomainToCommentMapper: CommentDomainToCommentMapper,
+    private val postMarkDomainToUiMapper: PostMarkDomainToUiMapper,
     private val commentsStateCommunication: CommentsStateStateFlowCommunication,
     private val navigationCommunication: NavigationRouteFlowCommunication,
     private val snackbarDisplayer: SnackbarDisplayer,
@@ -64,12 +67,14 @@ internal class PostDetailViewModel(
             commentsDataJob = fetchPostComments()
         }
 
-        postMarksManager.observePostWithMarks(PostsObserver.Post(postId)).onEach { postMarks ->
-            val postMark = postMarks.firstOrNull()
-            val state = if (postMark != null) PostDetailUiState.Content(postMark)
-            else PostDetailUiState.Error(defaultErrorMessage)
-            mutableState.tryEmit(state)
-        }.launchIn(viewModelScope)
+        postMarksManager.observePostWithMarks(PostsObserveType.Post(postId))
+            .map { posts -> posts.map(postMarkDomainToUiMapper::map) }
+            .onEach { postMarks ->
+                val postMark = postMarks.firstOrNull()
+                val state = if (postMark != null) PostDetailUiState.Content(postMark)
+                else PostDetailUiState.Error(defaultErrorMessage)
+                mutableState.tryEmit(state)
+            }.launchIn(viewModelScope)
 
         fetchPostCommentsUseCase.observeAllPostComments(postId).onEach { commentsDomain ->
             commentsStateCommunication.emit(

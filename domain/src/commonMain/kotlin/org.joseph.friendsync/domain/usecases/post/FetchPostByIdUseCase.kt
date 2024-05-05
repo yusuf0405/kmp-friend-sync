@@ -4,7 +4,7 @@ import org.joseph.friendsync.domain.models.PostDomain
 import org.joseph.friendsync.domain.repository.PostRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 
 class FetchPostByIdUseCase : KoinComponent {
 

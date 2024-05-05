@@ -85,9 +85,6 @@ fun EnterWithEmailScreen(
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             shape = FriendSyncTheme.shapes.extraLarge,
             enabled = shouldButtonEnabled,
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = FriendSyncTheme.dimens.dp20
-            ),
             startIcon = Icons.Default.Email
         )
     }

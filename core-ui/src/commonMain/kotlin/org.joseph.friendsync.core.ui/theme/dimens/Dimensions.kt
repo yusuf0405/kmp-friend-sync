@@ -28,3 +28,4 @@ val SmallElevation = 2.dp
 val MediumElevation = 4.dp
 
 val DefaultPrimaryButtonSize = 52.dp
+val DefaultSecondaryButtonSize = 44.dp

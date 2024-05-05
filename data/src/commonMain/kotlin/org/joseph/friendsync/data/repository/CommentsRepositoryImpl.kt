@@ -3,17 +3,15 @@ package org.joseph.friendsync.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.extensions.callSafe
+import org.joseph.friendsync.core.map
 import org.joseph.friendsync.data.local.dao.comments.CommentsDao
 import org.joseph.friendsync.data.local.dao.post.PostDao
 import org.joseph.friendsync.data.local.dao.post.RecommendedPostDao
 import org.joseph.friendsync.data.mappers.CommentCloudToCommentDomainMapper
 import org.joseph.friendsync.data.mappers.CommentsLocalToCommentDomainMapper
-import org.joseph.friendsync.data.models.comments.CommentCloud
-import org.joseph.friendsync.data.models.comments.CommentListResponse
 import org.joseph.friendsync.data.models.comments.CommentResponse
 import org.joseph.friendsync.data.service.CommentsService
 import org.joseph.friendsync.domain.models.CommentDomain
@@ -44,7 +42,7 @@ internal class CommentsRepositoryImpl(
             val response = commentsService.addCommentToPost(userId, postId, commentText)
 
             if (response.isSuccess()) {
-                response.data?.data?.let { post -> commentsDao.insertOrUpdateComment(post) }
+//                response.data?.data?.let { post -> commentsDao.insertOrUpdateComment(post) }
                 postDao.incrementDecrementCommentsCount(postId, true)
                 recommendedPostDao.incrementDecrementCommentsCount(postId, true)
             }
@@ -90,7 +88,7 @@ internal class CommentsRepositoryImpl(
             when (val response = commentsService.fetchAllPostComments(postId)) {
                 is Result.Success -> {
                     val commentsCloud = response.data?.data ?: emptyList()
-                    commentsDao.insertOrUpdateComments(commentsCloud)
+//                    commentsDao.insertOrUpdateComments(commentsCloud)
                     Result.Success(commentsCloud.map(commentCloudToCommentDomainMapper::map))
                 }
 

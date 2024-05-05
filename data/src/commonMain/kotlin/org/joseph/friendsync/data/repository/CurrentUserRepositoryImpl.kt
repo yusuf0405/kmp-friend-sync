@@ -1,12 +1,14 @@
 package org.joseph.friendsync.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.data.local.dao.user.current.CurrentUserDao
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.extensions.callSafe
+import org.joseph.friendsync.core.extensions.onError
+import org.joseph.friendsync.data.local.dao.user.CurrentUserDao
 import org.joseph.friendsync.data.mappers.CurrentUserLocalToCurrentUserDomainMapper
 import org.joseph.friendsync.domain.models.CurrentUserDomain
 import org.joseph.friendsync.domain.models.EditProfileParams
@@ -21,8 +23,9 @@ class CurrentUserRepositoryImpl(
 
     override fun observeCurrentUser(id: Int): Flow<CurrentUserDomain?> {
         return currentUserDao.getCurrentUserReactive(id).map {
-            currentUserDomainMapper.map(it ?: return@map null)
-        }.flowOn(dispatcherProvider.io)
+            currentUserDomainMapper.map(it) ?: null
+        }.catch { emit(null) }
+            .flowOn(dispatcherProvider.io)
     }
 
     override suspend fun getUserById(
@@ -42,12 +45,12 @@ class CurrentUserRepositoryImpl(
         user: UserDetailDomain,
         email: String
     ) = withContext(dispatcherProvider.io) {
-        currentUserDao.insertOrUpdateUser(user, email)
+//        currentUserDao.insertOrUpdateUser(user, email)
     }
 
     override suspend fun editUserWithParams(
         params: EditProfileParams
     ) = withContext(dispatcherProvider.io) {
-        currentUserDao.editUserWithParams(params)
+//        currentUserDao.editUserWithParams(params)
     }
 }

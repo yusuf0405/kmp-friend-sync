@@ -21,7 +21,7 @@ internal val featureDependencyModule = module {
     }
     single<PostFeatureDependencies> {
         object : PostFeatureDependencies {
-            override fun getProfileRoute(userId: Int): String = searchFeature()
+            override fun getProfileRoute(userId: Int): String = profileFeature(userId)
         }
     }
     single<SearchFeatureDependencies> {

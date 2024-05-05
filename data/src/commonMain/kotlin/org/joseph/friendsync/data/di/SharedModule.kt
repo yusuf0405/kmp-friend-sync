@@ -1,31 +1,7 @@
 package org.joseph.friendsync.data.di
 
-import org.joseph.friendsync.common.util.ImageByteArrayProvider
-import org.joseph.friendsync.common.util.coroutines.provideDispatcher
-import org.joseph.friendsync.data.local.DatabaseDriverFactory
-import org.joseph.friendsync.data.local.dao.comments.CommentsDao
-import org.joseph.friendsync.data.local.dao.comments.CommentsDaoImpl
-import org.joseph.friendsync.data.local.dao.liked.post.LikePostDao
-import org.joseph.friendsync.data.local.dao.liked.post.LikePostDaoImpl
-import org.joseph.friendsync.data.local.dao.post.PostDao
-import org.joseph.friendsync.data.local.dao.post.PostDaoImpl
-import org.joseph.friendsync.data.local.dao.post.RecommendedPostDao
-import org.joseph.friendsync.data.local.dao.post.RecommendedPostDaoImpl
-import org.joseph.friendsync.data.local.dao.subscriptions.SubscriptionsDao
-import org.joseph.friendsync.data.local.dao.subscriptions.SubscriptionsDaoImpl
-import org.joseph.friendsync.data.local.dao.user.UserDao
-import org.joseph.friendsync.data.local.dao.user.UserDaoImpl
-import org.joseph.friendsync.data.local.dao.user.current.CurrentUserDao
-import org.joseph.friendsync.data.local.dao.user.current.CurrentUserDaoImpl
-import org.joseph.friendsync.data.local.mappers.CommentsSqlToCommentLocalMapper
-import org.joseph.friendsync.data.local.mappers.LikedPostSqlToLikedPostLocalMapper
-import org.joseph.friendsync.data.local.mappers.PostSqlToPostLocalMapper
-import org.joseph.friendsync.data.local.mappers.PostSqlToPostLocalMapperImpl
-import org.joseph.friendsync.data.local.mappers.RecommendedPostSqlToPostLocalMapper
-import org.joseph.friendsync.data.local.mappers.RecommendedPostSqlToPostLocalMapperImpl
-import org.joseph.friendsync.data.local.mappers.SubscriptionSqlToSubscriptionLocalMapper
-import org.joseph.friendsync.data.local.mappers.UserSqlToCurrentUserLocalMapper
-import org.joseph.friendsync.data.local.mappers.UserSqlToUserDetailLocalMapper
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.provideDispatcher
 import org.joseph.friendsync.data.mappers.AuthResponseDataToAuthResultDataMapper
 import org.joseph.friendsync.data.mappers.CategoryCloudToCategoryDomainMapper
 import org.joseph.friendsync.data.mappers.CommentCloudToCommentDomainMapper
@@ -58,7 +34,6 @@ import org.joseph.friendsync.data.service.LikePostService
 import org.joseph.friendsync.data.service.PostService
 import org.joseph.friendsync.data.service.SubscriptionService
 import org.joseph.friendsync.data.service.UserService
-import org.joseph.friendsync.database.AppDatabase
 import org.joseph.friendsync.domain.repository.AuthRepository
 import org.joseph.friendsync.domain.repository.CategoryRepository
 import org.joseph.friendsync.domain.repository.CommentsRepository
@@ -95,7 +70,7 @@ import org.koin.dsl.module
 
 fun getSharedModule() = listOf(
     networkModule,
-    localDatabaseModule,
+    databaseModule,
     authModule,
     postModule,
     usersModule,
@@ -112,16 +87,6 @@ private val authModule = module {
     single { AuthService(get()) }
     single { SignInUseCase() }
     single { SignUpUseCase() }
-}
-
-private val localDatabaseModule = module {
-    single { DatabaseDriverFactory(get()).createDriver() }
-    single { AppDatabase(get()) }
-    single<RecommendedPostDao> { RecommendedPostDaoImpl(get(), get(), get()) }
-    single<PostDao> { PostDaoImpl(get(), get(), get()) }
-    factory<RecommendedPostSqlToPostLocalMapper> { RecommendedPostSqlToPostLocalMapperImpl() }
-    factory<PostSqlToPostLocalMapper> { PostSqlToPostLocalMapperImpl() }
-
 }
 
 private val postModule = module {
@@ -143,8 +108,6 @@ private val usersModule = module {
             get(), get(), get(), get(), get()
         )
     }
-    single<UserDao> { UserDaoImpl(get(), get(), get()) }
-    single<CurrentUserDao> { CurrentUserDaoImpl(get(), get(), get()) }
     single<CurrentUserRepository> { CurrentUserRepositoryImpl(get(), get(), get()) }
     single { UserService(get()) }
     factory<FetchCurrentUserUseCase> { CurrentUserFacade }
@@ -158,14 +121,11 @@ private val usersModule = module {
     factory { ProfileParamsDomainToProfileParamsCloudMapper() }
     factory { ProfileParamsCloudToProfileParamsDomainMapper() }
     factory { FetchOnboardingUsersUseCase() }
-    factory { UserSqlToUserDetailLocalMapper() }
     factory { UserDetailLocalToUserDetailDomainMapper() }
     factory { CurrentUserLocalToCurrentUserDomainMapper() }
-    factory<UserSqlToCurrentUserLocalMapper> { UserSqlToCurrentUserLocalMapper() }
 }
 private val likeModule = module {
     single { LikePostService(get()) }
-    single<LikePostDao> { LikePostDaoImpl(get(), get(), get()) }
     single<PostLikesRepository> {
         PostLikesRepositoryImpl(get(), get(), get(), get(), get(), get(), get())
     }
@@ -177,7 +137,6 @@ private val categoryModule = module {
     single { CategoryService(get()) }
     factory { CategoryCloudToCategoryDomainMapper() }
     factory { FetchAllCategoriesUseCase() }
-    factory { LikedPostSqlToLikedPostLocalMapper() }
     factory { LikedPostCloudToLikedPostDomainMapper() }
     factory { LikedPostLocalToLikedPostDomainMapper() }
 }
@@ -195,27 +154,22 @@ private val commentsModule = module {
     factory { DeleteCommentByIdUseCase() }
     factory { FetchPostCommentsUseCase() }
     factory { EditCommentUseCase() }
-    factory { CommentsSqlToCommentLocalMapper() }
     factory { CommentsLocalToCommentDomainMapper() }
-    single<CommentsDao> { CommentsDaoImpl(get(), get(), get()) }
 }
 
 private val subscriptionModule = module {
     single<SubscriptionRepository> {
         SubscriptionRepositoryImpl(get(), get(), get(), get(), get(), get(), get())
     }
-    single<SubscriptionsDao> { SubscriptionsDaoImpl(get(), get(), get()) }
     single { SubscriptionService(get()) }
     factory { CommentCloudToCommentDomainMapper(get()) }
     factory { SubscriptionsInteractor() }
     factory { HasUserSubscriptionUseCase() }
     factory { FetchUserSubscriptionsInteractor() }
-    factory { SubscriptionSqlToSubscriptionLocalMapper() }
     factory { SubscriptionLocalToSubscriptionDomainMapper() }
     factory { SubscriptionCloudToSubscriptionDomainMapper() }
 }
 
 private val factoryModule = module {
-    factory { provideDispatcher() }
-    factory { ImageByteArrayProvider(get()) }
+    factory<DispatcherProvider> { provideDispatcher() }
 }

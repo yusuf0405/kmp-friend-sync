@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.friendsync.android.library)
     alias(libs.plugins.friendsync.android.compose)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.libres)
 }
 
@@ -14,7 +14,6 @@ kotlin {
             }
         }
         commonMain.dependencies {
-            implementation(projects.domain)
             implementation(projects.uiComponents)
 
             implementation(compose.runtime)
@@ -31,8 +30,8 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.activityCompose)
-            implementation(libs.compose.uitooling)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.compose.uitooling)
         }
     }
 }

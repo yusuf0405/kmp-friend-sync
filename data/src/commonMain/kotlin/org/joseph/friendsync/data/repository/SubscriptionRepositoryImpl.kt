@@ -3,21 +3,20 @@ package org.joseph.friendsync.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.Result.Companion.defaultError
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNullOrError
-import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.core.Result.Companion.defaultError
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.extensions.callSafe
+import org.joseph.friendsync.core.filterNotNullOrError
+import org.joseph.friendsync.core.map
 import org.joseph.friendsync.data.local.dao.subscriptions.SubscriptionsDao
 import org.joseph.friendsync.data.local.dao.user.UserDao
-import org.joseph.friendsync.data.local.dao.user.current.CurrentUserDao
+import org.joseph.friendsync.data.local.dao.user.CurrentUserDao
 import org.joseph.friendsync.data.mappers.SubscriptionCloudToSubscriptionDomainMapper
 import org.joseph.friendsync.data.mappers.SubscriptionLocalToSubscriptionDomainMapper
-import org.joseph.friendsync.data.models.subscription.SubscriptionCloud
 import org.joseph.friendsync.data.service.SubscriptionService
 import org.joseph.friendsync.domain.models.SubscriptionDomain
 import org.joseph.friendsync.domain.repository.SubscriptionRepository
+import org.joseph.friendsync.core.Result
 
 private const val UNKNOWN_USER_ID = -1
 
@@ -43,11 +42,11 @@ internal class SubscriptionRepositoryImpl(
             if (response.isSuccess()) {
                 val postId = response.data?.data?.subscriptionId ?: return@callSafe defaultError()
                 if (postId == UNKNOWN_USER_ID) return@callSafe defaultError()
-                subscriptionsDao.insertOrUpdateSubscription(
-                    id = postId,
-                    followerId = followerId,
-                    followingId = followingId
-                )
+//                subscriptionsDao.insertOrUpdateSubscription(
+//                    id = postId,
+//                    followerId = followerId,
+//                    followingId = followingId
+//                )
                 userDao.incrementDecrementFollowersCount(followingId, true)
                 currentUserDao.incrementDecrementFollowingCount(followerId, true)
             }
@@ -82,7 +81,7 @@ internal class SubscriptionRepositoryImpl(
             when (val response = service.fetchUserSubscriptions(userId)) {
                 is Result.Success -> {
                     val subscriptionsCloud = response.data?.data ?: emptyList()
-                    subscriptionsDao.insertOrUpdateSubscriptions(subscriptionsCloud)
+//                    subscriptionsDao.insertOrUpdateSubscriptions(subscriptionsCloud)
                     val subscriptions = subscriptionsCloud.map(subscriptionCloudToDomainMapper::map)
                     Result.Success(subscriptions)
                 }

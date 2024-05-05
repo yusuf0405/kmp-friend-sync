@@ -7,38 +7,42 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.user.UserPreferences
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.asyncWithDefault
-import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.common.util.coroutines.onError
+import org.joseph.friendsync.core.DispatcherProvider
 import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.extensions.asyncWithDefault
+import org.joseph.friendsync.core.extensions.launchSafe
+import org.joseph.friendsync.core.extensions.onError
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
-import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
-import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksManager
-import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
-import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Error
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.domain.markers.post.PostMarksManager
+import org.joseph.friendsync.domain.markers.users.UserMarksManager
 import org.joseph.friendsync.domain.models.PostDomain
+import org.joseph.friendsync.domain.models.UserPreferences
+import org.joseph.friendsync.domain.post.PostsObserveType
 import org.joseph.friendsync.domain.usecases.likes.FetchLikedPostsUseCase
 import org.joseph.friendsync.domain.usecases.onboarding.FetchOnboardingUsersUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchRecommendedPostsUseCase
+import org.joseph.friendsync.domain.usecases.post.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.domain.usecases.subscriptions.FetchUserSubscriptionsInteractor
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.home.impl.di.HomeFeatureDependencies
 import org.joseph.friendsync.home.impl.onboarding.OnBoardingUiState
 import org.joseph.friendsync.home.impl.onboarding.OnboardingStateStateFlowCommunication
+import org.joseph.friendsync.ui.components.mappers.PostMarkDomainToUiMapper
 import org.joseph.friendsync.ui.components.mappers.UserInfoDomainToUserInfoMapper
+import org.joseph.friendsync.ui.components.mappers.UserInfoToDomainMapper
+import org.joseph.friendsync.ui.components.mappers.UserMarkDomainToUiMapper
 import org.koin.core.component.KoinComponent
 
 private const val DEFAULT_PAGE = 1
@@ -54,6 +58,9 @@ internal class HomeViewModel(
     private val postLikeOrDislikeInteractor: PostLikeOrDislikeInteractor,
     private val fetchUserSubscriptionsInteractor: FetchUserSubscriptionsInteractor,
     private val userInfoDomainToUserInfoMapper: UserInfoDomainToUserInfoMapper,
+    private val postMarkDomainToUiMapper: PostMarkDomainToUiMapper,
+    private val userInfoToDomainMapper: UserInfoToDomainMapper,
+    private val userMarkDomainToUiMapper: UserMarkDomainToUiMapper,
     private val subscriptionsInteractor: SubscriptionsInteractor,
     private val userMarksManager: UserMarksManager,
     private val postMarksManager: PostMarksManager,
@@ -95,22 +102,29 @@ internal class HomeViewModel(
         fetchLikedPostsUseCase.invoke(currentUser.id)
         fetchUserSubscriptionsInteractor.fetchUserSubscriptions(currentUser.id)
 
-        postMarksManager.observePostWithMarks(PostsObserver.Recommended).onEach { postMarks ->
-            val state = mutableState.value as? HomeUiState.Content ?: HomeUiState.Content.unknown
-            mutableState.tryEmit(state.copy(postMarks = postMarks, isPaging = false))
-        }.onError {
-            mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
-        }.launchIn(viewModelScope)
+        postMarksManager.observePostWithMarks(PostsObserveType.Recommended)
+            .map { posts -> posts.map(postMarkDomainToUiMapper::map) }
+            .onEach { postMarks ->
+                val state =
+                    mutableState.value as? HomeUiState.Content ?: HomeUiState.Content.unknown
+                mutableState.tryEmit(state.copy(postMarks = postMarks, isPaging = false))
+            }.onError {
+                mutableState.tryEmit(HomeUiState.Error(defaultErrorMessage))
+            }.launchIn(viewModelScope)
 
-        usersFlow.flatMapLatest { userMarksManager.observeUsersWithMarks(it) }.onEach { users ->
-            val onboardingState = onboardingCommunication.value()
-            onboardingCommunication.emit(
-                onboardingState.copy(
-                    users = users,
-                    shouldShowOnBoarding = users.isNotEmpty()
+        usersFlow
+            .map { users -> users.map(userInfoToDomainMapper::map) }
+            .flatMapLatest { userMarksManager.observeUsersWithMarks(it) }
+            .map { users -> users.map(userMarkDomainToUiMapper::map) }
+            .onEach { users ->
+                val onboardingState = onboardingCommunication.value()
+                onboardingCommunication.emit(
+                    onboardingState.copy(
+                        users = users,
+                        shouldShowOnBoarding = users.isNotEmpty()
+                    )
                 )
-            )
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: HomeScreenEvent) {

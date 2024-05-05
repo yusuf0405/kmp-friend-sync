@@ -1,9 +1,10 @@
 plugins {
-    alias(libs.plugins.multiplatform)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.application)
     alias(libs.plugins.libres)
-    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -23,6 +24,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
             compilation.kotlinOptions.freeCompilerArgs += arrayOf("-linker-options", "-lsqlite3")
+            linkerOpts.add("-lsqlite3")
         }
     }
 
@@ -72,7 +74,6 @@ kotlin {
             implementation(libs.composeImageLoader)
             implementation(libs.napier)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.moko.mvvm)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
 
@@ -90,8 +91,8 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.activityCompose)
-            implementation(libs.compose.uitooling)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.compose.uitooling)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.androidx.core.splashscreen)
         }
@@ -136,6 +137,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
+}
+
+compose {
+    val kotlinVersion = libs.versions.kotlin.get()
+    kotlinCompilerPlugin = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable:$kotlinVersion"
 }
 
 libres {

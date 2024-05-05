@@ -1,6 +1,6 @@
 package org.joseph.friendsync.ui.components.mappers
 
-import org.joseph.friendsync.common.mapper.Mapper
+import org.joseph.friendsync.core.Mapper
 import org.joseph.friendsync.domain.models.UserInfoDomain
 import org.joseph.friendsync.ui.components.models.user.UserInfo
 
@@ -12,7 +12,7 @@ class UserInfoDomainToUserInfoMapper : Mapper<UserInfoDomain, UserInfo> {
             name = name,
             lastName = lastName,
             avatar = avatar ?: String(),
-            releaseDate = releaseDate.toLocalDate().toString()
+            releaseDate = releaseDate.toString()
         )
     }
 }

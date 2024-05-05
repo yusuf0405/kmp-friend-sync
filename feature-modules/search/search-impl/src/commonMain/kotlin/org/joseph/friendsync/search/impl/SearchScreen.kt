@@ -3,23 +3,18 @@ package org.joseph.friendsync.search.impl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,7 +30,6 @@ import org.joseph.friendsync.core.ui.components.PostItem
 import org.joseph.friendsync.core.ui.components.SearchTextField
 import org.joseph.friendsync.core.ui.components.UserItemWithName
 import org.joseph.friendsync.core.ui.components.UserVerticalWithFollowItem
-import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
@@ -50,7 +44,7 @@ import org.joseph.friendsync.search.impl.category.CategoryType
 import org.joseph.friendsync.search.impl.post.PostUiState
 import org.joseph.friendsync.search.impl.user.UsersUiState
 import org.joseph.friendsync.ui.components.models.Category
-import org.joseph.friendsync.ui.components.models.user.UserInfoMark
+import org.joseph.friendsync.ui.components.models.UserInfoMark
 
 @Composable
 internal fun SearchScreen(

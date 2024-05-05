@@ -29,22 +29,8 @@ object AddPostFeatureImpl : AddPostFeatureApi {
     ) {
         navGraphBuilder.composable(route = addPostRoute) {
             val viewModel: AddPostViewModel = koinInject()
-            val uiState: AddPostUiState by viewModel.state.collectAsStateWithLifecycle()
+            val uiState by viewModel.state.collectAsStateWithLifecycle()
             val keyboardController = LocalSoftwareKeyboardController.current
-
-            val addPostAction = remember {
-                {
-                    keyboardController?.hide()
-                    viewModel.onEvent(AddPostEvent.OnAddPost)
-                }
-            }
-
-            val clearAllDataAction = remember {
-                {
-                    keyboardController?.hide()
-                    viewModel.onEvent(AddPostEvent.OnClearData)
-                }
-            }
 
             Scaffold(
                 topBar = {
@@ -52,15 +38,25 @@ object AddPostFeatureImpl : AddPostFeatureApi {
                         title = MainResStrings.create_destination_title,
                         endIcon = Icons.Default.Send,
                         startIcon = Icons.Default.Clear,
-                        onEndClick = addPostAction,
-                        onStartClick = clearAllDataAction
+                        onEndClick = remember {
+                            {
+                                keyboardController?.hide()
+                                viewModel.onAction(ScreenAction.OnAddPost)
+                            }
+                        },
+                        onStartClick = remember {
+                            {
+                                keyboardController?.hide()
+                                viewModel.onAction(ScreenAction.OnClearData)
+                            }
+                        }
                     )
                 }
             ) { paddings ->
                 AddPostScreen(
                     modifier = Modifier.padding(top = paddings.calculateTopPadding()),
                     uiState = uiState,
-                    onEvent = viewModel::onEvent
+                    onAction = viewModel::onAction
                 )
             }
         }

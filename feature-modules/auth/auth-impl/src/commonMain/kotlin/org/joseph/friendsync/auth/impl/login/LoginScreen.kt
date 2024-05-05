@@ -32,7 +32,7 @@ import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 
 @Composable
-fun LoginScreen(
+internal fun LoginScreen(
     viewModel: LoginViewModel,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -92,9 +92,6 @@ fun LoginScreen(
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             shape = FriendSyncTheme.shapes.extraLarge,
             enabled = shouldButtonEnabled && !uiState.isAuthenticating,
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = FriendSyncTheme.dimens.dp20
-            ),
         )
     }
 

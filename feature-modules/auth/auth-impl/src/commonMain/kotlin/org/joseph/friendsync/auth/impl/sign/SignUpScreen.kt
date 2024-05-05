@@ -117,9 +117,6 @@ fun SignUpScreen(
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             shape = FriendSyncTheme.shapes.extraLarge,
             enabled = shouldButtonEnabled && !uiState.isAuthenticating,
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = FriendSyncTheme.dimens.dp20
-            ),
         )
     }
 

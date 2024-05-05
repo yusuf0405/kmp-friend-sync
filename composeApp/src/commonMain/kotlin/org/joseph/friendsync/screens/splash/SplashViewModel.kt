@@ -1,9 +1,10 @@
 package org.joseph.friendsync.screens.splash
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.core.extensions.launchSafe
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.di.DependencyProvider.authFeature

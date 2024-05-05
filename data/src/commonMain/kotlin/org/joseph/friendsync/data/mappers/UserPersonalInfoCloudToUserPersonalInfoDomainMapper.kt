@@ -1,9 +1,7 @@
 package org.joseph.friendsync.data.mappers
 
-import org.joseph.friendsync.common.mapper.Mapper
-import org.joseph.friendsync.data.models.user.UserInfoCloud
+import org.joseph.friendsync.core.Mapper
 import org.joseph.friendsync.data.models.user.UserPersonalInfoCloud
-import org.joseph.friendsync.domain.models.UserInfoDomain
 import org.joseph.friendsync.domain.models.UserPersonalInfoDomain
 
 internal class UserPersonalInfoCloudToUserPersonalInfoDomainMapper :

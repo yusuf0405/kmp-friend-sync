@@ -14,24 +14,24 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.user.UserPreferences
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.common.util.coroutines.onError
 import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.extensions.launchSafe
+import org.joseph.friendsync.core.extensions.onError
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.common.extensions.createMutableSharedFlowAsLiveData
-import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
-import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksManager
-import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
-import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.domain.markers.post.PostMarksManager
+import org.joseph.friendsync.domain.markers.users.UserMarksManager
+import org.joseph.friendsync.domain.models.UserPreferences
+import org.joseph.friendsync.domain.post.PostsObserveType
 import org.joseph.friendsync.domain.usecases.categories.FetchAllCategoriesUseCase
+import org.joseph.friendsync.domain.usecases.post.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.domain.usecases.post.SearchPostsByQueryUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.SubscriptionsInteractor
 import org.joseph.friendsync.domain.usecases.user.SearchUsersByQueryUseCase
@@ -44,13 +44,16 @@ import org.joseph.friendsync.search.impl.post.PostUiStateCommunication
 import org.joseph.friendsync.search.impl.user.UserUiStateCommunication
 import org.joseph.friendsync.search.impl.user.UsersUiState
 import org.joseph.friendsync.ui.components.mappers.CategoryDomainToCategoryMapper
+import org.joseph.friendsync.ui.components.mappers.PostMarkDomainToUiMapper
 import org.joseph.friendsync.ui.components.mappers.UserInfoDomainToUserInfoMapper
+import org.joseph.friendsync.ui.components.mappers.UserInfoToDomainMapper
+import org.joseph.friendsync.ui.components.mappers.UserMarkDomainToUiMapper
 import org.joseph.friendsync.ui.components.models.Category
 import org.joseph.friendsync.ui.components.models.Post
 import org.joseph.friendsync.ui.components.models.PostMark
+import org.joseph.friendsync.ui.components.models.UserInfoMark
 import org.joseph.friendsync.ui.components.models.filterPhotoPosts
 import org.joseph.friendsync.ui.components.models.filterTextPosts
-import org.joseph.friendsync.ui.components.models.user.UserInfoMark
 import org.koin.core.component.KoinComponent
 
 private const val SEARCH_DEBOUNCE = 300L
@@ -69,6 +72,9 @@ internal class SearchViewModel(
     private val postLikeOrDislikeInteractor: PostLikeOrDislikeInteractor,
     private val categoryDomainToCategoryMapper: CategoryDomainToCategoryMapper,
     private val userInfoMapper: UserInfoDomainToUserInfoMapper,
+    private val postMarkDomainToUiMapper: PostMarkDomainToUiMapper,
+    private val userInfoToDomainMapper: UserInfoToDomainMapper,
+    private val userMarkDomainToUiMapper: UserMarkDomainToUiMapper,
     private val snackbarDisplayer: SnackbarDisplayer,
     private val postUiStateCommunication: PostUiStateCommunication,
     private val userUiStateCommunication: UserUiStateCommunication,
@@ -101,7 +107,9 @@ internal class SearchViewModel(
     init {
         allDataJob = loadAllData()
 
-        usersFlow.flatMapLatest { userMarksManager.observeUsersWithMarks(it) }
+        usersFlow.map { users -> users.map(userInfoToDomainMapper::map) }
+            .flatMapLatest(userMarksManager::observeUsersWithMarks)
+            .map { users -> users.map(userMarkDomainToUiMapper::map) }
             .onEach(::handleUsersState)
             .onError(::handleError)
             .launchIn(viewModelScope)
@@ -118,7 +126,8 @@ internal class SearchViewModel(
 
         combine(
             searchQueryFlow.debounce(SEARCH_DEBOUNCE),
-            postMarksManager.observePostWithMarks(PostsObserver.Simple),
+            postMarksManager.observePostWithMarks(PostsObserveType.Simple)
+                .map { it.map(postMarkDomainToUiMapper::map) },
             categoryTypeFlow
         ) { query, posts, category ->
             val postMarks = if (query.isBlank()) emptyList()

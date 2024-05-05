@@ -3,10 +3,10 @@ package org.joseph.friendsync.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.extensions.callSafe
+import org.joseph.friendsync.core.map
 import org.joseph.friendsync.data.local.dao.liked.post.LikePostDao
 import org.joseph.friendsync.data.local.dao.post.PostDao
 import org.joseph.friendsync.data.local.dao.post.RecommendedPostDao
@@ -33,7 +33,7 @@ internal class PostLikesRepositoryImpl(
             when (val response = likePostService.fetchLikedPosts(userId)) {
                 is Result.Success -> {
                     val postCloud = response.data?.data ?: return@callSafe Result.defaultError()
-                    postCloud.forEach { likePostDao.insertOrUpdateLikesPost(it) }
+//                    postCloud.forEach { likePostDao.insertOrUpdateLikesPost(it) }
                     Result.Success(postCloud.map(likedPostCloudToLikedPostDomainMapper::map))
                 }
 
@@ -58,7 +58,7 @@ internal class PostLikesRepositoryImpl(
             if (result.isSuccess() && likedPostCloud != null) {
                 recommendedPostDao.incrementDecrementLikesCount(postId, true)
                 postDao.incrementDecrementLikesCount(postId, true)
-                likePostDao.insertOrUpdateLikesPost(likedPostCloud)
+//                likePostDao.insertOrUpdateLikesPost(likedPostCloud)
             }
             result.map { }
         }

@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.extensions.launchSafe
 import org.joseph.friendsync.core.FriendSyncViewModel
 import org.joseph.friendsync.core.ui.common.extensions.firstLetterIsCapitalizedRestSmall
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus

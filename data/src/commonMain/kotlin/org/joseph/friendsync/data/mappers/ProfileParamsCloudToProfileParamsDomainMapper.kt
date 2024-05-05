@@ -1,6 +1,6 @@
 package org.joseph.friendsync.data.mappers
 
-import org.joseph.friendsync.common.mapper.Mapper
+import org.joseph.friendsync.core.Mapper
 import org.joseph.friendsync.data.models.user.EditProfileParamsCloud
 import org.joseph.friendsync.domain.models.EditProfileParams
 

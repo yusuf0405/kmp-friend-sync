@@ -11,8 +11,6 @@ sealed class PostDetailUiState {
 
     data class Error(val message: String) : PostDetailUiState()
 
-    data class Content(
-        val postMark: PostMark
-    ) : PostDetailUiState()
+    data class Content(val postMark: PostMark) : PostDetailUiState()
 
 }

@@ -1,6 +1,6 @@
 package org.joseph.friendsync.domain.usecases.user
 
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.domain.models.EditProfileParams
 import org.joseph.friendsync.domain.repository.CurrentUserRepository
 import org.joseph.friendsync.domain.repository.UserRepository

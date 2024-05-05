@@ -1,10 +1,12 @@
 package org.joseph.friendsync.core
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -15,11 +17,17 @@ abstract class FriendSyncViewModel<S>(initialState: S) : ViewModel() {
 
     private val stateMutex = Mutex()
 
+    suspend fun getCurrentState(): S = stateMutex.withLock { state.value }
+
     suspend fun withState(
         block: suspend S.() -> Unit
     ) = stateMutex.withLock { block(state.value) }
 
-    suspend fun updateState(
+    fun updateState(
         transform: suspend S.() -> S
-    ) = stateMutex.withLock { mutableState.update { transform(it) } }
+    ) {
+        viewModelScope.launch {
+            stateMutex.withLock { mutableState.update { transform(it) } }
+        }
+    }
 }

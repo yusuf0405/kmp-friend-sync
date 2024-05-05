@@ -9,7 +9,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.path
 import kotlinx.coroutines.CancellationException
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 
 suspend inline fun <reified T> HttpClient.request(
     endPoint: String,

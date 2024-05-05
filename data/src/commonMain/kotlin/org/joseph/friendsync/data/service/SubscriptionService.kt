@@ -4,7 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.data.models.subscription.CreateOrCancelSubscription
 import org.joseph.friendsync.data.models.subscription.ShouldUserSubscriptionResponse
 import org.joseph.friendsync.data.models.subscription.SubscriptionIdResponse

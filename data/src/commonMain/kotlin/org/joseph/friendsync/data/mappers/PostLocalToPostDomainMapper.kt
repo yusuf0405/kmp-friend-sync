@@ -1,6 +1,7 @@
 package org.joseph.friendsync.data.mappers
 
-import org.joseph.friendsync.common.mapper.Mapper
+import org.joseph.friendsync.core.Mapper
+import org.joseph.friendsync.core.extensions.toLocalDate
 import org.joseph.friendsync.data.di.BASE_URL
 import org.joseph.friendsync.data.local.models.PostLocal
 import org.joseph.friendsync.data.models.post.PostCloud
@@ -14,10 +15,7 @@ internal class PostLocalToPostDomainMapper(
         PostDomain(
             commentsCount = commentsCount,
             id = id,
-            imageUrls = imageUrls.map { imageUrl ->
-                if (imageUrl.isBlank()) String()
-                else BASE_URL + imageUrl
-            },
+            imageUrls = listOf(),
             likesCount = likesCount,
             message = message,
             releaseDate = releaseDate,
@@ -27,7 +25,7 @@ internal class PostLocalToPostDomainMapper(
                 name = userName,
                 lastName = userLastname,
                 avatar = userAvatar,
-                releaseDate = userReleaseDate
+                releaseDate = userReleaseDate.toLocalDate()
             )
         )
     }

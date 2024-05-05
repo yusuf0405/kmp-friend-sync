@@ -5,21 +5,21 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.util.coroutines.launchSafe
 import org.joseph.friendsync.core.FriendSyncViewModel
+import org.joseph.friendsync.core.extensions.launchSafe
 import org.joseph.friendsync.core.extensions.routeWithParam
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
-import org.joseph.friendsync.core.ui.common.managers.post.PostMarksManager
-import org.joseph.friendsync.core.ui.common.observers.post.PostsObserver
-import org.joseph.friendsync.core.ui.common.usecases.post.like.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.domain.markers.post.PostMarksManager
+import org.joseph.friendsync.domain.post.PostsObserveType
 import org.joseph.friendsync.domain.usecases.current.user.FetchCurrentUserFlowUseCase
 import org.joseph.friendsync.domain.usecases.current.user.FetchCurrentUserUseCase
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
+import org.joseph.friendsync.domain.usecases.post.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.profile.impl.communication.CurrentUserPostsStateCommunication
 import org.joseph.friendsync.profile.impl.di.ProfileFeatureDependencies
 import org.joseph.friendsync.profile.impl.screens.current.user.tabs.posts.CurrentUserPostsUiState.Content
@@ -29,6 +29,7 @@ import org.joseph.friendsync.profile.impl.screens.edit.profile.EditProfileFeatur
 import org.joseph.friendsync.profile.impl.screens.profile.ProfileFeatureImpl
 import org.joseph.friendsync.profile.impl.screens.profile.UNKNOWN_USER_ID
 import org.joseph.friendsync.ui.components.mappers.CurrentUserDomainToCurrentUserMapper
+import org.joseph.friendsync.ui.components.mappers.PostMarkDomainToUiMapper
 import org.joseph.friendsync.ui.components.models.user.CurrentUser
 import org.koin.core.component.KoinComponent
 
@@ -44,6 +45,7 @@ internal class CurrentUserViewModel(
     private val postsStateCommunication: CurrentUserPostsStateCommunication,
     private val navigationCommunication: NavigationRouteFlowCommunication,
     private val currentUserMapper: CurrentUserDomainToCurrentUserMapper,
+    private val postMarkDomainToUiMapper: PostMarkDomainToUiMapper,
 ) : FriendSyncViewModel<CurrentUserUiState>(CurrentUserUiState.Initial), KoinComponent {
 
     val postsUiStateFlow = postsStateCommunication.observe()
@@ -60,7 +62,8 @@ internal class CurrentUserViewModel(
             fetchUserPostsUseCase.invoke(currentUserId)
             fetchCurrentUserUseCase.fetchCurrentUser()
 
-            postsMarksManager.observePostWithMarks(PostsObserver.ForUser(currentUserId))
+            postsMarksManager.observePostWithMarks(PostsObserveType.ForUser(currentUserId))
+                .map { posts -> posts.map(postMarkDomainToUiMapper::map) }
                 .onStart { postsStateCommunication.emit(Loading) }
                 .onEach { posts -> postsStateCommunication.emit(Content(posts)) }
                 .launchIn(this)

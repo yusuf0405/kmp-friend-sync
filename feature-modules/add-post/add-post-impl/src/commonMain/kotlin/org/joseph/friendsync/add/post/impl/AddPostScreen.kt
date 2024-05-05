@@ -26,10 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Attachment
-import androidx.compose.material.icons.outlined.Gif
 import androidx.compose.material.icons.outlined.Photo
-import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -52,6 +49,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import kotlinx.coroutines.launch
+import org.joseph.friendsync.add.post.impl.model.FileType
+import org.joseph.friendsync.add.post.impl.state.ScreenUiState
 import org.joseph.friendsync.core.ui.components.CircularImage
 import org.joseph.friendsync.core.ui.components.HorizontalPagerIndicator
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
@@ -64,12 +63,11 @@ import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 
 @Composable
-fun AddPostScreen(
-    uiState: AddPostUiState,
-    onEvent: (AddPostEvent) -> Unit,
+internal fun AddPostScreen(
+    uiState: ScreenUiState,
+    onAction: (ScreenAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -89,7 +87,7 @@ fun AddPostScreen(
             )
             TextField(
                 value = uiState.message ?: String(),
-                onValueChange = { onEvent(AddPostEvent.OnMessageChange(it)) },
+                onValueChange = { onAction(ScreenAction.OnMessageChange(it)) },
                 placeholder = {
                     Text(
                         text = MainResStrings.whats_on_your_mind,
@@ -109,27 +107,28 @@ fun AddPostScreen(
         SpacerHeight(MediumSpacing)
         PhotoContent(
             uiState = uiState,
-            onEvent = onEvent
+            onAction = onAction
         )
     }
 }
 
 @Composable
-fun PhotoContent(
-    uiState: AddPostUiState,
-    onEvent: (AddPostEvent) -> Unit,
+private fun PhotoContent(
+    uiState: ScreenUiState,
+    onAction: (ScreenAction) -> Unit,
 ) {
     var showFilePicker by remember { mutableStateOf(false) }
     var isShowCloseIcon by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    val fileType = listOf("jpg", "png")
+    val fileType = FileType.entries.map { it.name }
+
     FilePicker(
         show = showFilePicker,
         fileExtensions = fileType
     ) { file ->
         file?.let {
-            scope.launch { onEvent(AddPostEvent.OnImageChange(file.platformFile)) }
+            scope.launch { onAction(ScreenAction.OnImageChange(file.platformFile)) }
         }
         showFilePicker = false
     }

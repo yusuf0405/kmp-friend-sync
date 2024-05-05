@@ -1,6 +1,6 @@
 package org.joseph.friendsync.domain.usecases.onboarding
 
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.domain.models.UserInfoDomain
 import org.joseph.friendsync.domain.repository.UserRepository
 import org.koin.core.component.KoinComponent

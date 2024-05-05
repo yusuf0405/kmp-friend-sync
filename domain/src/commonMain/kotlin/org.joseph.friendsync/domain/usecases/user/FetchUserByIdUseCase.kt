@@ -1,7 +1,7 @@
 package org.joseph.friendsync.domain.usecases.user
 
 import kotlinx.coroutines.flow.Flow
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.domain.models.UserDetailDomain
 import org.joseph.friendsync.domain.repository.UserRepository
 import org.koin.core.component.KoinComponent

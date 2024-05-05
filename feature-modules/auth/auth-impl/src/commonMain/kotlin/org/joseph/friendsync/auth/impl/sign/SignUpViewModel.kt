@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.joseph.friendsync.auth.impl.AuthFeatureDependencies
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.extensions.launchSafe
 import org.joseph.friendsync.core.FriendSyncViewModel
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
@@ -111,9 +111,11 @@ class SignUpViewModel(
 
     private fun handleSignUpSuccessResult(authResultData: AuthResultData) {
         val user = authResultDataToUserPreferencesMapper.map(authResultData)
-        userDataStore.saveCurrentUser(user)
-        setStateToAuthenticatingEnd()
-        navigationCommunication.emit(navigationParams(authFeatureDependencies.getHomeRoute()))
+        viewModelScope.launchSafe {
+            userDataStore.saveCurrentUser(user)
+            setStateToAuthenticatingEnd()
+            navigationCommunication.emit(navigationParams(authFeatureDependencies.getHomeRoute()))
+        }
     }
 
     private fun handleSignUpErrorResult(message: String?) {

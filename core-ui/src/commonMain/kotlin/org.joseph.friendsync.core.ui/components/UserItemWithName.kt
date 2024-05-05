@@ -24,7 +24,7 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.ui.components.models.FollowsUser
-import org.joseph.friendsync.ui.components.models.user.UserInfoMark
+import org.joseph.friendsync.ui.components.models.UserInfoMark
 
 @Composable
 fun FollowsUserList(

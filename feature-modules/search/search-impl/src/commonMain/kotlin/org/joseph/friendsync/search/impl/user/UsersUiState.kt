@@ -1,7 +1,6 @@
 package org.joseph.friendsync.search.impl.user
 
-import org.joseph.friendsync.ui.components.models.user.UserInfo
-import org.joseph.friendsync.ui.components.models.user.UserInfoMark
+import org.joseph.friendsync.ui.components.models.UserInfoMark
 
 sealed class UsersUiState {
 

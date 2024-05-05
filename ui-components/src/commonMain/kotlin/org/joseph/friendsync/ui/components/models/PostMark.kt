@@ -21,5 +21,7 @@ fun List<PostMark>.filterPhotoPosts(): List<PostMark> {
 }
 
 fun List<PostMark>.filterTextPosts(): List<PostMark> {
-    return this.filter { post -> post.post.text.isNotEmpty() && post.post.imageUrls.isEmpty() }
+    return this.filter { post ->
+        post.post.text.isNotEmpty() && post.post.imageUrls.isEmpty()
+    }
 }

@@ -1,11 +1,11 @@
 package org.joseph.friendsync.data.repository
 
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNullOrError
-import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.extensions.callSafe
+import org.joseph.friendsync.core.filterNotNullOrError
+import org.joseph.friendsync.core.map
 import org.joseph.friendsync.data.mappers.CategoryCloudToCategoryDomainMapper
 import org.joseph.friendsync.data.service.CategoryService
 import org.joseph.friendsync.domain.models.CategoryDomain

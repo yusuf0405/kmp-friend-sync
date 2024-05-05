@@ -3,7 +3,7 @@ package org.joseph.friendsync.data.service
 import io.ktor.client.HttpClient
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.data.models.comments.AddCommentParams
 import org.joseph.friendsync.data.models.comments.CommentListResponse
 import org.joseph.friendsync.data.models.comments.CommentResponse

@@ -4,16 +4,21 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -34,6 +39,9 @@ import kotlinx.coroutines.launch
 import org.joseph.friendsync.core.ui.common.EmptyScreen
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
+import org.joseph.friendsync.core.ui.common.animation.AnimateSlideTop
+import org.joseph.friendsync.core.ui.common.toolbar.CollapsibleToolbar
+import org.joseph.friendsync.core.ui.components.AppTopBar
 import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
@@ -84,100 +92,106 @@ fun LoadedCurrentUserScreen(
     onEvent: (CurrentUserEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tabs = fetchProfileTabs(
-        postsUiState = postsUiState,
-        onEvent = onEvent
-    )
+    val tabs = postsUiState.profileTabs(onEvent = onEvent)
     val pagerState = rememberPagerState { tabs.size }
     val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
-    BoxWithConstraints(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
+    Scaffold(
+        topBar = {
+            AnimateSlideTop(
+                isVisible = scrollState.value > (scrollState.maxValue * 0.8)
+            ) {
+                AppTopBar(title = "Joseph")
+            }
+        }
     ) {
-        val screenHeight = maxHeight
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(state = scrollState)
+        BoxWithConstraints(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
         ) {
-            UserPersonalInfo(
-                user = uiState.user,
-                hasUserSubscription = hasUserSubscription,
-                onEvent = onEvent
-            )
-            Column(modifier = Modifier.height(screenHeight)) {
-                TabRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = FriendSyncTheme.colors.backgroundPrimary,
-                    contentColor = FriendSyncTheme.colors.backgroundPrimary,
-                    selectedTabIndex = pagerState.currentPage,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            modifier = Modifier
-                                .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                                .clip(RoundedCornerShape(SmallSpacing)),
-                            height = FriendSyncTheme.dimens.dp2,
-                            color = FriendSyncTheme.colors.primary
-                        )
-                    }
-                ) {
-                    tabs.forEachIndexed { index, tab ->
-                        Tab(
-                            text = {
-                                Text(
-                                    modifier = Modifier.padding(vertical = FriendSyncTheme.dimens.dp4),
-                                    text = tab.title,
-                                    style = FriendSyncTheme.typography.bodyExtraMedium.medium,
-                                    color = FriendSyncTheme.colors.textPrimary
-                                )
-                            },
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            }
-                        )
-                    }
-                }
-
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .nestedScroll(remember {
-                            object : NestedScrollConnection {
-                                override fun onPreScroll(
-                                    available: Offset,
-                                    source: NestedScrollSource
-                                ): Offset {
-                                    return if (available.y > 0) Offset.Zero else Offset(
-                                        x = 0f,
-                                        y = -scrollState.dispatchRawDelta(-available.y)
-                                    )
-                                }
-                            }
-                        })
+            val screenHeight = maxHeight
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = scrollState)
+            ) {
+                UserPersonalInfo(
+                    user = uiState.user,
+                    hasUserSubscription = hasUserSubscription,
+                    onEvent = onEvent
                 )
-                { page: Int ->
-                    tabs[page].content()
+                Column(modifier = Modifier.height(screenHeight)) {
+                    TabRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = FriendSyncTheme.colors.backgroundPrimary,
+                        contentColor = FriendSyncTheme.colors.backgroundPrimary,
+                        selectedTabIndex = pagerState.currentPage,
+                        indicator = { tabPositions ->
+                            TabRowDefaults.Indicator(
+                                modifier = Modifier
+                                    .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                                    .clip(RoundedCornerShape(SmallSpacing)),
+                                height = FriendSyncTheme.dimens.dp2,
+                                color = FriendSyncTheme.colors.primary
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, tab ->
+                            Tab(
+                                text = {
+                                    Text(
+                                        modifier = Modifier.padding(vertical = FriendSyncTheme.dimens.dp4),
+                                        text = tab.title,
+                                        style = FriendSyncTheme.typography.bodyExtraMedium.medium,
+                                        color = FriendSyncTheme.colors.textPrimary
+                                    )
+                                },
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .nestedScroll(remember {
+                                object : NestedScrollConnection {
+                                    override fun onPreScroll(
+                                        available: Offset,
+                                        source: NestedScrollSource
+                                    ): Offset {
+                                        return if (available.y > 0) Offset.Zero else Offset(
+                                            x = 0f,
+                                            y = -scrollState.dispatchRawDelta(-available.y)
+                                        )
+                                    }
+                                }
+                            })
+                    )
+                    { page: Int ->
+                        tabs[page].content()
+                    }
                 }
             }
         }
     }
 }
 
-fun fetchProfileTabs(
-    postsUiState: CurrentUserPostsUiState,
+fun CurrentUserPostsUiState.profileTabs(
     onEvent: (CurrentUserEvent) -> Unit
 ) = listOf(
     ProfileTab(
         title = MainResStrings.posts,
         content = {
             CurrentUserPostsScreen(
-                uiState = postsUiState,
+                uiState = this,
                 onEvent = onEvent
             )
         }

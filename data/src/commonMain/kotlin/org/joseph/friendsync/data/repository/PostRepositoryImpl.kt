@@ -3,10 +3,10 @@ package org.joseph.friendsync.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.extensions.callSafe
+import org.joseph.friendsync.core.map
 import org.joseph.friendsync.data.local.dao.post.PostDao
 import org.joseph.friendsync.data.local.dao.post.RecommendedPostDao
 import org.joseph.friendsync.data.mappers.PostCloudToPostDomainMapper
@@ -34,7 +34,7 @@ internal class PostRepositoryImpl(
             if (response.data == null)
                 Result.defaultError()
             else {
-                postDao.insertOrUpdatePost(response.data)
+//                postDao.insertOrUpdatePost(response.data)
                 Result.Success(postCloudToPostDomainMapper.map(response.data))
             }
         }
@@ -47,7 +47,7 @@ internal class PostRepositoryImpl(
             when (val response = postService.fetchPostById(postId)) {
                 is Result.Success -> {
                     val postCloud = response.data?.data ?: return@callSafe Result.defaultError()
-                    postDao.insertOrUpdatePost(postCloud)
+//                    postDao.insertOrUpdatePost(postCloud)
                     Result.Success(postCloudToPostDomainMapper.map(postCloud))
                 }
 
@@ -66,7 +66,7 @@ internal class PostRepositoryImpl(
             when (val response = postService.fetchUserPosts(userId)) {
                 is Result.Success -> {
                     val postsCloud = response.data?.data ?: emptyList()
-                    postDao.insertOrUpdatePosts(postsCloud)
+//                    postDao.insertOrUpdatePosts(postsCloud)
                     Result.Success(postsCloud.map(postCloudToPostDomainMapper::map))
                 }
 
@@ -109,7 +109,7 @@ internal class PostRepositoryImpl(
             when (val response = postService.fetchRecommendedPosts(page, pageSize, userId)) {
                 is Result.Success -> {
                     val postsCloud = response.data?.data ?: emptyList()
-                    recommendedPostDao.insertOrUpdatePosts(postsCloud)
+//                    recommendedPostDao.insertOrUpdatePosts(postsCloud)
                     Result.Success(postsCloud.map(postCloudToPostDomainMapper::map))
                 }
 
@@ -130,7 +130,7 @@ internal class PostRepositoryImpl(
             when (val response = postService.searchPosts(query, page, pageSize)) {
                 is Result.Success -> {
                     val postsCloud = response.data?.data ?: emptyList()
-                    postDao.insertOrUpdatePosts(postsCloud)
+//                    postDao.insertOrUpdatePosts(postsCloud)
                     Result.Success(postsCloud.map(postCloudToPostDomainMapper::map))
                 }
 

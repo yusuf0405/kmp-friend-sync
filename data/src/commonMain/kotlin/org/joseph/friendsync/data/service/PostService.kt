@@ -10,7 +10,7 @@ import io.ktor.client.request.parameter
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.data.di.BASE_URL
 import org.joseph.friendsync.data.models.post.PostListResponse
 import org.joseph.friendsync.data.models.post.PostResponse

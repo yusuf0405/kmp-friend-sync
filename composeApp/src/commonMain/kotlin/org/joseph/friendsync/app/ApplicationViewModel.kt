@@ -1,9 +1,7 @@
 package org.joseph.friendsync.app
 
-import androidx.navigation.NavOptionsBuilder
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.SharedFlow
-import org.joseph.friendsync.core.ui.common.communication.ActionAfterNavigate
 import org.joseph.friendsync.core.ui.common.communication.NavigationParams
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar

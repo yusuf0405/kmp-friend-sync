@@ -9,7 +9,7 @@ val homeScreenModule = module {
     factory {
         HomeViewModel(
             get(), get(), get(), get(), get(), get(), get(), get(), get(),
-            get(), get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
     factory<OnboardingStateStateFlowCommunication> { OnboardingStateStateFlowCommunication.Default() }

@@ -1,6 +1,6 @@
 package org.joseph.friendsync.domain.usecases.signup
 
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.domain.models.AuthResultData
 import org.joseph.friendsync.domain.repository.AuthRepository
 import org.koin.core.component.KoinComponent

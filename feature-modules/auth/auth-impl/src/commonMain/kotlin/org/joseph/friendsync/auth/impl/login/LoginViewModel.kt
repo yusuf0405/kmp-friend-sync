@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.joseph.friendsync.auth.impl.AuthFeatureDependencies
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.launchSafe
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.extensions.launchSafe
 import org.joseph.friendsync.core.FriendSyncViewModel
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
@@ -22,7 +22,7 @@ import org.joseph.friendsync.domain.validations.PasswordValidation
 import org.joseph.friendsync.ui.components.mappers.AuthResultDataToUserPreferencesMapper
 import org.koin.core.component.KoinComponent
 
-class LoginViewModel(
+internal class LoginViewModel(
     private val email: String,
     private val authFeatureDependencies: AuthFeatureDependencies,
     private val passwordValidation: PasswordValidation,
@@ -68,9 +68,11 @@ class LoginViewModel(
 
     private fun handleSuccessSignIn(authResultData: AuthResultData) {
         val user = authResultDataToUserPreferencesMapper.map(authResultData)
-        userDataStore.saveCurrentUser(user)
-        setStateToAuthenticatingEnd()
-        navigationCommunication.emit(navigationParams(authFeatureDependencies.getHomeRoute()))
+        viewModelScope.launchSafe {
+            userDataStore.saveCurrentUser(user)
+            setStateToAuthenticatingEnd()
+            navigationCommunication.emit(navigationParams(authFeatureDependencies.getHomeRoute()))
+        }
     }
 
     private fun handleErrorSignIn(message: String?) {

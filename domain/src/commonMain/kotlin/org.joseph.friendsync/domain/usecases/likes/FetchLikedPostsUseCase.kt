@@ -1,6 +1,6 @@
 package org.joseph.friendsync.domain.usecases.likes
 
-import org.joseph.friendsync.common.util.Result
+import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.domain.models.LikedPostDomain
 import org.joseph.friendsync.domain.repository.PostLikesRepository
 import org.koin.core.component.KoinComponent

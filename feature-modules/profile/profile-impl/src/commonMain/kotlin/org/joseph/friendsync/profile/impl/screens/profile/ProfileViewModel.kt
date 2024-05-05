@@ -7,16 +7,16 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import org.joseph.friendsync.common.user.UserDataStore
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.launchSafe
-import org.joseph.friendsync.common.util.coroutines.onError
+import org.joseph.friendsync.domain.UserDataStore
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.extensions.launchSafe
+import org.joseph.friendsync.core.extensions.onError
 import org.joseph.friendsync.core.FriendSyncViewModel
 import org.joseph.friendsync.core.ui.common.communication.BooleanStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
-import org.joseph.friendsync.core.ui.common.managers.subscriptions.UserMarksManager
+import org.joseph.friendsync.domain.markers.users.UserMarksManager
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Error
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
 import org.joseph.friendsync.core.ui.strings.MainResStrings
@@ -32,6 +32,8 @@ import org.joseph.friendsync.profile.impl.mappers.toUserInfo
 import org.joseph.friendsync.profile.impl.screens.edit.profile.EditProfileFeatureImpl
 import org.joseph.friendsync.profile.impl.screens.profile.ProfileUiState.Content
 import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
+import org.joseph.friendsync.ui.components.mappers.UserInfoToDomainMapper
+import org.joseph.friendsync.ui.components.mappers.UserMarkDomainToUiMapper
 import org.koin.core.component.KoinComponent
 
 const val UNKNOWN_USER_ID = -1
@@ -47,6 +49,7 @@ internal class ProfileViewModel(
     private val subscriptionsInteractor: SubscriptionsInteractor,
     private val userMarksManager: UserMarksManager,
     private val userDetailDomainToUserDetailMapper: UserDetailDomainToUserDetailMapper,
+    private val userInfoToDomainMapper: UserInfoToDomainMapper,
     private val snackbarDisplayer: SnackbarDisplayer,
     private val profilePostsStateCommunication: ProfilePostsStateCommunication,
     private val shouldCurrentUserFlowCommunication: BooleanStateFlowCommunication,
@@ -81,7 +84,8 @@ internal class ProfileViewModel(
             .launchIn(viewModelScope)
 
 
-        usersFlow.flatMapLatest { userMarksManager.observeUsersWithMarks(it) }
+        usersFlow.map { users -> users.map(userInfoToDomainMapper::map) }
+            .flatMapLatest(userMarksManager::observeUsersWithMarks)
             .map { it.firstOrNull() }
             .filterNotNull()
             .onEach { hasUserSubscriptionCommunication.emit(it.isSubscribed) }

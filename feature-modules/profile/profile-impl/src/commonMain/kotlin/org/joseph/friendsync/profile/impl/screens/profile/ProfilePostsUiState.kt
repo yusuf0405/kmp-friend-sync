@@ -2,7 +2,6 @@ package org.joseph.friendsync.profile.impl.screens.profile
 
 import androidx.compose.runtime.Immutable
 import org.joseph.friendsync.ui.components.models.Post
-import org.joseph.friendsync.ui.components.models.PostMark
 
 
 @Immutable

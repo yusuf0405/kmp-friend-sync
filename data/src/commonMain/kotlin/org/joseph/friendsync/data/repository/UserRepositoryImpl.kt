@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.common.util.Result
-import org.joseph.friendsync.common.util.coroutines.DispatcherProvider
-import org.joseph.friendsync.common.util.coroutines.callSafe
-import org.joseph.friendsync.common.util.filterNotNullOrError
-import org.joseph.friendsync.common.util.map
+import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.core.DispatcherProvider
+import org.joseph.friendsync.core.extensions.callSafe
+import org.joseph.friendsync.core.filterNotNullOrError
+import org.joseph.friendsync.core.map
 import org.joseph.friendsync.data.local.dao.user.UserDao
 import org.joseph.friendsync.data.mappers.ProfileParamsCloudToProfileParamsDomainMapper
 import org.joseph.friendsync.data.mappers.ProfileParamsDomainToProfileParamsCloudMapper
@@ -54,7 +54,7 @@ internal class UserRepositoryImpl(
             }.filterNotNullOrError()
 
             if (response.isSuccess()) {
-                response.data?.let { userDao.insertOrUpdateUser(it) }
+//                response.data?.let { userDao.insertOrUpdateUser(it) }
             }
             response.map { it.let(userDetailCloudToUserDetailDomainMapper::map) }
         }

@@ -4,25 +4,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.extensions.SpacerWidth
+import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnterTypeDialog(
+internal fun EnterTypeDialog(
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
     onNavigateToLogin: () -> Unit,
@@ -37,46 +38,51 @@ fun EnterTypeDialog(
         tonalElevation = FriendSyncTheme.dimens.dp12,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = MainResStrings.select_the_login_option,
-                style = FriendSyncTheme.typography.titleExtraMedium.bold,
+                style = FriendSyncTheme.typography.titleSmall.semiBold,
                 color = FriendSyncTheme.colors.textPrimary
+            )
+            SpacerHeight(MediumSpacing)
+            Text(
+                text = MainResStrings.select_the_login_method_to_continue,
+                style = FriendSyncTheme.typography.bodyMedium.regular,
+                color = FriendSyncTheme.colors.textSecondary
             )
             SpacerHeight(LargeSpacing)
             Row(
                 modifier = Modifier
-                    .padding(LargeSpacing)
+                    .padding(
+                        vertical = LargeSpacing,
+                        horizontal = ExtraLargeSpacing
+                    )
                     .fillMaxWidth()
             ) {
-                PrimaryButton(
+                OutlinedButton(
                     modifier = Modifier.weight(1f),
-                    onClick = onNavigateToLogin,
-                    text = MainResStrings.login_button_label,
-                    textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
-                    shape = FriendSyncTheme.shapes.extraLarge,
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = FriendSyncTheme.dimens.dp20
-                    ),
-                )
+                    onClick = onNavigateToSignUp
+                ) {
+                    Text(
+                        text = MainResStrings.signup_button_hint,
+                        style = FriendSyncTheme.typography.bodyMedium.semiBold,
+                        color = FriendSyncTheme.colors.textPrimary
+                    )
+                }
                 SpacerWidth(LargeSpacing)
-                PrimaryButton(
+                Button(
                     modifier = Modifier.weight(1f),
-                    onClick = onNavigateToSignUp,
-                    text = MainResStrings.signup_button_hint,
-                    textStyle = FriendSyncTheme.typography.bodyMedium.semiBold,
-                    shape = FriendSyncTheme.shapes.extraLarge,
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = FriendSyncTheme.dimens.dp20
-                    ),
-                    color = FriendSyncTheme.colors.accentPositive,
-                    textColor = FriendSyncTheme.colors.onTextPrimary
-                )
+                    onClick = onNavigateToLogin
+                ) {
+                    Text(
+                        text = MainResStrings.login_button_label,
+                        style = FriendSyncTheme.typography.bodyMedium.semiBold,
+                        color = FriendSyncTheme.colors.onTextPrimary
+                    )
+                }
             }
-            SpacerHeight(ExtraLargeSpacing)
         }
     }
 }

@@ -1,14 +1,11 @@
 package org.joseph.friendsync.ui.components.mappers
 
+import org.joseph.friendsync.core.Mapper
+import org.joseph.friendsync.core.extensions.toLocalDate
 import org.joseph.friendsync.domain.models.PostDomain
 import org.joseph.friendsync.ui.components.models.Post
 
-interface PostDomainToPostMapper {
-
-    fun map(from: PostDomain): Post
-}
-
-class PostDomainToPostMapperImpl : PostDomainToPostMapper {
+class PostDomainToPostMapper : Mapper<PostDomain, Post> {
 
     override fun map(from: PostDomain): Post = from.run {
         Post(

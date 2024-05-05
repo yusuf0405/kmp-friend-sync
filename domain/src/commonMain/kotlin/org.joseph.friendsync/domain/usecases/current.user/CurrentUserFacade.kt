@@ -1,7 +1,9 @@
 package org.joseph.friendsync.domain.usecases.current.user
 
 import kotlinx.coroutines.flow.Flow
-import org.joseph.friendsync.common.user.UserDataStore
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import org.joseph.friendsync.domain.UserDataStore
 import org.joseph.friendsync.domain.models.CurrentUserDomain
 import org.joseph.friendsync.domain.repository.CurrentUserRepository
 import org.joseph.friendsync.domain.repository.UserRepository
@@ -23,7 +25,10 @@ object CurrentUserFacade : FetchCurrentUserUseCase, FetchCurrentUserFlowUseCase,
 
 
     override fun fetchCurrentUserFlow(): Flow<CurrentUserDomain?> {
-        val userId = userDataStore.fetchCurrentUser().id
-        return currentUserRepository.observeCurrentUser(userId)
+        return flow {
+            emit(userDataStore.fetchCurrentUser().id)
+        }.flatMapLatest { userId ->
+            currentUserRepository.observeCurrentUser(userId)
+        }
     }
 }
