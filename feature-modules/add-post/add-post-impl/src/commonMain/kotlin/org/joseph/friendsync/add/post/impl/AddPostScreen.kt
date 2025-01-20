@@ -55,7 +55,9 @@ import org.joseph.friendsync.core.ui.components.CircularImage
 import org.joseph.friendsync.core.ui.components.HorizontalPagerIndicator
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.extensions.SpacerWidth
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.whats_on_your_mind
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
@@ -90,7 +92,7 @@ internal fun AddPostScreen(
                 onValueChange = { onAction(ScreenAction.OnMessageChange(it)) },
                 placeholder = {
                     Text(
-                        text = MainResStrings.whats_on_your_mind,
+                        text = stringResource(Res.string.whats_on_your_mind),
                         style = FriendSyncTheme.typography.bodyMedium.medium,
                     )
                 },

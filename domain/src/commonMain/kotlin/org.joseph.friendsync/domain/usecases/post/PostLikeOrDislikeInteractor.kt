@@ -10,10 +10,10 @@ class PostLikeOrDislikeInteractor : KoinComponent {
     private val repository by inject<PostLikesRepository>()
 
     suspend fun likePost(userId: Int, postId: Int): Result<Unit> {
-        return repository.likePost(userId, postId)
+        return Result.Success(repository.likePost(userId, postId))
     }
 
     suspend fun unlikePost(userId: Int, postId: Int): Result<Unit> {
-        return repository.unlikePost(userId, postId)
+        return Result.Success(repository.unlikePost(userId, postId))
     }
 }

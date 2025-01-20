@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.friendsync.android.library)
+    alias(libs.plugins.friendsync.library.api)
 }
 
 kotlin {

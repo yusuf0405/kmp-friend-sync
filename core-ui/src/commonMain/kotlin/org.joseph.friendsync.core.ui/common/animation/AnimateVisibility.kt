@@ -8,6 +8,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kmp_friend_sync.core_ui.generated.resources.Res
 
 private const val DEFAULT_ANIMATION_DURATION = 300
 

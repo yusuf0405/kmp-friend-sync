@@ -1,29 +1,29 @@
 package org.joseph.friendsync.data.di
 
 import androidx.room.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import org.joseph.friendsync.domain.UserDataStore
 import org.joseph.friendsync.core.PlatformConfiguration
-import org.joseph.friendsync.data.database.AppDatabase
-import org.joseph.friendsync.data.database.UserDataStoreImpl
-import org.joseph.friendsync.data.database.dataStoreFileName
-import org.joseph.friendsync.data.database.dataBaseFileName
-import org.joseph.friendsync.data.database.instantiateImpl
+import org.joseph.friendsync.data.local.database.AppDatabase
+import org.joseph.friendsync.data.local.database.UserDataStoreImpl
+import org.joseph.friendsync.data.local.database.dataStoreFileName
+import org.joseph.friendsync.data.local.database.dataBaseFileName
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
-import platform.Foundation.NSHomeDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
 actual class DatabaseFactory actual constructor(platformConfiguration: PlatformConfiguration) {
 
     actual fun createRoomDatabase(): AppDatabase {
-        val dbFilePath = NSHomeDirectory() + dataBaseFileName
+        val dbFile = "${fileDirectory()}/$dataBaseFileName"
         return Room.databaseBuilder<AppDatabase>(
-            name = dbFilePath,
-            factory = { AppDatabase::class.instantiateImpl() }
-        ).setQueryCoroutineContext(Dispatchers.Default)
+            name = dbFile
+        ).setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
 
@@ -39,5 +39,17 @@ actual class DatabaseFactory actual constructor(platformConfiguration: PlatformC
             )
             requireNotNull(documentDirectory).path + "/$dataStoreFileName"
         }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun fileDirectory(): String {
+        val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
+            directory = NSDocumentDirectory,
+            inDomain = NSUserDomainMask,
+            appropriateForURL = null,
+            create = false,
+            error = null,
+        )
+        return requireNotNull(documentDirectory).path!!
     }
 }

@@ -10,7 +10,6 @@ sealed class Result<T>(
     val data: T? = null,
     val message: String? = null
 ) {
-
     fun isSuccess() = this is Success
 
     fun isError() = this is Error

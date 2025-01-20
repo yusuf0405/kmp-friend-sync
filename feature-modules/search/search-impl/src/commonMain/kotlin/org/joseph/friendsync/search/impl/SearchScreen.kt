@@ -30,7 +30,10 @@ import org.joseph.friendsync.core.ui.components.PostItem
 import org.joseph.friendsync.core.ui.components.SearchTextField
 import org.joseph.friendsync.core.ui.components.UserItemWithName
 import org.joseph.friendsync.core.ui.components.UserVerticalWithFollowItem
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.popular
+import kmp_friend_sync.core_ui.generated.resources.search_screen_placeholder
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
@@ -93,7 +96,7 @@ fun SearchScreenContent(
         item {
             SearchTextField(
                 modifier = Modifier.padding(ExtraLargeSpacing),
-                placeholder = MainResStrings.search_screen_placeholder,
+                placeholder = stringResource(Res.string.search_screen_placeholder),
                 value = searchQueryValue,
                 onValueChange = { onEvent(SearchScreenEvent.OnSearchValueChange(it)) }
             )
@@ -107,7 +110,7 @@ fun SearchScreenContent(
                 item {
                     Text(
                         modifier = Modifier.padding(horizontal = ExtraLargeSpacing),
-                        text = MainResStrings.popular,
+                        text = stringResource(Res.string.popular),
                         style = FriendSyncTheme.typography.bodyExtraLarge.bold,
                     )
                     Spacer(Modifier.height(ExtraMediumSpacing))

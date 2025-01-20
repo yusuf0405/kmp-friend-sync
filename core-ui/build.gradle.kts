@@ -1,31 +1,12 @@
 plugins {
-    alias(libs.plugins.friendsync.android.library)
-    alias(libs.plugins.friendsync.android.compose)
-    alias(libs.plugins.compose.multiplatform)
-    alias(libs.plugins.libres)
+    alias(libs.plugins.friendsync.library.impl)
+    alias(libs.plugins.friendsync.library.compose)
 }
 
 kotlin {
     sourceSets {
-        all {
-            languageSettings {
-                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
-                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
-            }
-        }
         commonMain.dependencies {
             implementation(projects.uiComponents)
-
-            implementation(compose.runtime)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(libs.composeIcons.featherIcons)
-            implementation(libs.lifecycle.viewmodel.compose)
-            implementation(libs.navigation.compose)
-
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.libres)
-            implementation(libs.composeImageLoader)
         }
 
         androidMain.dependencies {
@@ -36,13 +17,11 @@ kotlin {
     }
 }
 
-android {
-    namespace = "org.joseph.friendsync.core.ui"
+compose.resources {
+    publicResClass = true
+    generateResClass = auto
 }
 
-libres {
-    generatedClassName = "MainRes"
-    generateNamedArguments = true
-    baseLocaleLanguageCode = "en"
-    camelCaseNamesForAppleFramework = false
+android {
+    namespace = "org.joseph.friendsync.core.ui"
 }

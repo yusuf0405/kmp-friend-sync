@@ -17,7 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.add_new_string
+import kmp_friend_sync.core_ui.generated.resources.add_new_string_desc
+import kmp_friend_sync.core_ui.generated.resources.create_destination_title
+import kmp_friend_sync.core_ui.generated.resources.edit_comment
+import kmp_friend_sync.core_ui.generated.resources.edit_comment_desc
+import kmp_friend_sync.core_ui.generated.resources.enter_something
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.DefaultSecondaryButtonSize
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
@@ -83,7 +90,7 @@ internal fun AddCommentBottomDialog(
                 ),
                 placeholder = {
                     Text(
-                        text = MainResStrings.enter_something,
+                        text = stringResource(Res.string.enter_something),
                         style = FriendSyncTheme.typography.bodyMedium.medium,
                         color = FriendSyncTheme.colors.textSecondary,
                     )
@@ -100,9 +107,9 @@ internal fun AddCommentBottomDialog(
                 Text(
                     modifier = Modifier.padding(vertical = SmallSpacing),
                     text = if (isEditComment) {
-                        MainResStrings.edit_comment
+                        stringResource(Res.string.edit_comment)
                     } else {
-                        MainResStrings.create_destination_title
+                        stringResource(Res.string.create_destination_title)
                     },
                     style = FriendSyncTheme.typography.bodyMedium.semiBold,
                     color = if (buttonEnabled) {
@@ -117,18 +124,20 @@ internal fun AddCommentBottomDialog(
     }
 }
 
+@Composable
 private fun Boolean.titleText(): String {
     return if (this) {
-        MainResStrings.edit_comment
+        stringResource(Res.string.edit_comment)
     } else {
-        MainResStrings.add_new_string
+        stringResource(Res.string.add_new_string)
     }
 }
 
+@Composable
 private fun Boolean.descriptionText(): String {
     return if (this) {
-        MainResStrings.edit_comment_desc
+        stringResource(Res.string.edit_comment_desc)
     } else {
-        MainResStrings.add_new_string_desc
+        stringResource(Res.string.add_new_string_desc)
     }
 }

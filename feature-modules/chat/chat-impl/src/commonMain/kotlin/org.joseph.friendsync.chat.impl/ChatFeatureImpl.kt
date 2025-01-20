@@ -18,7 +18,9 @@ import org.joseph.friendsync.chat.impl.list.ChatListScreen
 import org.joseph.friendsync.chat.impl.list.ChatListViewModel
 import org.joseph.friendsync.core.ui.components.AppTopBar
 import org.joseph.friendsync.core.ui.components.ChatAppTopBar
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.chats_list_destination_title
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.ui.components.models.sampleChats
 import org.koin.compose.koinInject
 
@@ -41,7 +43,7 @@ object ChatFeatureImpl : ChatFeatureApi {
             Scaffold(
                 topBar = {
                     AppTopBar(
-                        title = MainResStrings.chats_list_destination_title,
+                        title = stringResource(Res.string.chats_list_destination_title),
                         endIcon = FeatherIcons.Settings,
                         startIcon = FeatherIcons.ArrowLeft,
                         onStartClick = { navController.navigateUp() }

@@ -26,7 +26,16 @@ import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.auth.impl.login.generateEmailTextForLogin
 import org.joseph.friendsync.core.ui.components.AppBarIcon
 import org.joseph.friendsync.core.ui.components.PrimaryButton
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.last_name_hint
+import kmp_friend_sync.core_ui.generated.resources.password_hint
+import kmp_friend_sync.core_ui.generated.resources.signup_button_hint
+import kmp_friend_sync.core_ui.generated.resources.signup_destination_title
+import kmp_friend_sync.core_ui.generated.resources.username_hint
+import kmp_friend_sync.core_ui.generated.resources.your_lastname
+import kmp_friend_sync.core_ui.generated.resources.your_name
+import kmp_friend_sync.core_ui.generated.resources.your_password
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 
@@ -58,7 +67,7 @@ fun SignUpScreen(
         )
         SpacerHeight(FriendSyncTheme.dimens.dp32)
         Text(
-            text = MainResStrings.signup_destination_title,
+            text = stringResource(Res.string.signup_destination_title),
             style = FriendSyncTheme.typography.titleExtraLarge.semiBold,
             fontSize = FriendSyncTheme.dimens.sp40,
             lineHeight = FriendSyncTheme.dimens.sp48
@@ -70,38 +79,38 @@ fun SignUpScreen(
         SpacerHeight(FriendSyncTheme.dimens.dp48)
 
         LoginTextField(
-            title = MainResStrings.your_name.toUpperCase(Locale.current),
+            title = stringResource(Res.string.your_name).toUpperCase(Locale.current),
             value = uiState.name,
             onValueChange = { name ->
                 viewModel.onEvent(SignUpEvent.OnNameChanged(name))
             },
-            hint = MainResStrings.username_hint,
+            hint = stringResource(Res.string.username_hint),
             validationStatus = nameValidationStatus,
             readOnly = uiState.isAuthenticating
         )
         SpacerHeight(ExtraLargeSpacing)
 
         LoginTextField(
-            title = MainResStrings.your_lastname.toUpperCase(Locale.current),
+            title = stringResource(Res.string.your_lastname).toUpperCase(Locale.current),
             value = uiState.lastName,
             onValueChange = { lastname ->
                 viewModel.onEvent(SignUpEvent.OnLastNameChanged(lastname))
             },
-            hint = MainResStrings.last_name_hint,
+            hint = stringResource(Res.string.last_name_hint),
             validationStatus = lastnameValidationStatus,
             readOnly = uiState.isAuthenticating
         )
         SpacerHeight(ExtraLargeSpacing)
 
         LoginTextField(
-            title = MainResStrings.your_password.toUpperCase(Locale.current),
+            title = stringResource(Res.string.your_password).toUpperCase(Locale.current),
             value = uiState.password,
             onValueChange = { password ->
                 viewModel.onEvent(SignUpEvent.OnPasswordChanged(password))
             },
             keyboardType = KeyboardType.Password,
             isPasswordTextField = true,
-            hint = MainResStrings.password_hint,
+            hint = stringResource(Res.string.password_hint),
             validationStatus = passwordValidationStatus,
             readOnly = uiState.isAuthenticating
         )
@@ -113,7 +122,7 @@ fun SignUpScreen(
                 focusManager.clearFocus()
                 viewModel.onEvent(SignUpEvent.OnSignUp)
             },
-            text = MainResStrings.signup_button_hint,
+            text = stringResource(Res.string.signup_button_hint),
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             shape = FriendSyncTheme.shapes.extraLarge,
             enabled = shouldButtonEnabled && !uiState.isAuthenticating,

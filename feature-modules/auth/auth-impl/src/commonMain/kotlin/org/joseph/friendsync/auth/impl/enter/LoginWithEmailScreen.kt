@@ -28,7 +28,12 @@ import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.continue_with_email
+import kmp_friend_sync.core_ui.generated.resources.email_hint
+import kmp_friend_sync.core_ui.generated.resources.enter_with_email_screen_title
+import kmp_friend_sync.core_ui.generated.resources.your_email
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 
@@ -61,17 +66,17 @@ fun EnterWithEmailScreen(
         )
         SpacerHeight(FriendSyncTheme.dimens.dp32)
         Text(
-            text = MainResStrings.enter_with_email_screen_title,
+            text = stringResource(Res.string.enter_with_email_screen_title),
             style = FriendSyncTheme.typography.titleExtraLarge.semiBold,
             fontSize = FriendSyncTheme.dimens.sp40,
             lineHeight = FriendSyncTheme.dimens.sp48
         )
         SpacerHeight(FriendSyncTheme.dimens.dp40)
         LoginTextField(
-            title = MainResStrings.your_email.toUpperCase(Locale.current),
+            title = stringResource(Res.string.your_email).toUpperCase(Locale.current),
             value = uiState.email,
             onValueChange = { viewModel.onEvent(LoginWithEmailEvent.OnEmailChanged(it)) },
-            hint = MainResStrings.email_hint,
+            hint = stringResource(Res.string.email_hint),
             validationStatus = emailValidationStatus
         )
         SpacerHeight(FriendSyncTheme.dimens.dp32)
@@ -81,7 +86,7 @@ fun EnterWithEmailScreen(
                 focusManager.clearFocus()
                 shouldShowEnterTypeDialog = true
             },
-            text = MainResStrings.continue_with_email,
+            text = stringResource(Res.string.continue_with_email),
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             shape = FriendSyncTheme.shapes.extraLarge,
             enabled = shouldButtonEnabled,

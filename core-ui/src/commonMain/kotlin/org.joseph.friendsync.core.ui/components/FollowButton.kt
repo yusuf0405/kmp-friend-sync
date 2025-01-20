@@ -7,7 +7,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.edit_profile
+import kmp_friend_sync.core_ui.generated.resources.follow_button_text
+import kmp_friend_sync.core_ui.generated.resources.unsubscribe
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 
 enum class FollowButtonType {
@@ -36,7 +40,7 @@ fun FollowButton(
     ) {
         Text(
             modifier = Modifier,
-            text = MainResStrings.edit_profile,
+            text = stringResource(Res.string.edit_profile),
             style = textStyle(type),
             color = FriendSyncTheme.colors.textPrimary,
             maxLines = 1,
@@ -48,7 +52,7 @@ fun FollowButton(
     ) {
         Text(
             modifier = Modifier,
-            text = MainResStrings.unsubscribe,
+            text = stringResource(Res.string.unsubscribe),
             style = textStyle(type),
             color = FriendSyncTheme.colors.textPrimary,
             maxLines = 1,
@@ -63,7 +67,7 @@ fun FollowButton(
         ) {
             Text(
                 modifier = Modifier,
-                text = MainResStrings.follow_button_text,
+                text = stringResource(Res.string.follow_button_text),
                 style = textStyle(type),
                 color = FriendSyncTheme.colors.textPrimary,
                 maxLines = 1,

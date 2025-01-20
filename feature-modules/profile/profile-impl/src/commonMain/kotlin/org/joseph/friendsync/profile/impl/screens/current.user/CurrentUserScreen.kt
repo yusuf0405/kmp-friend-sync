@@ -42,7 +42,12 @@ import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.common.animation.AnimateSlideTop
 import org.joseph.friendsync.core.ui.common.toolbar.CollapsibleToolbar
 import org.joseph.friendsync.core.ui.components.AppTopBar
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.liked
+import kmp_friend_sync.core_ui.generated.resources.posts
+import kmp_friend_sync.core_ui.generated.resources.stories
+import kmp_friend_sync.core_ui.generated.resources.tagged
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
 import org.joseph.friendsync.profile.impl.models.ProfileTab
@@ -184,11 +189,12 @@ fun LoadedCurrentUserScreen(
     }
 }
 
+@Composable
 fun CurrentUserPostsUiState.profileTabs(
     onEvent: (CurrentUserEvent) -> Unit
 ) = listOf(
     ProfileTab(
-        title = MainResStrings.posts,
+        title = stringResource(Res.string.posts),
         content = {
             CurrentUserPostsScreen(
                 uiState = this,
@@ -197,16 +203,16 @@ fun CurrentUserPostsUiState.profileTabs(
         }
     ),
     ProfileTab(
-        title = MainResStrings.stories,
+        title = stringResource(Res.string.stories),
         content = { EmptyScreen() }
 
     ),
     ProfileTab(
-        title = MainResStrings.liked,
+        title = stringResource(Res.string.liked),
         content = { EmptyScreen() }
     ),
     ProfileTab(
-        title = MainResStrings.tagged,
+        title = stringResource(Res.string.tagged),
         content = { EmptyScreen() }
     )
 )

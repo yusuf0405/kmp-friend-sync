@@ -5,10 +5,10 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import org.joseph.friendsync.domain.UserDataStore
 import org.joseph.friendsync.core.PlatformConfiguration
-import org.joseph.friendsync.data.database.AppDatabase
-import org.joseph.friendsync.data.database.UserDataStoreImpl
-import org.joseph.friendsync.data.database.dataStoreFileName
-import org.joseph.friendsync.data.database.dataBaseFileName
+import org.joseph.friendsync.data.local.database.AppDatabase
+import org.joseph.friendsync.data.local.database.UserDataStoreImpl
+import org.joseph.friendsync.data.local.database.dataStoreFileName
+import org.joseph.friendsync.data.local.database.dataBaseFileName
 
 actual class DatabaseFactory actual constructor(
     private val platformConfiguration: PlatformConfiguration

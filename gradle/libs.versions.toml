@@ -2,49 +2,52 @@
 android-minSdk = "24"
 android-compileSdk = "34"
 android-targetSdk = "34"
-kotlinCompilerExtensionVersion = "1.5.4"
+kotlinCompilerExtensionVersion = "1.5.14"
 jvmTarget = "17"
+
+versionCode = "1"
+versionName = "1.0.0"
 
 # view kotlin and compose multiplatform compatibility here:
 # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compatibility-and-versioning.html#kotlin-compatibility
-kotlin = "2.0.0-RC2"
-compose-multiplatform = "1.6.10-beta03"
+kotlin = "2.0.0"
+compose-multiplatform = "1.7.3"
 
-agp = "8.2.2"
+agp = "8.4.0"
 
 # view kotlin ksp version here: https://github.com/google/ksp/releases
-ksp = "2.0.0-RC2-1.0.20"
+ksp = "2.0.0-1.0.21"
 
 # Libraries in alpha or beta
-viewmodel-compose = "2.8.0-beta02"
+lifecycle-compose = "2.8.4"
 navigation-compose = "2.8.0-alpha02"
-room = "2.7.0-alpha01"
-sqlite-bundled = "2.5.0-alpha01"
+room = "2.7.0-alpha08"
+sqlite = "2.5.0-alpha07"
+coil3 = "3.0.0"
 
 android-splashscreen = "1.0.1"
-androidx-appcompat = "1.6.1"
+androidx-appcompat = "1.7.0"
 androidx-activity-compose = "1.9.0"
-compose-uitooling = "1.6.7"
-data-store = "1.1.1"
-ktor = "2.3.8"
-koin = "3.5.0"
-koin-compose = "1.1.0"
-kotlinx-coroutines = "1.8.0"
-kotlinx-serialization = "1.6.3"
-kotlinx-datetime = "0.5.0"
-skie = "0.6.2"
-okio = "3.9.0"
+compose-uitooling = "1.7.6"
+data-store = "1.1.2"
+ktor = "2.3.11"
+koin = "3.5.6"
+koin-compose = "1.1.5"
+kotlinx-coroutines = "1.9.0"
+kotlinx-serialization = "1.7.1"
+kotlinx-datetime = "0.6.0"
+skie = "0.8.4"
+okio = "3.9.1"
+paging-compose = "3.3.0-alpha02-0.5.1"
 
-libres = "1.2.1"
-compose-image-loader = "1.7.0"
-napier = "2.6.1"
+napier = "2.7.1"
 buildkonfig = "0.15.1"
 mpfilepicker = "3.1.0"
 
 compose-icons = "1.1.0"
 junit = "4.13.2"
-androidx-test-junit = "1.1.5"
-androidx-espresso-core = "3.5.1"
+androidx-test-junit = "1.2.1"
+androidx-espresso-core = "3.6.1"
 
 [libraries]
 # Androidx
@@ -52,14 +55,16 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-compose-uitooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-uitooling" }
-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "viewmodel-compose" }
-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "viewmodel-compose" }
 
 # Kotlinx
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+# Lifecycle
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-compose" }
+lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-compose" }
 
 # Navigation
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
@@ -76,7 +81,8 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite-bundled" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
 
 # Data Store
 datastore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "data-store" }
@@ -87,12 +93,20 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
 
+# Coil
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
+coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
+
+# Paging
+paging-common = { module = "app.cash.paging:paging-common", version.ref = "paging-compose" }
+paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "paging-compose" }
+
 # Other
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 skie-annotations = { module = "co.touchlab.skie:configuration-annotations", version.ref = "skie" }
 
-libres = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
-composeImageLoader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "compose-image-loader" }
 composeIcons-featherIcons = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "compose-icons" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
@@ -107,6 +121,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-gradlePlugin = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "compose-multiplatform" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -115,7 +130,6 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-libres = { id = "io.github.skeptick.libres", version.ref = "libres" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -123,5 +137,7 @@ room = { id = "androidx.room", version.ref = "room" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
 
 # Plugins defined by this project
-friendsync-android-library = { id = "friendsync.android.library", version = "unspecified" }
-friendsync-android-compose = { id = "friendsync.android.compose", version = "unspecified" }
+friendsync-library-api = { id = "friendsync.library.api", version = "unspecified" }
+friendsync-library-impl = { id = "friendsync.library.impl", version = "unspecified" }
+friendsync-library-compose = { id = "friendsync.library.compose", version = "unspecified" }
+friendsync-application-compose = { id = "friendsync.application.compose", version = "unspecified" }

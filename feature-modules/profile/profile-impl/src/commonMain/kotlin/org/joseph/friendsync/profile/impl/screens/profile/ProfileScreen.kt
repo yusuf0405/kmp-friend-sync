@@ -1,7 +1,6 @@
 package org.joseph.friendsync.profile.impl.screens.profile
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.seiko.imageloader.rememberImagePainter
+import coil3.compose.AsyncImage
 import org.joseph.friendsync.core.ui.common.EmptyScreen
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
@@ -56,7 +55,13 @@ import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.extensions.SpacerWidth
 import org.joseph.friendsync.core.ui.extensions.clickableNoRipple
 import org.joseph.friendsync.core.ui.extensions.collectStateWithLifecycle
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.edit_profile
+import kmp_friend_sync.core_ui.generated.resources.follow_button_text
+import kmp_friend_sync.core_ui.generated.resources.followers
+import kmp_friend_sync.core_ui.generated.resources.following
+import kmp_friend_sync.core_ui.generated.resources.unsubscribe
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
@@ -185,11 +190,11 @@ fun PostItem(
             contentAlignment = Alignment.Center
         ) {
             if (post.imageUrls.isNotEmpty()) {
-                Image(
+                AsyncImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight(),
-                    painter = rememberImagePainter(post.imageUrls.first()),
+                    model = post.imageUrls.first(),
                     contentScale = ContentScale.Crop,
                     contentDescription = null,
                 )
@@ -217,9 +222,6 @@ private fun UserImageWithInfo(
     onEvent: (ProfileScreenEvent) -> Unit,
     onNavigateUp: () -> Unit,
 ) {
-    println("user.avatar ${user.avatar}")
-    val painter = rememberImagePainter(user.avatar)
-
     Column {
         Box(
             modifier = Modifier
@@ -227,9 +229,9 @@ private fun UserImageWithInfo(
                 .height(500.dp)
                 .background(Placeholder())
         ) {
-            Image(
+            AsyncImage(
                 modifier = Modifier.fillMaxSize(),
-                painter = painter,
+                model = user.avatar,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
             )
@@ -340,7 +342,7 @@ private fun UserInfo(
                 style = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             )
             Text(
-                text = MainResStrings.followers,
+                text = stringResource(Res.string.followers),
                 style = FriendSyncTheme.typography.bodyExtraSmall.regular,
                 color = FriendSyncTheme.colors.textSecondary
             )
@@ -352,7 +354,7 @@ private fun UserInfo(
                 style = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             )
             Text(
-                text = MainResStrings.following,
+                text = stringResource(Res.string.following),
                 style = FriendSyncTheme.typography.bodyExtraSmall.regular,
                 color = FriendSyncTheme.colors.textSecondary
             )
@@ -396,9 +398,9 @@ private fun FollowButton(
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val text = if (shouldCurrentUser) MainResStrings.edit_profile
-    else if (isSubscribed) MainResStrings.unsubscribe
-    else MainResStrings.follow_button_text
+    val text = if (shouldCurrentUser) Res.string.edit_profile
+    else if (isSubscribed) Res.string.unsubscribe
+    else Res.string.follow_button_text
 
     OutlinedCard(
         modifier = modifier
@@ -427,7 +429,7 @@ private fun FollowButton(
         ) {
             Text(
                 modifier = Modifier,
-                text = text,
+                text = stringResource(text),
                 style = FriendSyncTheme.typography.bodyMedium.medium,
                 color = followButtonTextColor(isSubscribed, shouldCurrentUser),
                 maxLines = 1,

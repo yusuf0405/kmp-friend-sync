@@ -16,10 +16,12 @@ class AddPostUseCase : KoinComponent {
         message: String?,
         userId: Int,
     ): Result<PostDomain> {
-        return repository.addPost(
-            byteArray = byteArray,
-            message = message,
-            userId = userId
+        return Result.Success(
+            repository.addPost(
+                byteArray = byteArray,
+                message = message,
+                userId = userId
+            )
         )
     }
 }

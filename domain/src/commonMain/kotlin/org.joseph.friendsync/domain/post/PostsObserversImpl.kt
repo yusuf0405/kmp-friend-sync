@@ -29,12 +29,9 @@ class PostsObserversImpl(
 
     private fun observePost(postId: Int) = postRepository
         .observePost(postId)
-        .map { post ->
-            if (post == null) return@map null
-            listOf(post)
-        }.filterNotNull()
+        .map { post -> listOf(post) }
+        .filterNotNull()
 
     private fun observeUserPosts(userId: Int) = postRepository
         .observeUserPosts(userId)
-        .map { posts -> posts }
 }

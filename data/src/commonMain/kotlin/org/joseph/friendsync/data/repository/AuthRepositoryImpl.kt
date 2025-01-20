@@ -1,52 +1,37 @@
 package org.joseph.friendsync.data.repository
 
-import kotlinx.coroutines.withContext
-import org.joseph.friendsync.core.DispatcherProvider
-import org.joseph.friendsync.core.Result
-import org.joseph.friendsync.core.extensions.callSafe
-import org.joseph.friendsync.core.filterNotNullOrError
-import org.joseph.friendsync.core.map
+import org.joseph.friendsync.data.cloud.source.auth.AuthDataSource
 import org.joseph.friendsync.data.mappers.AuthResponseDataToAuthResultDataMapper
+import org.joseph.friendsync.data.mappers.SignUpContextToRequestMapper
 import org.joseph.friendsync.data.models.user.SignInRequest
-import org.joseph.friendsync.data.models.user.SignUpRequest
-import org.joseph.friendsync.data.service.AuthService
 import org.joseph.friendsync.domain.models.AuthResultData
+import org.joseph.friendsync.domain.models.SignUpContext
 import org.joseph.friendsync.domain.repository.AuthRepository
 
 internal class AuthRepositoryImpl(
-    private val authService: AuthService,
-    private val dispatcherProvider: DispatcherProvider,
-    private val authResponseDataToAuthResultDataMapper: AuthResponseDataToAuthResultDataMapper
+    private val authDataSource: AuthDataSource,
+    private val signUpContextToRequestMapper: SignUpContextToRequestMapper,
+    private val authResponseDataToAuthResultDataMapper: AuthResponseDataToAuthResultDataMapper,
 ) : AuthRepository {
 
-    override suspend fun signUp(
-        name: String,
-        lastName: String,
-        email: String,
-        password: String
-    ): Result<AuthResultData> = withContext(dispatcherProvider.io) {
-        callSafe {
-            val request = SignUpRequest(
-                email = email,
-                password = password,
-                name = name,
-                lastName = lastName
-            )
-            authService.signUp(request).map { response ->
-                response.data?.let(authResponseDataToAuthResultDataMapper::map)
-            }.filterNotNullOrError()
+    @Throws(IllegalStateException::class)
+    override suspend fun signUp(context: SignUpContext): AuthResultData {
+        val authResponse = authDataSource.signUp(signUpContextToRequestMapper.map(context))
+        return if (authResponse.data != null) {
+            authResponseDataToAuthResultDataMapper.map(authResponse.data)
+        } else {
+            throw IllegalStateException(authResponse.errorMessage)
         }
     }
 
-    override suspend fun signIn(
-        email: String,
-        password: String
-    ): Result<AuthResultData> = withContext(dispatcherProvider.io) {
-        callSafe {
-            val request = SignInRequest(email, password)
-            authService.signIn(request).map { response ->
-                response.data?.let(authResponseDataToAuthResultDataMapper::map)
-            }.filterNotNullOrError()
+    @Throws(IllegalStateException::class)
+    override suspend fun signIn(email: String, password: String): AuthResultData {
+        val signInRequest = SignInRequest(email = email, password = password)
+        val authResponse = authDataSource.signIn(signInRequest)
+        return if (authResponse.data != null) {
+            authResponseDataToAuthResultDataMapper.map(authResponse.data)
+        } else {
+            throw IllegalStateException(authResponse.errorMessage)
         }
     }
 }

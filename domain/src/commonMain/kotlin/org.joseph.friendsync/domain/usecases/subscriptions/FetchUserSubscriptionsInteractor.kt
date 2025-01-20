@@ -13,7 +13,7 @@ class FetchUserSubscriptionsInteractor : KoinComponent {
 
     suspend fun fetchUserSubscriptions(userId: Int): Result<List<SubscriptionDomain>> {
         repository.removeAllSubscriptionsInLocalDB()
-        return repository.fetchUserSubscriptions(userId)
+        return Result.Success(repository.fetchUserSubscriptions(userId))
     }
 
     fun observeUserSubscriptions(userId: Int): Flow<List<SubscriptionDomain>> {

@@ -22,4 +22,5 @@ data class CommentEntity(
     @ColumnInfo("user_lastname") val userLastname: String,
     @ColumnInfo("user_avatar") val userAvatar: String?,
     @ColumnInfo("user_release_date") val userReleaseDate: Long,
+    @ColumnInfo("is_sync") val isSync: Boolean = false,
 )

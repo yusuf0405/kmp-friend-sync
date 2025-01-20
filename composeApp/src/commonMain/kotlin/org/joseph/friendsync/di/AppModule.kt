@@ -1,7 +1,7 @@
 package org.joseph.friendsync.di
 
+import org.joseph.friendsync.ApplicationViewModel
 import org.joseph.friendsync.add.post.impl.di.addPostModule
-import org.joseph.friendsync.app.ApplicationViewModel
 import org.joseph.friendsync.auth.impl.di.authScreenModule
 import org.joseph.friendsync.chat.impl.list.ChatListViewModel
 import org.joseph.friendsync.core.FilePropertiesProvider
@@ -14,16 +14,16 @@ import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayerAdapter
 import org.joseph.friendsync.core.ui.snackbar.SnackbarQueue
 import org.joseph.friendsync.domain.markers.post.PostMarksManager
 import org.joseph.friendsync.domain.markers.post.PostMarksManagerImpl
-import org.joseph.friendsync.domain.markers.users.UserMarksManager
-import org.joseph.friendsync.domain.markers.users.UserMarksManagerImpl
 import org.joseph.friendsync.domain.post.PostsObservers
 import org.joseph.friendsync.domain.post.PostsObserversImpl
 import org.joseph.friendsync.domain.usecases.post.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.home.impl.di.homeScreenModule
 import org.joseph.friendsync.post.impl.di.postScreenModule
 import org.joseph.friendsync.profile.impl.di.profileScreenModule
-import org.joseph.friendsync.screens.splash.SplashViewModel
+import org.joseph.friendsync.providers.ImageLoaderConfigurator
+import org.joseph.friendsync.providers.ImageLoaderDefaultConfigurator
 import org.joseph.friendsync.search.impl.di.searchModule
+import org.joseph.friendsync.splash.SplashViewModel
 import org.joseph.friendsync.ui.components.di.uiComponentsModule
 import org.koin.dsl.module
 
@@ -60,8 +60,9 @@ private val managersModule = module {
     single<SnackbarDisplayerAdapter> { SnackbarDisplayerAdapter }
     single<SnackbarQueue> { SnackbarDisplayerAdapter }
     single<SnackbarDisplayer> { SnackbarDisplayerAdapter }
+    single<ImageLoaderConfigurator> { ImageLoaderDefaultConfigurator() }
     factory<PostMarksManager> { PostMarksManagerImpl(get(), get(), get()) }
-    factory<UserMarksManager> { UserMarksManagerImpl(get(), get()) }
+    factory { FilePropertiesProvider(get()) }
     factory { FilePropertiesProvider(get()) }
 }
 

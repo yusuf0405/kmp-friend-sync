@@ -10,6 +10,6 @@ class HasUserSubscriptionUseCase : KoinComponent {
     private val repository by inject<SubscriptionRepository>()
 
     suspend operator fun invoke(currentUserId: Int, followingId: Int): Result<Boolean> {
-        return repository.hasUserSubscription(currentUserId, followingId)
+        return Result.Success(repository.hasUserSubscription(currentUserId, followingId))
     }
 }

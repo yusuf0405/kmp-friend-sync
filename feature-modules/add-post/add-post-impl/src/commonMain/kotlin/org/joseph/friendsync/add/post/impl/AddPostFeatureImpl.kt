@@ -15,12 +15,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import org.joseph.friendsync.add.post.api.AddPostFeatureApi
 import org.joseph.friendsync.core.ui.components.AppTopBar
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.create_destination_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 object AddPostFeatureImpl : AddPostFeatureApi {
 
-    override val addPostRoute: String = MainResStrings.add_post_screen_route
+    override val addPostRoute: String = "add_post_screen_route"
 
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
@@ -35,7 +37,7 @@ object AddPostFeatureImpl : AddPostFeatureApi {
             Scaffold(
                 topBar = {
                     AppTopBar(
-                        title = MainResStrings.create_destination_title,
+                        title = stringResource(Res.string.create_destination_title),
                         endIcon = Icons.Default.Send,
                         startIcon = Icons.Default.Clear,
                         onEndClick = remember {

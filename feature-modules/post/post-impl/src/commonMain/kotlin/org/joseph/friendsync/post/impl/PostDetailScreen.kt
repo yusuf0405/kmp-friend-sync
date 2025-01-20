@@ -2,53 +2,37 @@ package org.joseph.friendsync.post.impl
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kmp_friend_sync.core_ui.generated.resources.Res
 import kotlinx.coroutines.launch
 import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.components.CommentItem
 import org.joseph.friendsync.core.ui.components.PostItem
-import org.joseph.friendsync.core.ui.components.PrimaryButton
-import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
-import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.post.impl.comment.CommentsUiState
-import org.joseph.friendsync.core.ui.strings.MainResStrings
 import org.joseph.friendsync.post.impl.components.AddCommentBottomDialog
 import org.joseph.friendsync.post.impl.components.CommentsSelectionHeader
-import org.joseph.friendsync.ui.components.models.Comment
 
 @Composable
 internal fun PostDetailScreen(
     viewModel: PostDetailViewModel,
     modifier: Modifier = Modifier,
 ) {
+    Res
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val commentsUiState by viewModel.commentsUiState.collectAsStateWithLifecycle()
 

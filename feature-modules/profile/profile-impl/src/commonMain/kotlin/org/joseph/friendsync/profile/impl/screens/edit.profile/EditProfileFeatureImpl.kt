@@ -12,7 +12,9 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Save
 import org.joseph.friendsync.core.ui.components.AppTopBar
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.edit_profile_destination_title
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.profile.api.navigation.ProfileFeatureApi
 import org.koin.compose.koinInject
 
@@ -39,7 +41,7 @@ object EditProfileFeatureImpl : ProfileFeatureApi {
             Scaffold(
                 topBar = {
                     AppTopBar(
-                        title = MainResStrings.edit_profile_destination_title,
+                        title = stringResource(Res.string.edit_profile_destination_title),
                         startIcon = FeatherIcons.ArrowLeft,
                         endIcon = FeatherIcons.Save,
                         onEndClick = { viewModel.onEvent(EditProfileEvent.OnSaveClick(uiState.id)) },

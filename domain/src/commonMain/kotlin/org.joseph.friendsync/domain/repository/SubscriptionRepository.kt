@@ -4,19 +4,22 @@ import kotlinx.coroutines.flow.Flow
 import org.joseph.friendsync.core.Result
 import org.joseph.friendsync.domain.models.SubscriptionDomain
 
+typealias UserId = Int
+typealias HasUserSubscription = Boolean
+
 interface SubscriptionRepository {
-
-    suspend fun createSubscription(followerId: Int, followingId: Int): Result<Unit>
-
-    suspend fun cancelSubscription(followerId: Int, followingId: Int): Result<Unit>
-
-    suspend fun fetchSubscriptionUserIds(userId: Int): Result<List<Int>>
-
-    suspend fun fetchUserSubscriptions(userId: Int): Result<List<SubscriptionDomain>>
-
-    suspend fun removeAllSubscriptionsInLocalDB()
 
     fun observeUserSubscriptions(userId: Int): Flow<List<SubscriptionDomain>>
 
-    suspend fun hasUserSubscription(userId: Int, followingId: Int): Result<Boolean>
+    suspend fun createSubscription(followerId: Int, followingId: Int)
+
+    suspend fun cancelSubscription(followerId: Int, followingId: Int)
+
+    suspend fun fetchSubscriptionUserIds(userId: Int): List<UserId>
+
+    suspend fun fetchUserSubscriptions(userId: Int): List<SubscriptionDomain>
+
+    suspend fun hasUserSubscription(userId: Int, followingId: Int): HasUserSubscription
+
+    suspend fun removeAllSubscriptionsInLocalDB()
 }

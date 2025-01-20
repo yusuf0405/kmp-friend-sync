@@ -15,18 +15,14 @@ class SignInUseCase : KoinComponent {
         password: String,
     ): Result<AuthResultData> {
         if (email.isBlank() || "@" !in email) {
-            return Result.Error(
-                message = "Invalid email"
-            )
+            return Result.Error(message = "Invalid email")
         }
 
         if (password.isBlank() || password.length < 8) {
-            return Result.Error(
-                message = "Invalid password"
-            )
+            return Result.Error(message = "Invalid password")
         }
 
-        return repository.signIn(email = email, password = password)
+        return Result.Success(repository.signIn(email = email, password = password))
     }
 }
 

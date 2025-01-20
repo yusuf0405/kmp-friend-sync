@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
-import org.joseph.friendsync.app.App
 import org.joseph.friendsync.core.PlatformConfiguration
 import org.joseph.friendsync.di.appModules
 import org.joseph.friendsync.data.di.getSharedModule
@@ -20,10 +19,8 @@ class AndroidApp : Application() {
     }
 
     override fun onCreate() {
-//        val splashScreen = installSplashScreen()
         super.onCreate()
         Napier.base(DebugAntilog())
-//        splashScreen.setKeepOnScreenCondition { true }
 
         INSTANCE = this
         startKoin {
@@ -38,8 +35,6 @@ class AndroidApp : Application() {
 class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            App()
-        }
+        setContent { App() }
     }
 }

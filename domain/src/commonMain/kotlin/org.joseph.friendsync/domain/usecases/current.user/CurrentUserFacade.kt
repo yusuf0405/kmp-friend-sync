@@ -18,8 +18,8 @@ object CurrentUserFacade : FetchCurrentUserUseCase, FetchCurrentUserFlowUseCase,
 
     override suspend fun fetchCurrentUser() {
         val userId = userDataStore.fetchCurrentUser().id
-        val email = userRepository.fetchUserPersonalInfoById(userId).getOrThrow().email
-        val user = userRepository.fetchUserById(userId).getOrThrow()
+        val email = userRepository.fetchUserPersonalInfoById(userId).email
+        val user = userRepository.fetchUserById(userId)
         currentUserRepository.insertOrUpdateUser(user, email)
     }
 

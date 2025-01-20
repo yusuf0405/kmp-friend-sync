@@ -1,20 +1,13 @@
 package org.joseph.friendsync.domain.repository
 
 import org.joseph.friendsync.domain.models.AuthResultData
-import org.joseph.friendsync.core.Result
+import org.joseph.friendsync.domain.models.SignUpContext
 
 interface AuthRepository {
 
-    suspend fun signUp(
-        name: String,
-        lastName: String,
-        email: String,
-        password: String,
-    ): Result<AuthResultData>
+    @Throws(IllegalStateException::class)
+    suspend fun signUp(context: SignUpContext): AuthResultData
 
-
-    suspend fun signIn(
-        email: String,
-        password: String,
-    ): Result<AuthResultData>
+    @Throws(IllegalStateException::class)
+    suspend fun signIn(email: String, password: String): AuthResultData
 }

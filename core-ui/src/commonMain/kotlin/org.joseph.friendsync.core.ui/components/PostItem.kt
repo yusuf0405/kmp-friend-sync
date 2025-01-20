@@ -1,7 +1,6 @@
 package org.joseph.friendsync.core.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.seiko.imageloader.rememberImagePainter
+import coil3.compose.AsyncImage
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.MoreVertical
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
@@ -78,9 +77,8 @@ fun PostItem(
         if (post.imageUrls.isNotEmpty()) HorizontalPager(
             state = pagerState
         ) { index ->
-            val painter = rememberImagePainter(post.imageUrls[index])
-            Image(
-                painter = painter,
+            AsyncImage(
+                model = post.imageUrls[index],
                 contentDescription = null,
                 modifier = Modifier
                     .padding(vertical = MediumSpacing)

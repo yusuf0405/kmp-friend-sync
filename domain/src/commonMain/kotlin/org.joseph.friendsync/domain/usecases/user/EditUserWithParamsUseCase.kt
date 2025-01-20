@@ -14,6 +14,6 @@ class EditUserWithParamsUseCase : KoinComponent {
 
     suspend operator fun invoke(params: EditProfileParams): Result<EditProfileParams> {
         currentUserRepository.editUserWithParams(params)
-        return userRepository.editUserWithParams(params)
+        return Result.Success(userRepository.editUserWithParams(params))
     }
 }

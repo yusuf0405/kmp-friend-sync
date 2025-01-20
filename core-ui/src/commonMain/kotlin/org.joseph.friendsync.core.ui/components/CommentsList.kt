@@ -24,7 +24,10 @@ import compose.icons.feathericons.MoreHorizontal
 import compose.icons.feathericons.Trash
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.extensions.SpacerWidth
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.delete
+import kmp_friend_sync.core_ui.generated.resources.edit
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
@@ -93,7 +96,7 @@ fun CommentItem(
                                 },
                                 text = {
                                     Text(
-                                        text = MainResStrings.edit,
+                                        text = stringResource(Res.string.edit),
                                         style = FriendSyncTheme.typography.bodySmall.medium,
                                         color = FriendSyncTheme.colors.textPrimary
                                     )
@@ -114,7 +117,7 @@ fun CommentItem(
                                 },
                                 text = {
                                     Text(
-                                        text = MainResStrings.delete,
+                                        text = stringResource(Res.string.delete),
                                         style = FriendSyncTheme.typography.bodySmall.medium,
                                         color = FriendSyncTheme.colors.accentNegative
                                     )

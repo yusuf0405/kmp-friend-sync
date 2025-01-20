@@ -1,106 +1,84 @@
 package org.joseph.friendsync.data.repository
 
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.joseph.friendsync.core.DispatcherProvider
-import org.joseph.friendsync.core.Result
-import org.joseph.friendsync.core.extensions.callSafe
-import org.joseph.friendsync.core.map
-import org.joseph.friendsync.data.local.dao.comments.CommentsDao
-import org.joseph.friendsync.data.local.dao.post.PostDao
-import org.joseph.friendsync.data.local.dao.post.RecommendedPostDao
-import org.joseph.friendsync.data.mappers.CommentCloudToCommentDomainMapper
-import org.joseph.friendsync.data.mappers.CommentsLocalToCommentDomainMapper
-import org.joseph.friendsync.data.models.comments.CommentResponse
-import org.joseph.friendsync.data.service.CommentsService
+import org.joseph.friendsync.data.cloud.source.comments.CommentsCloudDataSource
+import org.joseph.friendsync.data.local.source.comments.CommentsAddLocalDataSource
+import org.joseph.friendsync.data.local.source.comments.CommentsDeleteLocalDataSource
+import org.joseph.friendsync.data.local.source.comments.CommentsEditLocalDataSource
+import org.joseph.friendsync.data.local.source.comments.CommentsReadLocalDataSource
+import org.joseph.friendsync.data.local.source.posts.PostAddLocalDataSource
+import org.joseph.friendsync.data.mappers.CommentDataToDomainMapper
+import org.joseph.friendsync.data.models.comments.CommentData
+import org.joseph.friendsync.data.models.comments.toData
+import org.joseph.friendsync.domain.models.AddCommentParams
 import org.joseph.friendsync.domain.models.CommentDomain
+import org.joseph.friendsync.domain.repository.CommentId
 import org.joseph.friendsync.domain.repository.CommentsRepository
 
+/**
+ * Реализация репозитория для управления комментариями.
+ *
+ * Класс предоставляет методы для получения, добавления, удаления и редактирования комментариев.
+ *
+ * @property commentCloudDataSource Облачный источник данных для управления комментариями.
+ * @property commentsReadLocalDataSource Локальный источник данных для чтения комментариев.
+ * @property commentsAddLocalDataSource Локальный источник данных для добавления комментариев.
+ * @property commentsDeleteLocalDataSource Локальный источник данных для удаления комментариев.
+ * @property commentsEditLocalDataSource Локальный источник данных для редактирования комментариев.
+ * @property postAddLocalDataSource Локальный источник данных для редактирования постов.
+ * @property commentDataToDomainMapper Маппер из объекта [CommentData] в [CommentDomain].
+ */
 internal class CommentsRepositoryImpl(
-    private val postDao: PostDao,
-    private val recommendedPostDao: RecommendedPostDao,
-    private val commentsDao: CommentsDao,
-    private val commentsService: CommentsService,
-    private val commentCloudToCommentDomainMapper: CommentCloudToCommentDomainMapper,
-    private val commentsLocalToCommentDomainMapper: CommentsLocalToCommentDomainMapper,
-    private val dispatcherProvider: DispatcherProvider,
+    private val commentCloudDataSource: CommentsCloudDataSource,
+    private val commentsReadLocalDataSource: CommentsReadLocalDataSource,
+    private val commentsAddLocalDataSource: CommentsAddLocalDataSource,
+    private val commentsDeleteLocalDataSource: CommentsDeleteLocalDataSource,
+    private val commentsEditLocalDataSource: CommentsEditLocalDataSource,
+    private val postAddLocalDataSource: PostAddLocalDataSource,
+    private val commentDataToDomainMapper: CommentDataToDomainMapper,
 ) : CommentsRepository {
 
     override fun observeAllPostComments(postId: Int): Flow<List<CommentDomain>> {
-        return commentsDao.fetchAllPostCommentsReactive(postId).map { comments ->
-            comments.map(commentsLocalToCommentDomainMapper::map)
-        }
+        return commentsReadLocalDataSource
+            .observeComments(postId)
+            .map { comments: List<CommentData> -> comments.map(commentDataToDomainMapper::map) }
     }
 
-    override suspend fun addCommentToPost(
-        userId: Int,
-        postId: Int,
-        commentText: String
-    ): Result<CommentDomain?> = withContext(dispatcherProvider.io) {
-        callSafe {
-            val response = commentsService.addCommentToPost(userId, postId, commentText)
-
-            if (response.isSuccess()) {
-//                response.data?.data?.let { post -> commentsDao.insertOrUpdateComment(post) }
-                postDao.incrementDecrementCommentsCount(postId, true)
-                recommendedPostDao.incrementDecrementCommentsCount(postId, true)
-            }
-            response.map(::mapCommentResponseToDomain)
+    override suspend fun fetchAllPostComments(postId: Int): List<CommentDomain> {
+        val commentsData = commentCloudDataSource.fetchPostComments(postId)
+        val commentsDomain = commentsData.map(commentDataToDomainMapper::map)
+        withContext(NonCancellable) {
+            commentsAddLocalDataSource.addComments(commentsData)
         }
-
+        return commentsDomain
     }
 
-    override suspend fun deleteCommentById(
-        postId: Int,
-        commentId: Int
-    ): Result<Int> = withContext(dispatcherProvider.io) {
-        callSafe {
-            val response = commentsService.deleteCommentById(commentId)
-            if (response.isSuccess()) {
-                commentsDao.deleteCommentById(commentId)
-                postDao.incrementDecrementCommentsCount(postId, false)
-                recommendedPostDao.incrementDecrementCommentsCount(postId, false)
-            }
-            response
+    override suspend fun addCommentToPost(params: AddCommentParams): CommentDomain {
+        val commentData = commentCloudDataSource.addCommentToPost(params.toData())
+        withContext(NonCancellable) {
+            commentsAddLocalDataSource.addComment(commentData)
+            postAddLocalDataSource.incrementOrDecrementCommentsCount(commentData.postId, true)
         }
-
+        return commentDataToDomainMapper.map(commentData)
     }
 
-    override suspend fun editCommentById(
-        commentId: Int,
-        editedText: String
-    ): Result<Int> = withContext(dispatcherProvider.io) {
-        callSafe {
-            val response = commentsService.editCommentById(commentId, editedText)
-            if (response.isSuccess()) {
-                commentsDao.editCommentById(commentId, editedText)
-            }
-            response
+    override suspend fun deleteCommentById(postId: Int, commentId: Int): CommentId {
+        commentCloudDataSource.deleteCommentById(commentId)
+        withContext(NonCancellable) {
+            commentsDeleteLocalDataSource.deleteCommentById(commentId)
+            postAddLocalDataSource.incrementOrDecrementCommentsCount(postId, false)
         }
-
+        return commentId
     }
 
-    override suspend fun fetchAllPostComments(
-        postId: Int
-    ): Result<List<CommentDomain>> = withContext(dispatcherProvider.io) {
-        callSafe {
-            when (val response = commentsService.fetchAllPostComments(postId)) {
-                is Result.Success -> {
-                    val commentsCloud = response.data?.data ?: emptyList()
-//                    commentsDao.insertOrUpdateComments(commentsCloud)
-                    Result.Success(commentsCloud.map(commentCloudToCommentDomainMapper::map))
-                }
-
-                is Result.Error -> {
-                    if (response.message != null) Result.Error(response.message!!)
-                    else Result.defaultError()
-                }
-            }
+    override suspend fun editCommentById(commentId: Int, editedText: String): CommentId {
+        commentCloudDataSource.editCommentById(commentId, editedText)
+        withContext(NonCancellable) {
+            commentsEditLocalDataSource.editCommentById(commentId, editedText)
         }
-    }
-
-    private fun mapCommentResponseToDomain(response: CommentResponse): CommentDomain? {
-        return response.data?.let(commentCloudToCommentDomainMapper::map)
+        return commentId
     }
 }

@@ -20,6 +20,7 @@ tasks.withType<KotlinCompile>().configureEach {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.compose.gradlePlugin)
 }
 
 tasks {
@@ -31,13 +32,21 @@ tasks {
 
 gradlePlugin {
     plugins {
-        register("androidLibrary") {
-            id = "friendsync.android.library"
-            implementationClass = "AndroidLibraryConventionPlugin"
+        register("libraryApi") {
+            id = "friendsync.library.api"
+            implementationClass = "LibraryApiConventionPlugin"
         }
-        register("compose") {
-            id = "friendsync.android.compose"
-            implementationClass = "ComposeConventionPlugin"
+        register("libraryImpl") {
+            id = "friendsync.library.impl"
+            implementationClass = "LibraryImplConventionPlugin"
+        }
+        register("libraryCompose") {
+            id = "friendsync.library.compose"
+            implementationClass = "LibraryComposeConventionPlugin"
+        }
+        register("applicationCompose") {
+            id = "friendsync.application.compose"
+            implementationClass = "ApplicationComposeConventionPlugin"
         }
     }
 }

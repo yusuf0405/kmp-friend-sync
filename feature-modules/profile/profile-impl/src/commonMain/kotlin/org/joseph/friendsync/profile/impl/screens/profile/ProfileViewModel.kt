@@ -16,10 +16,12 @@ import org.joseph.friendsync.core.ui.common.communication.BooleanStateFlowCommun
 import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.UsersStateFlowCommunication
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
-import org.joseph.friendsync.domain.markers.users.UserMarksManager
+import org.joseph.friendsync.ui.components.markers.users.UserMarksManager
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar.Error
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.default_error_message
+import org.jetbrains.compose.resources.getString
 import org.joseph.friendsync.domain.models.UserDetailDomain
 import org.joseph.friendsync.domain.usecases.post.FetchUserPostsUseCase
 import org.joseph.friendsync.domain.usecases.subscriptions.HasUserSubscriptionUseCase
@@ -33,7 +35,6 @@ import org.joseph.friendsync.profile.impl.screens.edit.profile.EditProfileFeatur
 import org.joseph.friendsync.profile.impl.screens.profile.ProfileUiState.Content
 import org.joseph.friendsync.ui.components.mappers.PostDomainToPostMapper
 import org.joseph.friendsync.ui.components.mappers.UserInfoToDomainMapper
-import org.joseph.friendsync.ui.components.mappers.UserMarkDomainToUiMapper
 import org.koin.core.component.KoinComponent
 
 const val UNKNOWN_USER_ID = -1
@@ -49,7 +50,6 @@ internal class ProfileViewModel(
     private val subscriptionsInteractor: SubscriptionsInteractor,
     private val userMarksManager: UserMarksManager,
     private val userDetailDomainToUserDetailMapper: UserDetailDomainToUserDetailMapper,
-    private val userInfoToDomainMapper: UserInfoToDomainMapper,
     private val snackbarDisplayer: SnackbarDisplayer,
     private val profilePostsStateCommunication: ProfilePostsStateCommunication,
     private val shouldCurrentUserFlowCommunication: BooleanStateFlowCommunication,
@@ -63,7 +63,7 @@ internal class ProfileViewModel(
     val hasUserSubscriptionFlow: StateFlow<Boolean> = hasUserSubscriptionCommunication.observe()
 
     private val usersFlow = usersStateFlowCommunication.observe()
-    private val defaultErrorMessage = MainResStrings.default_error_message
+    private val defaultErrorMessage = Res.string.default_error_message
     private var currentUserId: Int = UNKNOWN_USER_ID
 
     init {
@@ -84,8 +84,7 @@ internal class ProfileViewModel(
             .launchIn(viewModelScope)
 
 
-        usersFlow.map { users -> users.map(userInfoToDomainMapper::map) }
-            .flatMapLatest(userMarksManager::observeUsersWithMarks)
+        usersFlow.flatMapLatest(userMarksManager::observeUsersWithMarks)
             .map { it.firstOrNull() }
             .filterNotNull()
             .onEach { hasUserSubscriptionCommunication.emit(it.isSubscribed) }
@@ -109,19 +108,25 @@ internal class ProfileViewModel(
         val response = fetchUserByIdUseCase.fetchUserById(userId)
         if (response.isError()) {
             showErrorSnackbar(response.message)
-            mutableState.tryEmit(ProfileUiState.Error(response.message ?: defaultErrorMessage))
+            mutableState.tryEmit(
+                ProfileUiState.Error(
+                    response.message ?: getString(
+                        defaultErrorMessage
+                    )
+                )
+            )
 
         }
     }
 
-    private fun processUserDetailDomain(userDomain: UserDetailDomain?) {
+    private suspend fun processUserDetailDomain(userDomain: UserDetailDomain?) {
         val currentUserUiState = if (userDomain != null) {
             val user = userDetailDomainToUserDetailMapper.map(userDomain)
             usersStateFlowCommunication.emit(listOf(user.toUserInfo()))
             Content(user = user)
         } else {
-            showErrorSnackbar(defaultErrorMessage)
-            ProfileUiState.Error(defaultErrorMessage)
+            showErrorSnackbar(getString(defaultErrorMessage))
+            ProfileUiState.Error(getString(defaultErrorMessage))
         }
         mutableState.tryEmit(currentUserUiState)
     }
@@ -137,7 +142,7 @@ internal class ProfileViewModel(
 
             is Result.Error -> {
                 profilePostsStateCommunication.emit(
-                    ProfilePostsUiState.Error(response.message ?: defaultErrorMessage)
+                    ProfilePostsUiState.Error(response.message ?: getString(defaultErrorMessage))
                 )
                 showErrorSnackbar(response.message)
             }
@@ -167,6 +172,8 @@ internal class ProfileViewModel(
     }
 
     private fun showErrorSnackbar(message: String? = null) {
-        snackbarDisplayer.showSnackbar(Error(message ?: defaultErrorMessage))
+        viewModelScope.launchSafe {
+            snackbarDisplayer.showSnackbar(Error(message ?: getString(defaultErrorMessage)))
+        }
     }
 }

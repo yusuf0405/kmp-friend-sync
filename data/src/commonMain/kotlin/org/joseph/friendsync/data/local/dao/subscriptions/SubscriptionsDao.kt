@@ -11,13 +11,13 @@ import org.joseph.friendsync.data.local.models.SubscriptionLocal
 interface SubscriptionsDao {
 
     @Query("SELECT * FROM subscriptions_table WHERE follower_id = :followerId")
-    suspend fun allSubscriptions(followerId: Long): List<SubscriptionLocal>
+    suspend fun getAllSubscriptions(followerId: Long): List<SubscriptionLocal>
 
     @Query("SELECT * FROM subscriptions_table WHERE follower_id = :followerId")
-    fun reactiveAllSubscriptions(followerId: Long): Flow<List<SubscriptionLocal>>
+    fun observeAllSubscriptions(followerId: Long): Flow<List<SubscriptionLocal>>
 
     @Query("SELECT * FROM subscriptions_table WHERE id = :id LIMIT 1")
-    suspend fun subscriptionById(id: Long): SubscriptionLocal?
+    suspend fun getSubscriptionById(id: Long): SubscriptionLocal?
 
     @Query("DELETE FROM subscriptions_table WHERE id = :id")
     suspend fun deleteSubscriptionById(id: Long)

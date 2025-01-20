@@ -15,15 +15,19 @@ import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCom
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.default_error_message
+import kotlinx.coroutines.flow.catch
+import org.jetbrains.compose.resources.getString
 import org.joseph.friendsync.domain.UserDataStore
 import org.joseph.friendsync.domain.markers.post.PostMarksManager
+import org.joseph.friendsync.domain.models.AddCommentParams
 import org.joseph.friendsync.domain.models.UserPreferences
 import org.joseph.friendsync.domain.post.PostsObserveType
 import org.joseph.friendsync.domain.usecases.comments.AddCommentToPostUseCase
 import org.joseph.friendsync.domain.usecases.comments.DeleteCommentByIdUseCase
 import org.joseph.friendsync.domain.usecases.comments.EditCommentUseCase
-import org.joseph.friendsync.domain.usecases.comments.FetchPostCommentsUseCase
+import org.joseph.friendsync.domain.usecases.comments.FetchPostCommentsInteractor
 import org.joseph.friendsync.domain.usecases.post.FetchPostByIdUseCase
 import org.joseph.friendsync.domain.usecases.post.PostLikeOrDislikeInteractor
 import org.joseph.friendsync.post.impl.comment.CommentsStateStateFlowCommunication
@@ -39,7 +43,7 @@ internal class PostDetailViewModel(
     private val postFeatureDependencies: PostFeatureDependencies,
     private val userDataStore: UserDataStore,
     private val fetchPostByIdUseCase: FetchPostByIdUseCase,
-    private val fetchPostCommentsUseCase: FetchPostCommentsUseCase,
+    private val fetchPostCommentsInteractor: FetchPostCommentsInteractor,
     private val addCommentToPostUseCase: AddCommentToPostUseCase,
     private val editCommentUseCase: EditCommentUseCase,
     private val deleteCommentByIdUseCase: DeleteCommentByIdUseCase,
@@ -55,7 +59,7 @@ internal class PostDetailViewModel(
     val commentsUiState: StateFlow<CommentsUiState> = commentsStateCommunication.observe()
 
     private var currentUser = UserPreferences.unknown
-    private var defaultErrorMessage = MainResStrings.default_error_message
+    private var defaultErrorMessage = Res.string.default_error_message
 
     private var postDataJob: Job? = null
     private var commentsDataJob: Job? = null
@@ -72,19 +76,20 @@ internal class PostDetailViewModel(
             .onEach { postMarks ->
                 val postMark = postMarks.firstOrNull()
                 val state = if (postMark != null) PostDetailUiState.Content(postMark)
-                else PostDetailUiState.Error(defaultErrorMessage)
+                else PostDetailUiState.Error(getString(defaultErrorMessage))
                 mutableState.tryEmit(state)
             }.launchIn(viewModelScope)
 
-        fetchPostCommentsUseCase.observeAllPostComments(postId).onEach { commentsDomain ->
+        fetchPostCommentsInteractor.observeAllPostComments(postId).onEach { commentsDomain ->
             commentsStateCommunication.emit(
                 CommentsUiState.Content(
                     comments = commentsDomain.map(commentDomainToCommentMapper::map),
                     shouldShowAddCommentDialog = shouldShowAddCommentDialog
                 )
             )
-        }.onError { commentsStateCommunication.emit(CommentsUiState.Error(defaultErrorMessage)) }
-            .launchIn(viewModelScope)
+        }.catch {
+            commentsStateCommunication.emit(CommentsUiState.Error(getString(defaultErrorMessage)))
+        }.launchIn(viewModelScope)
     }
 
     private fun refreshPostData() {
@@ -121,30 +126,39 @@ internal class PostDetailViewModel(
         mutableState.tryEmit(PostDetailUiState.Loading)
         val response = fetchPostByIdUseCase(postId)
         if (response.isError()) {
-            mutableState.tryEmit(PostDetailUiState.Error(response.message ?: defaultErrorMessage))
+            mutableState.tryEmit(
+                PostDetailUiState.Error(
+                    response.message ?: getString(
+                        defaultErrorMessage
+                    )
+                )
+            )
         }
     }
 
-    private fun fetchPostComments() = viewModelScope.launchSafe {
+    private fun fetchPostComments() = viewModelScope.launchSafe(
+        onError = {
+            viewModelScope.launchSafe {
+                commentsStateCommunication.emit(CommentsUiState.Error(getString(defaultErrorMessage)))
+            }
+        }
+    ) {
         commentsStateCommunication.emit(CommentsUiState.Loading)
-        val response = fetchPostCommentsUseCase(postId)
-        if (response.isError()) commentsStateCommunication.emit(
-            CommentsUiState.Error(response.message ?: defaultErrorMessage)
-        )
+        fetchPostCommentsInteractor.fetchPostComments(postId)
     }
 
     private fun doLikeButtonClick(event: PostDetailEvent.OnLikeClick) {
-        viewModelScope.launchSafe(onError = { handleError(null) }) {
+        viewModelScope.launchSafe(onError = { handleError() }) {
             if (event.isLiked) {
                 postLikeOrDislikeInteractor.unlikePost(
                     currentUser.id,
                     event.postId
-                ).onFailure { handleError(null) }
+                ).onFailure { handleError() }
             } else {
                 postLikeOrDislikeInteractor.likePost(
                     currentUser.id,
                     event.postId
-                ).onFailure { handleError(null) }
+                ).onFailure { handleError() }
             }
         }
     }
@@ -158,32 +172,30 @@ internal class PostDetailViewModel(
 
     private fun doEditCommentClick() {
         val state = commentsUiState.value as? CommentsUiState.Content ?: return
-        viewModelScope.launchSafe {
-            val result = editCommentUseCase(
+        viewModelScope.launchSafe(onError = { handleError() }) {
+            editCommentUseCase(
                 commentId = state.editComment?.id ?: return@launchSafe,
                 commentText = state.editCommentValue
             )
-            if (result.isError()) handleError(result.message)
         }
     }
 
     private fun doAddCommentClick() {
         val state = commentsUiState.value as? CommentsUiState.Content ?: return
-        viewModelScope.launchSafe {
-            val result = addCommentToPostUseCase(
+        viewModelScope.launchSafe(onError = { handleError() }) {
+            val params = AddCommentParams(
                 userId = currentUser.id,
                 postId = postId,
                 commentText = state.newCommentValue
             )
-            if (result.isError()) handleError(result.message)
+            addCommentToPostUseCase(params)
         }
         commentsStateCommunication.update { state.copy(newCommentValue = String()) }
     }
 
     private fun doDeleteCommentClick(event: PostDetailEvent.OnDeleteCommentClick) {
-        viewModelScope.launchSafe {
-            val result = deleteCommentByIdUseCase(postId, event.commentId)
-            if (result.isError()) handleError(result.message)
+        viewModelScope.launchSafe(onError = { handleError() }) {
+            deleteCommentByIdUseCase(postId, event.commentId)
         }
     }
 
@@ -216,9 +228,11 @@ internal class PostDetailViewModel(
         )
     }
 
-    private fun handleError(message: String?) {
-        val errorMessage = message ?: defaultErrorMessage
-        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+    private fun handleError(message: String? = null) {
+        viewModelScope.launchSafe {
+            val notNullMessage = message ?: getString(defaultErrorMessage)
+            snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(notNullMessage))
+        }
     }
 
     override fun onCleared() {

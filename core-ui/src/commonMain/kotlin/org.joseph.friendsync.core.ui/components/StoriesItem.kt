@@ -1,6 +1,5 @@
 package org.joseph.friendsync.core.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import com.seiko.imageloader.rememberImagePainter
+import coil3.compose.AsyncImage
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
@@ -35,12 +34,11 @@ fun StoriesItem(
             .clip(RoundedCornerShape(LargeSpacing))
             .clickable { onStoriesClick() }
     ) {
-        val painter = rememberImagePainter(imageUrl)
-        Image(
+        AsyncImage(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Placeholder()),
-            painter = painter,
+            model = imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop
         )

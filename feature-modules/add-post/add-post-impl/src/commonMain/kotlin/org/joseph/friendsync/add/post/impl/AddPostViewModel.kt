@@ -23,11 +23,12 @@ internal class AddPostViewModel(
     }
 
     internal fun onAction(action: ScreenAction) {
+        val currentInstance = this@AddPostViewModel
         viewModelScope.launchSafe {
             screenActionCompositeHandler.handle(
                 action = action,
-                stateProvider = this@AddPostViewModel,
-                stateUpdater = this@AddPostViewModel
+                stateProvider = currentInstance,
+                stateUpdater = currentInstance
             )
         }
     }

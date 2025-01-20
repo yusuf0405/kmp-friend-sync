@@ -10,8 +10,7 @@ class FetchPostByIdUseCase : KoinComponent {
 
     private val repository by inject<PostRepository>()
 
-
     suspend operator fun invoke(postId: Int): Result<PostDomain> {
-        return repository.fetchPostById(postId)
+        return Result.Success(repository.fetchPostById(postId))
     }
 }

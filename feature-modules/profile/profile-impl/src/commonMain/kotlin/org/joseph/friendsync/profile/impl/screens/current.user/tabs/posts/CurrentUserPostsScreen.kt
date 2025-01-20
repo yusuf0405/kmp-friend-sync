@@ -19,7 +19,9 @@ import org.joseph.friendsync.core.ui.common.ErrorScreen
 import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.components.PostItem
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.empty_data
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.profile.impl.screens.current.user.CurrentUserEvent
@@ -74,7 +76,7 @@ private fun LoadedCurrentUserPostsScreen(
                 )
                 SpacerHeight(LargeSpacing)
                 Text(
-                    text = MainResStrings.empty_data,
+                    text = stringResource(Res.string.empty_data),
                     style = FriendSyncTheme.typography.titleMedium.extraBold,
                     color = FriendSyncTheme.colors.textSecondary
                 )

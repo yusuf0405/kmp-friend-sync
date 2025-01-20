@@ -25,7 +25,13 @@ import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.components.AppBarIcon
 import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.login_destination_title
+import kmp_friend_sync.core_ui.generated.resources.password_hint
+import kmp_friend_sync.core_ui.generated.resources.sign_in
+import kmp_friend_sync.core_ui.generated.resources.using_to_login
+import kmp_friend_sync.core_ui.generated.resources.your_password
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.common.LoadingScreen
@@ -57,7 +63,7 @@ internal fun LoginScreen(
         )
         SpacerHeight(FriendSyncTheme.dimens.dp32)
         Text(
-            text = MainResStrings.login_destination_title,
+            text = stringResource(Res.string.login_destination_title),
             style = FriendSyncTheme.typography.titleExtraLarge.semiBold,
             fontSize = FriendSyncTheme.dimens.sp40,
             lineHeight = FriendSyncTheme.dimens.sp48
@@ -69,14 +75,14 @@ internal fun LoginScreen(
         SpacerHeight(FriendSyncTheme.dimens.dp48)
 
         LoginTextField(
-            title = MainResStrings.your_password.toUpperCase(Locale.current),
+            title = stringResource(Res.string.your_password).toUpperCase(Locale.current),
             value = uiState.password,
             onValueChange = { password ->
                 viewModel.onEvent(LoginEvent.OnPasswordChanged(password))
             },
             keyboardType = KeyboardType.Password,
             isPasswordTextField = true,
-            hint = MainResStrings.password_hint,
+            hint = stringResource(Res.string.password_hint),
             validationStatus = passwordValidationStatus,
             readOnly = uiState.isAuthenticating
         )
@@ -88,7 +94,7 @@ internal fun LoginScreen(
                 focusManager.clearFocus()
                 viewModel.onEvent(LoginEvent.OnLogin)
             },
-            text = MainResStrings.sign_in,
+            text = stringResource(Res.string.sign_in),
             textStyle = FriendSyncTheme.typography.bodyExtraMedium.semiBold,
             shape = FriendSyncTheme.shapes.extraLarge,
             enabled = shouldButtonEnabled && !uiState.isAuthenticating,
@@ -103,14 +109,15 @@ internal fun LoginScreen(
 
 @Composable
 fun generateEmailTextForLogin(email: String): AnnotatedString {
-    val text = MainResStrings.using_to_login.format(login = email)
+    val text = stringResource(Res.string.using_to_login, email)
+    val emailIndex = text.indexOf(email)
     return buildAnnotatedString {
         withStyle(
             style = FriendSyncTheme.typography.bodyMedium.regular.toSpanStyle().copy(
                 color = FriendSyncTheme.colors.textSecondary
             ),
         ) {
-            append(text.substring(0, text.indexOf(email)))
+            append(text.substring(0, emailIndex))
         }
 
         withStyle(
@@ -121,8 +128,8 @@ fun generateEmailTextForLogin(email: String): AnnotatedString {
         ) {
             append(
                 text.substring(
-                    text.indexOf(email),
-                    text.indexOf(email) + email.length
+                    emailIndex,
+                    emailIndex + email.length
                 )
             )
         }
@@ -134,7 +141,7 @@ fun generateEmailTextForLogin(email: String): AnnotatedString {
         ) {
             append(
                 text.substring(
-                    text.indexOf(email) + email.length,
+                    emailIndex + email.length,
                     text.length
                 )
             )

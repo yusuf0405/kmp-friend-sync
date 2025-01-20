@@ -15,7 +15,11 @@ import org.joseph.friendsync.core.ui.common.extensions.firstLetterIsCapitalizedR
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.default_error_message
+import kmp_friend_sync.core_ui.generated.resources.function_is_temporarily_unavailable
+import kmp_friend_sync.core_ui.generated.resources.profile_has_been_successfully_updated
+import org.jetbrains.compose.resources.getString
 import org.joseph.friendsync.domain.models.EditProfileParams
 import org.joseph.friendsync.domain.usecases.current.user.FetchCurrentUserFlowUseCase
 import org.joseph.friendsync.domain.usecases.user.EditUserWithParamsUseCase
@@ -111,8 +115,10 @@ class EditProfileViewModel(
             is EditProfileEvent.OnEducationChanged -> doEducationChanged(event.value)
             is EditProfileEvent.OnEmailChanged -> doEmailChanged(event.value)
             is EditProfileEvent.OnEditAvatar -> {
-                val message = MainResStrings.function_is_temporarily_unavailable
-                snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Sample(message))
+                viewModelScope.launchSafe {
+                    val message = getString(Res.string.function_is_temporarily_unavailable)
+                    snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Sample(message))
+                }
             }
         }
     }
@@ -122,7 +128,7 @@ class EditProfileViewModel(
             val params = createParamsByState(id)
             when (val result = editUserWithParamsUseCase(params)) {
                 is Result.Success -> {
-                    val message = MainResStrings.profile_has_been_successfully_updated
+                    val message = getString(Res.string.profile_has_been_successfully_updated)
                     snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Success(message))
                 }
 
@@ -172,7 +178,9 @@ class EditProfileViewModel(
     }
 
     private fun showErrorSnackbar(message: String?) {
-        val errorMessage = message ?: MainResStrings.default_error_message
-        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+        viewModelScope.launchSafe {
+            val errorMessage = message ?: getString(Res.string.default_error_message)
+            snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+        }
     }
 }

@@ -13,6 +13,6 @@ class FetchUserPostsUseCase : KoinComponent {
     suspend operator fun invoke(
         userId: Int
     ): Result<List<PostDomain>> {
-        return repository.fetchUserPosts(userId)
+        return Result.Success(repository.fetchUserPosts(userId))
     }
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.joseph.friendsync.core.extensions.launchSafe
 
 abstract class FriendSyncViewModel<S>(initialState: S) : ViewModel() {
 
@@ -26,7 +27,7 @@ abstract class FriendSyncViewModel<S>(initialState: S) : ViewModel() {
     fun updateState(
         transform: suspend S.() -> S
     ) {
-        viewModelScope.launch {
+        viewModelScope.launchSafe {
             stateMutex.withLock { mutableState.update { transform(it) } }
         }
     }

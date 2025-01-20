@@ -8,7 +8,6 @@ data class SubscriptionsResponse(
     val errorMessage: String? = null
 )
 
-
 @Serializable
 data class SubscriptionCloud(
     val id: Int,

@@ -12,6 +12,6 @@ class FetchAllCategoriesUseCase : KoinComponent {
     private val repository by inject<CategoryRepository>()
 
     suspend operator fun invoke(): Result<List<CategoryDomain>> {
-        return repository.fetchAllCategories()
+        return Result.Success(repository.fetchAllCategories())
     }
 }

@@ -29,7 +29,15 @@ import org.joseph.friendsync.core.ui.components.LoginTextField
 import org.joseph.friendsync.core.ui.components.LoginValidationStatus
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.extensions.clickableNoRipple
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.about_me
+import kmp_friend_sync.core_ui.generated.resources.education
+import kmp_friend_sync.core_ui.generated.resources.email_hint
+import kmp_friend_sync.core_ui.generated.resources.username_hint
+import kmp_friend_sync.core_ui.generated.resources.your_email
+import kmp_friend_sync.core_ui.generated.resources.your_lastname
+import kmp_friend_sync.core_ui.generated.resources.your_name
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 
@@ -93,43 +101,43 @@ fun EditProfileScreen(
 
             SpacerHeight(FriendSyncTheme.dimens.dp36)
             LoginTextField(
-                title = MainResStrings.your_name.uppercase(),
+                title = stringResource(Res.string.your_name).uppercase(),
                 value = uiState.name,
                 onValueChange = { onEvent(EditProfileEvent.OnNameChanged(it)) },
-                hint = MainResStrings.username_hint,
+                hint = stringResource(Res.string.username_hint),
                 validationStatus = nameValidationStatus
             )
             SpacerHeight(ExtraLargeSpacing)
             LoginTextField(
-                title = MainResStrings.your_lastname.uppercase(),
+                title = stringResource(Res.string.your_lastname).uppercase(),
                 value = uiState.lastName,
                 onValueChange = { onEvent(EditProfileEvent.OnLastNameChanged(it)) },
-                hint = MainResStrings.username_hint,
+                hint = stringResource(Res.string.username_hint),
                 validationStatus = lastnameValidationStatus
             )
             SpacerHeight(ExtraLargeSpacing)
             LoginTextField(
-                title = MainResStrings.your_email.uppercase(),
+                title = stringResource(Res.string.your_email).uppercase(),
                 value = uiState.email,
                 onValueChange = { onEvent(EditProfileEvent.OnEmailChanged(it)) },
-                hint = MainResStrings.email_hint,
+                hint = stringResource(Res.string.email_hint),
                 validationStatus = emailValidationStatus
             )
             SpacerHeight(ExtraLargeSpacing)
             LoginTextField(
-                title = MainResStrings.about_me.uppercase(),
+                title = stringResource(Res.string.about_me).uppercase(),
                 value = uiState.aboutMe,
                 onValueChange = { onEvent(EditProfileEvent.OnAboutMeChanged(it)) },
-                hint = MainResStrings.about_me,
+                hint = stringResource(Res.string.about_me),
                 isSingleLine = false,
                 validationStatus = aboutMeValidationStatus
             )
             SpacerHeight(ExtraLargeSpacing)
             LoginTextField(
-                title = MainResStrings.education.uppercase(),
+                title = stringResource(Res.string.education).uppercase(),
                 value = uiState.education,
                 onValueChange = { onEvent(EditProfileEvent.OnEducationChanged(it)) },
-                hint = MainResStrings.education,
+                hint = stringResource(Res.string.education),
                 isSingleLine = false,
                 validationStatus = educationValidationStatus
             )

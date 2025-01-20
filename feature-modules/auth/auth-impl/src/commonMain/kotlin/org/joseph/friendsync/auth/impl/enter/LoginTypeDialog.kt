@@ -15,7 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.extensions.SpacerWidth
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.login_button_label
+import kmp_friend_sync.core_ui.generated.resources.select_the_login_method_to_continue
+import kmp_friend_sync.core_ui.generated.resources.select_the_login_option
+import kmp_friend_sync.core_ui.generated.resources.signup_button_hint
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
@@ -42,13 +47,13 @@ internal fun EnterTypeDialog(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = MainResStrings.select_the_login_option,
+                text = stringResource(Res.string.select_the_login_option),
                 style = FriendSyncTheme.typography.titleSmall.semiBold,
                 color = FriendSyncTheme.colors.textPrimary
             )
             SpacerHeight(MediumSpacing)
             Text(
-                text = MainResStrings.select_the_login_method_to_continue,
+                text = stringResource(Res.string.select_the_login_method_to_continue),
                 style = FriendSyncTheme.typography.bodyMedium.regular,
                 color = FriendSyncTheme.colors.textSecondary
             )
@@ -66,7 +71,7 @@ internal fun EnterTypeDialog(
                     onClick = onNavigateToSignUp
                 ) {
                     Text(
-                        text = MainResStrings.signup_button_hint,
+                        text = stringResource(Res.string.signup_button_hint),
                         style = FriendSyncTheme.typography.bodyMedium.semiBold,
                         color = FriendSyncTheme.colors.textPrimary
                     )
@@ -77,7 +82,7 @@ internal fun EnterTypeDialog(
                     onClick = onNavigateToLogin
                 ) {
                     Text(
-                        text = MainResStrings.login_button_label,
+                        text = stringResource(Res.string.login_button_label),
                         style = FriendSyncTheme.typography.bodyMedium.semiBold,
                         color = FriendSyncTheme.colors.onTextPrimary
                     )

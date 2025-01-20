@@ -1,18 +1,11 @@
 package org.joseph.friendsync.data.local.dao.user
 
 import androidx.room.Dao
-import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.PrimaryKey
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import org.joseph.friendsync.data.local.models.PostLocal
 import org.joseph.friendsync.data.local.models.UserDetailLocal
-import org.joseph.friendsync.data.models.post.PostCloud
-import org.joseph.friendsync.data.models.user.UserDetailCloud
 
 @Dao
 interface UserDao {
@@ -24,10 +17,10 @@ interface UserDao {
     suspend fun searchUsers(query: String): List<UserDetailLocal>
 
     @Query("SELECT * FROM users_table")
-    fun getAllUsersReactive(): Flow<List<UserDetailLocal>>
+    fun observeAllUsers(): Flow<List<UserDetailLocal>>
 
     @Query("SELECT * FROM users_table WHERE id = :id")
-    fun getUserReactive(id: Int): Flow<UserDetailLocal?>
+    fun observeUser(id: Int): Flow<UserDetailLocal?>
 
     @Query("SELECT * FROM users_table WHERE id = :id LIMIT 1")
     suspend fun getUserById(id: Long): UserDetailLocal?
@@ -46,4 +39,15 @@ interface UserDao {
 
     @Query("UPDATE users_table SET following_count = following_count + CASE WHEN :isIncrement THEN 1 ELSE -1 END WHERE id = :id")
     suspend fun incrementDecrementFollowingCount(id: Int, isIncrement: Boolean)
+
+    @Query("UPDATE current_user_table SET name = :name, last_name = :lastName, email = :email, bio = :bio, education = :education, avatar = :avatar WHERE id = :id")
+    suspend fun editUserWithParams(
+        id: Int,
+        name: String,
+        lastName: String,
+        email: String,
+        bio: String?,
+        education: String?,
+        avatar: String?
+    )
 }

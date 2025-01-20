@@ -13,7 +13,7 @@ val profileScreenModule = module {
         ProfileViewModel(
             userId = params.get(),
             get(), get(), get(), get(), get(), get(), get(), get(),
-            get(), get(), get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get()
         )
     }
 

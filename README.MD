@@ -1,25 +1,4 @@
-# Compose Multiplatform Application
+# Friend-Sync KMP
 
-## Before running!
- - check your system with [KDoctor](https://github.com/Kotlin/kdoctor)
- - install JDK 17 on your machine
- - add `local.properties` file to the project root and set a path to Android SDK there
-
-### Android
-To run the application on android device/emulator:  
- - open project in Android Studio and run imported android run configuration
-
-To build the application bundle:
- - run `./gradlew :composeApp:assembleDebug`
- - find `.apk` file in `composeApp/build/outputs/apk/debug/composeApp-debug.apk`
-
-### Desktop
-Run the desktop application: `./gradlew :composeApp:run`
-
-### iOS
-To run the application on iPhone device/simulator:
- - Open `iosApp/iosApp.xcproject` in Xcode and run standard configuration
- - Or use [Kotlin Multiplatform Mobile plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile) for Android Studio
-
-### Browser
-Run the browser application: `./gradlew :composeApp:jsBrowserDevelopmentRun`
+## Overview
+FriendSync KMP is a Compose-multiplatform project that uses a custom [Ktor server](https://github.com/yusuf0405/friend-sync-server) to work as a backend and supports Android, iOS. Web and desktop applications will be added in the future. Basically, it is an analogue of Instagram, which will support all its functions in the future.

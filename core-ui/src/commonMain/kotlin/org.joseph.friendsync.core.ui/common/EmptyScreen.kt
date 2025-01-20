@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.empty_data
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 
@@ -36,7 +38,7 @@ fun EmptyScreen(
         )
         SpacerHeight(LargeSpacing)
         Text(
-            text = MainResStrings.empty_data,
+            text = stringResource(Res.string.empty_data),
             style = FriendSyncTheme.typography.titleMedium.extraBold,
             color = FriendSyncTheme.colors.textSecondary
         )

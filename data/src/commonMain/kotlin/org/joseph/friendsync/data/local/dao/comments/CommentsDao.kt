@@ -7,16 +7,15 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import org.joseph.friendsync.data.local.models.CommentEntity
-import org.joseph.friendsync.data.models.comments.CommentCloud
 
 @Dao
 interface CommentsDao {
 
     @Query("SELECT * FROM comment_table WHERE post_id = :postId")
-    fun fetchAllPostCommentsReactive(postId: Int): Flow<List<CommentEntity>>
+    fun observePostComments(postId: Int): Flow<List<CommentEntity>>
 
     @Query("SELECT * FROM comment_table WHERE post_id = :postId")
-    suspend fun fetchAllPostComments(postId: Int): List<CommentEntity>
+    suspend fun fetchPostComments(postId: Int): List<CommentEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateComment(comment: CommentEntity)

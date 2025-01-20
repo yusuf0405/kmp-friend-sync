@@ -9,13 +9,15 @@ import androidx.navigation.compose.composable
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.MessageCircle
 import org.joseph.friendsync.core.ui.components.AppTopBar
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.home_destination_title
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.home.api.HomeFeatureApi
 import org.koin.compose.koinInject
 
 object HomeFeatureImpl : HomeFeatureApi {
 
-    override val homeRoute: String = MainResStrings.home_screen_route
+    override val homeRoute: String = "home_screen_route"
 
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
@@ -28,7 +30,7 @@ object HomeFeatureImpl : HomeFeatureApi {
             Scaffold(
                 topBar = {
                     AppTopBar(
-                        title = MainResStrings.home_destination_title,
+                        title = stringResource(Res.string.home_destination_title),
                         endIcon = FeatherIcons.MessageCircle,
                         onEndClick = { viewModel.navigateChatScreen() }
                     )

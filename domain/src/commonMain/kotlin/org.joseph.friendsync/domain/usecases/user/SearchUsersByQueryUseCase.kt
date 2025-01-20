@@ -15,6 +15,6 @@ class SearchUsersByQueryUseCase : KoinComponent {
         page: Int,
         pageSize: Int
     ): Result<List<UserInfoDomain>> {
-        return repository.searchUsers(query, page, pageSize)
+        return Result.Success(repository.searchUsers(query, page, pageSize))
     }
 }

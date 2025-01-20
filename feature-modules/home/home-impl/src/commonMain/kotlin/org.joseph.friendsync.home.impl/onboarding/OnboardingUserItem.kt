@@ -20,7 +20,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import org.joseph.friendsync.core.ui.components.CircularImage
 import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.extensions.clickableNoRipple
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.follow_button_text
+import kmp_friend_sync.core_ui.generated.resources.unsubscribe
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.MediumSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
@@ -75,7 +78,7 @@ fun OnboardingUserItem(
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = MainResStrings.unsubscribe,
+                    text = stringResource(Res.string.unsubscribe),
                     style = FriendSyncTheme.typography.bodySmall.regular,
                     color = FriendSyncTheme.colors.textPrimary,
                     maxLines = 1,
@@ -86,7 +89,7 @@ fun OnboardingUserItem(
                 onClick = {
                     onFollowButtonClick(followUser.isSubscribed, followUser)
                 },
-                text = MainResStrings.follow_button_text,
+                text = stringResource(Res.string.follow_button_text),
                 textStyle = FriendSyncTheme.typography.bodySmall.medium,
                 shape = FriendSyncTheme.shapes.large
             )

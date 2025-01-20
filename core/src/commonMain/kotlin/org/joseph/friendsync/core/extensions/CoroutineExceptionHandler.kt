@@ -30,6 +30,7 @@ inline fun CoroutineScope.launchSafe(
     } catch (e: CancellationException) {
         throw e
     } catch (e: Throwable) {
+        println(e.stackTraceToString())
         onError(e)
     }
 }

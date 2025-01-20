@@ -1,6 +1,5 @@
 package org.joseph.friendsync.profile.impl.screens.current.user
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -24,7 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
-import com.seiko.imageloader.rememberImagePainter
+import coil3.compose.AsyncImage
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Edit
 import org.joseph.friendsync.core.ui.components.CircularImage
@@ -44,7 +43,6 @@ internal fun UserPersonalInfo(
     modifier: Modifier = Modifier
 ) {
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val painter = rememberImagePainter(user.profileBackground ?: String())
     val placeholder = Placeholder()
     Box(
         modifier = modifier,
@@ -56,11 +54,11 @@ internal fun UserPersonalInfo(
                 .fillMaxWidth()
                 .height(FriendSyncTheme.dimens.dp174 + statusBarHeight)
         ) {
-            Image(
+            AsyncImage(
                 modifier = Modifier
                     .height(FriendSyncTheme.dimens.dp150 + statusBarHeight)
                     .background(placeholder),
-                painter = painter,
+                model = user.profileBackground,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
             )

@@ -15,7 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.onboarding_description
+import kmp_friend_sync.core_ui.generated.resources.onboarding_done_button
+import kmp_friend_sync.core_ui.generated.resources.onboarding_title
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 import org.joseph.friendsync.ui.components.models.UserInfoMark
@@ -34,14 +38,14 @@ fun OnBoardingSelection(
     ) {
         SpacerHeight(LargeSpacing)
         Text(
-            text = MainResStrings.onboarding_title,
+            text = stringResource(Res.string.onboarding_title),
             modifier = Modifier.fillMaxWidth(),
             style = FriendSyncTheme.typography.bodyExtraLarge.medium,
             textAlign = TextAlign.Center,
             color = FriendSyncTheme.colors.textPrimary
         )
         Text(
-            text = MainResStrings.onboarding_description,
+            text = stringResource(Res.string.onboarding_description),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = LargeSpacing),
@@ -77,7 +81,7 @@ fun OnBoardingSelection(
             )
         ) {
             Text(
-                text = MainResStrings.onboarding_done_button,
+                text = stringResource(Res.string.onboarding_done_button),
                 color = FriendSyncTheme.colors.textPrimary,
                 style = FriendSyncTheme.typography.bodyExtraMedium.bold,
             )

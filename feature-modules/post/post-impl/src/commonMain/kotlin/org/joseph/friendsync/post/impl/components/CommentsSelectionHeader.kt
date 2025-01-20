@@ -9,7 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.commnts_header_label
+import kmp_friend_sync.core_ui.generated.resources.new_comment_button_label
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 
@@ -27,7 +30,7 @@ internal fun CommentsSelectionHeader(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = MainResStrings.commnts_header_label,
+            text = stringResource(Res.string.commnts_header_label),
             style = FriendSyncTheme.typography.bodyLarge.medium
         )
 
@@ -35,7 +38,7 @@ internal fun CommentsSelectionHeader(
             onClick = onAddCommentClick
         ) {
             Text(
-                text = MainResStrings.new_comment_button_label,
+                text = stringResource(Res.string.new_comment_button_label),
                 style = FriendSyncTheme.typography.bodyMedium.medium
             )
         }

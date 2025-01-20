@@ -15,6 +15,6 @@ class SearchPostsByQueryUseCase : KoinComponent {
         page: Int,
         pageSize: Int
     ): Result<List<PostDomain>> {
-        return repository.searchPosts(query, page, pageSize)
+        return  Result.Success(repository.searchPosts(query, page, pageSize))
     }
 }

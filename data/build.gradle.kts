@@ -1,10 +1,8 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 plugins {
-    alias(libs.plugins.friendsync.android.library)
+    alias(libs.plugins.friendsync.library.api)
     alias(libs.plugins.buildkonfig)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.skie)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }
@@ -21,10 +19,13 @@ kotlin {
             implementation(libs.ktor.serialization)
             implementation(libs.ktor.content.negotiation)
             implementation(libs.napier)
-            implementation(libs.skie.annotations)
-            implementation(libs.room.runtime)
             implementation(libs.okio)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
+            implementation(libs.sqlite)
+            implementation(libs.paging.compose.common)
+            implementation(libs.paging.common)
 
             api(libs.datastore.preferences.core)
             api(libs.koin.core)
@@ -39,7 +40,6 @@ kotlin {
             api(libs.koin.android)
             implementation(libs.ktor.client.android)
             implementation(libs.room.paging)
-            implementation(libs.sqlite.bundled)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

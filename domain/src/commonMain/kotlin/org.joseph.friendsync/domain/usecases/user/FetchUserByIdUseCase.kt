@@ -12,7 +12,7 @@ class FetchUserByIdUseCase : KoinComponent {
     private val repository by inject<UserRepository>()
 
     suspend fun fetchUserById(userId: Int): Result<UserDetailDomain> {
-        return repository.fetchUserById(userId)
+        return Result.Success(repository.fetchUserById(userId))
     }
 
     fun observeUserById(userId: Int): Flow<UserDetailDomain?> {

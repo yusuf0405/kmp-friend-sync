@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -22,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
@@ -34,21 +38,31 @@ private const val DEFAULT_ANIMATION_DURATION = 500
 @Composable
 internal fun BottomAppNavBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     BottomNavigation {
         IconScreens.entries.forEach { screen ->
+            val screenRoute = stringResource(screen.route)
             TabNavigationItem(
                 modifier = Modifier.weight(1f),
                 screen = screen,
-                selected = navBackStackEntry?.destination?.route == screen.route,
+                selected = navBackStackEntry?.destination?.route == screenRoute,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        val startRoute = requireNotNull(navController.graph.startDestinationRoute)
-                        popUpTo(startRoute) {
-                            saveState = true
+                    coroutineScope.launch {
+                        navController.navigate(screenRoute) {
+                            // Pop up to the start destination of the graph to
+                            // avoid building up a large stack of destinations
+                            // on the back stack as users select items
+
+                            navController.graph.startDestinationRoute?.let {
+                                popUpTo(it) { saveState = true }
+                            }
+                            // Avoid multiple copies of the same destination when
+                            // reselecting the same item
+                            launchSingleTop = true
+                            // Restore state when reselecting a previously selected item
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 }
             )

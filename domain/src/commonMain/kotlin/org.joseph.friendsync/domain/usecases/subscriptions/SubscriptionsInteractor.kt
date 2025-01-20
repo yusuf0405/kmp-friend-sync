@@ -10,11 +10,11 @@ class SubscriptionsInteractor : KoinComponent {
     private val repository by inject<SubscriptionRepository>()
 
     suspend fun cancelSubscription(followerId: Int, followingId: Int): Result<Unit> {
-       return repository.cancelSubscription(followerId, followingId)
+        return Result.Success(repository.cancelSubscription(followerId, followingId))
     }
 
     suspend fun createSubscription(followerId: Int, followingId: Int): Result<Unit> {
-        return repository.createSubscription(followerId, followingId)
+        return Result.Success(repository.createSubscription(followerId, followingId))
     }
 
 }

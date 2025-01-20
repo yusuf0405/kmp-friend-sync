@@ -1,6 +1,5 @@
 package org.joseph.friendsync.core.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,7 +12,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import com.seiko.imageloader.rememberImagePainter
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImage
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.colors.Blue
 import org.joseph.friendsync.core.ui.theme.colors.DarkPlaceHolderColor
@@ -24,16 +24,15 @@ import org.joseph.friendsync.core.ui.theme.colors.MediumBlue
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
 
 @Composable
+@OptIn(ExperimentalCoilApi::class)
 fun CircularImage(
     imageUrl: String?,
     modifier: Modifier = Modifier,
     placeholder: Color = Placeholder(),
     onClick: () -> Unit = {},
 ) {
-    val painter = rememberImagePainter(imageUrl ?: String())
-
-    Image(
-        painter = painter,
+    AsyncImage(
+        model = imageUrl,
         contentDescription = null,
         modifier = modifier
             .clip(CircleShape)
@@ -60,14 +59,11 @@ fun CircularBorderImage(
         brush = fetchStoriesGradient(),
         shape = CircleShape
     )
-
-    val painter = rememberImagePainter(imageUrl ?: String())
-
     Box(
         modifier = borderModifier
     ) {
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = imageUrl,
             contentDescription = null,
             modifier = imageModifier
                 .padding(SmallSpacing)

@@ -6,30 +6,35 @@ import compose.icons.feathericons.Home
 import compose.icons.feathericons.PlusCircle
 import compose.icons.feathericons.Search
 import compose.icons.feathericons.User
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.add_post_screen_route
+import kmp_friend_sync.core_ui.generated.resources.current_user_screen_route
+import kmp_friend_sync.core_ui.generated.resources.home_screen_route
+import kmp_friend_sync.core_ui.generated.resources.search_screen_route
+import org.jetbrains.compose.resources.StringResource
 
 enum class IconScreens(
-    val route: String,
+    val route: StringResource,
     val icon: ImageVector
 ) {
     HOME(
-        route = MainResStrings.home_screen_route,
+        route = Res.string.home_screen_route,
         icon = FeatherIcons.Home
     ),
     SEARCH(
-        route = MainResStrings.search_screen_route,
+        route = Res.string.search_screen_route,
         icon = FeatherIcons.Search
     ),
     ADD_POST(
-        route = MainResStrings.add_post_screen_route,
+        route = Res.string.add_post_screen_route,
         icon = FeatherIcons.PlusCircle
     ),
 //    NOTIFICATION(
-//        route = MainResStrings.notification_screen_route,
+//        route = Res.string.notification_screen_route,
 //        icon = Icons.Outlined.Notifications
 //    ),
     PROFILE(
-        route = MainResStrings.current_user_screen_route,
+        route = Res.string.current_user_screen_route,
         icon = FeatherIcons.User
     )
 }

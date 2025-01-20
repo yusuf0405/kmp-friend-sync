@@ -8,7 +8,6 @@ import org.joseph.friendsync.ui.components.models.Comment
 
 class CommentDomainToCommentMapper(
     private val userInfoDomainToUserInfoMapper: UserInfoDomainToUserInfoMapper,
-    private val userDataStore: UserDataStore,
 ) : Mapper<CommentDomain, Comment> {
 
     override fun map(from: CommentDomain): Comment = from.run {
@@ -19,7 +18,6 @@ class CommentDomainToCommentMapper(
             comment = comment,
             likesCount = likesCount,
             releaseDate = releaseDate.toLocalDate().toString(),
-            isCurrentUserComment = userDataStore.fetchCurrentUser().id == user.id
         )
     }
 }

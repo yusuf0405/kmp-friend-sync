@@ -23,7 +23,9 @@ import org.joseph.friendsync.core.ui.common.LoadingScreen
 import org.joseph.friendsync.core.ui.common.animation.AnimateFade
 import org.joseph.friendsync.core.ui.components.PostItem
 import org.joseph.friendsync.core.ui.components.StoriesItem
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.posts_empty_title
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraLargeSpacing
 import org.joseph.friendsync.core.ui.theme.dimens.ExtraMediumSpacing
@@ -94,6 +96,7 @@ internal fun LoadedHomeScreen(
             }
         }
 
+        println("uiState.postMarks.isEmpty() -> ${uiState.postMarks.isEmpty()}")
         if (uiState.postMarks.isEmpty()) {
             item {
                 Spacer(Modifier.height(ExtraLargeSpacing))
@@ -101,7 +104,7 @@ internal fun LoadedHomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(FriendSyncTheme.colors.onBackgroundPrimary),
-                    errorMessage = MainResStrings.posts_empty_title,
+                    errorMessage = stringResource(Res.string.posts_empty_title),
                     onClick = { onEvent(HomeScreenEvent.RefreshAllData) }
                 )
             }

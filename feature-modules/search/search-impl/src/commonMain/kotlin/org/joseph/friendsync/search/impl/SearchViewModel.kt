@@ -24,10 +24,12 @@ import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.common.extensions.createMutableSharedFlowAsLiveData
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.default_error_message
+import org.jetbrains.compose.resources.getString
 import org.joseph.friendsync.domain.UserDataStore
 import org.joseph.friendsync.domain.markers.post.PostMarksManager
-import org.joseph.friendsync.domain.markers.users.UserMarksManager
+import org.joseph.friendsync.ui.components.markers.users.UserMarksManager
 import org.joseph.friendsync.domain.models.UserPreferences
 import org.joseph.friendsync.domain.post.PostsObserveType
 import org.joseph.friendsync.domain.usecases.categories.FetchAllCategoriesUseCase
@@ -73,8 +75,6 @@ internal class SearchViewModel(
     private val categoryDomainToCategoryMapper: CategoryDomainToCategoryMapper,
     private val userInfoMapper: UserInfoDomainToUserInfoMapper,
     private val postMarkDomainToUiMapper: PostMarkDomainToUiMapper,
-    private val userInfoToDomainMapper: UserInfoToDomainMapper,
-    private val userMarkDomainToUiMapper: UserMarkDomainToUiMapper,
     private val snackbarDisplayer: SnackbarDisplayer,
     private val postUiStateCommunication: PostUiStateCommunication,
     private val userUiStateCommunication: UserUiStateCommunication,
@@ -101,15 +101,13 @@ internal class SearchViewModel(
 
     private var allDataJob: Job? = null
     private var searchDataJob: Job? = null
-    private val defaultErrorMessage = MainResStrings.default_error_message
+    private val defaultErrorMessage = Res.string.default_error_message.toString()
     private var currentUser: UserPreferences = UserPreferences.unknown
 
     init {
         allDataJob = loadAllData()
 
-        usersFlow.map { users -> users.map(userInfoToDomainMapper::map) }
-            .flatMapLatest(userMarksManager::observeUsersWithMarks)
-            .map { users -> users.map(userMarkDomainToUiMapper::map) }
+        usersFlow.flatMapLatest(userMarksManager::observeUsersWithMarks)
             .onEach(::handleUsersState)
             .onError(::handleError)
             .launchIn(viewModelScope)
@@ -165,7 +163,7 @@ internal class SearchViewModel(
     }
 
     private fun loadAllData(): Job = viewModelScope.launchSafe(
-        onError = { setUiStateToError(MainResStrings.default_error_message) }
+        onError = { setUiStateToError(Res.string.default_error_message.toString()) }
     ) {
         fetchCurrentUser()
         mutableState.tryEmit(SearchUiState.Loading)
@@ -177,7 +175,7 @@ internal class SearchViewModel(
         allDataJob = loadAllData()
     }
 
-    private fun fetchCurrentUser() {
+    private suspend fun fetchCurrentUser() {
         currentUser = userDataStore.fetchCurrentUser()
     }
 
@@ -284,8 +282,10 @@ internal class SearchViewModel(
     }
 
     private fun showErrorSnackbar(message: String?) {
-        val errorMessage = message ?: MainResStrings.default_error_message
-        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+        viewModelScope.launchSafe {
+            val errorMessage = message ?: getString(Res.string.default_error_message)
+            snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(errorMessage))
+        }
     }
 
     private fun setUiStateByReceivedCategories(categories: List<Category>) {
@@ -319,7 +319,7 @@ internal class SearchViewModel(
     }
 
     private fun setUiStateToError(message: String?) {
-        val errorMessage = message ?: MainResStrings.default_error_message
+        val errorMessage = message ?: Res.string.default_error_message.toString()
         mutableState.tryEmit(SearchUiState.Error(errorMessage))
     }
 

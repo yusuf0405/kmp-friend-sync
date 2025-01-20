@@ -9,9 +9,7 @@ interface UserDataStore {
 
     suspend fun removeCurrentUser(user: UserPreferences)
 
-    fun fetchCurrentUser(): UserPreferences
+    suspend fun fetchCurrentUser(): UserPreferences
 
     fun observeCurrentUser(): Flow<UserPreferences>
-
-    suspend fun isUserAuthorized(): Boolean
 }

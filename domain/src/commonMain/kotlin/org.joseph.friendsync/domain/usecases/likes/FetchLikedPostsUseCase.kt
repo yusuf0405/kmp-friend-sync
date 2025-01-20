@@ -16,6 +16,6 @@ class FetchLikedPostsUseCaseImpl : FetchLikedPostsUseCase, KoinComponent {
     private val repository by inject<PostLikesRepository>()
 
     override suspend operator fun invoke(userId: Int): Result<List<LikedPostDomain>> {
-        return repository.fetchLikedPosts(userId)
+        return Result.Success(repository.fetchLikedPosts(userId))
     }
 }

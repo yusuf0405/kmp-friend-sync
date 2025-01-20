@@ -1,11 +1,14 @@
 package org.joseph.friendsync.auth.impl.login
 
 import androidx.lifecycle.viewModelScope
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.default_error_message
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import org.jetbrains.compose.resources.getString
 import org.joseph.friendsync.auth.impl.AuthFeatureDependencies
 import org.joseph.friendsync.domain.UserDataStore
 import org.joseph.friendsync.core.Result
@@ -52,9 +55,8 @@ internal class LoginViewModel(
 
     private fun doLogin() {
         if (passwordValidationStatusFlow.value != LoginValidationStatus.SUCCESS) return
-        viewModelScope.launchSafe {
+        viewModelScope.launchSafe(onError = { handleErrorSignIn(null) }) {
             setStateToAuthenticating()
-            delay(3000)
             when (val result = signInUseCase(state.value.email, state.value.password)) {
                 is Result.Success -> handleSuccessSignIn(result.data ?: return@launchSafe)
                 is Result.Error -> handleErrorSignIn(result.message)
@@ -76,9 +78,11 @@ internal class LoginViewModel(
     }
 
     private fun handleErrorSignIn(message: String?) {
-        setStateToAuthenticatingEnd()
-        val snackbarMessage = message ?: return
-        snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(snackbarMessage))
+        viewModelScope.launchSafe {
+            setStateToAuthenticatingEnd()
+            val snackbarMessage = message ?: getString(Res.string.default_error_message)
+            snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Error(snackbarMessage))
+        }
     }
 
     private fun setStateToAuthenticating() {

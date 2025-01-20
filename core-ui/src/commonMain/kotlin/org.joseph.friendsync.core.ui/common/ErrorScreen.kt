@@ -11,7 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.joseph.friendsync.core.ui.components.PrimaryButton
 import org.joseph.friendsync.core.ui.extensions.SpacerHeight
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.refresh
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.dimens.LargeSpacing
 
@@ -36,7 +38,7 @@ fun ErrorScreen(
             SpacerHeight(LargeSpacing)
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(0.5f),
-                text = MainResStrings.refresh,
+                text = stringResource(Res.string.refresh),
                 onClick = onClick,
             )
         }

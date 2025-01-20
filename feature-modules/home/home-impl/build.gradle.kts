@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.friendsync.android.library)
-    alias(libs.plugins.friendsync.android.compose)
+    alias(libs.plugins.friendsync.library.impl)
+    alias(libs.plugins.friendsync.library.compose)
 }
 
 kotlin {
@@ -15,17 +15,8 @@ kotlin {
             implementation(projects.featureModules.post.postApi)
             implementation(projects.featureModules.profile.profileApi)
 
-            implementation(compose.runtime)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(libs.composeIcons.featherIcons)
-            implementation(libs.lifecycle.viewmodel.compose)
-            implementation(libs.lifecycle.runtime.compose)
-            implementation(libs.navigation.compose)
-
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-
+            implementation(libs.paging.compose.common)
+            implementation(libs.paging.common)
             implementation(libs.kotlinx.datetime)
         }
     }

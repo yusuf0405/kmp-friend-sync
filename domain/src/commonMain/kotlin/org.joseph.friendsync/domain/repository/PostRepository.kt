@@ -10,33 +10,19 @@ interface PostRepository {
 
     fun observePosts(): Flow<List<PostDomain>>
 
-    fun observePost(postId: Int): Flow<PostDomain?>
+    fun observePost(postId: Int): Flow<PostDomain>
 
     fun observeUserPosts(userId: Int): Flow<List<PostDomain>>
 
-    suspend fun addPost(
-        byteArray: List<ByteArray?>,
-        message: String?,
-        userId: Int,
-    ): Result<PostDomain>
+    suspend fun addPost(byteArray: List<ByteArray?>, message: String?, userId: Int): PostDomain
 
-    suspend fun fetchPostById(postId: Int): Result<PostDomain>
+    suspend fun fetchPostById(postId: Int): PostDomain
 
-    suspend fun fetchUserPosts(userId: Int): Result<List<PostDomain>>
+    suspend fun fetchUserPosts(userId: Int): List<PostDomain>
 
-    suspend fun fetchRecommendedPosts(
-        page: Int,
-        pageSize: Int,
-        userId: Int
-    ): Result<List<PostDomain>>
+    suspend fun fetchRecommendedPosts(page: Int, pageSize: Int, userId: Int): List<PostDomain>
 
-    suspend fun searchPosts(
-        query: String,
-        page: Int,
-        pageSize: Int,
-    ): Result<List<PostDomain>>
+    suspend fun searchPosts(query: String, page: Int, pageSize: Int): List<PostDomain>
 
     suspend fun removeAllPostsInLocalDb()
-
-    suspend fun removeAllRecommendedPostsInLocalDb()
 }

@@ -15,12 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.add_post_screen_route
+import kmp_friend_sync.core_ui.generated.resources.current_user_screen_route
+import kmp_friend_sync.core_ui.generated.resources.home_screen_route
+import kmp_friend_sync.core_ui.generated.resources.notification_screen_route
+import kmp_friend_sync.core_ui.generated.resources.search_screen_route
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.core.ui.components.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.extensions.observeWithLifecycle
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarType
-import org.joseph.friendsync.core.ui.strings.MainResStrings
 
 @Composable
 fun ScaffoldScreen(
@@ -65,13 +71,14 @@ fun ScaffoldScreen(
     }
 }
 
+@Composable
 private fun NavBackStackEntry?.shouldShowBottomBar(): Boolean {
     return when (this?.destination?.route) {
-        MainResStrings.home_screen_route -> true
-        MainResStrings.search_screen_route -> true
-        MainResStrings.add_post_screen_route -> true
-        MainResStrings.current_user_screen_route -> true
-        MainResStrings.notification_screen_route -> true
+        stringResource(Res.string.home_screen_route) -> true
+        stringResource(Res.string.search_screen_route) -> true
+        stringResource(Res.string.add_post_screen_route) -> true
+        stringResource(Res.string.current_user_screen_route) -> true
+        stringResource(Res.string.notification_screen_route) -> true
         else -> false
     }
 }

@@ -14,7 +14,9 @@ import androidx.navigation.navArgument
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import org.joseph.friendsync.core.ui.components.AppTopBar
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.post_detail_destination_title
+import org.jetbrains.compose.resources.stringResource
 import org.joseph.friendsync.post.api.navigation.PostFeatureApi
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -53,7 +55,7 @@ object PostFeatureImpl : PostFeatureApi {
             Scaffold(
                 topBar = {
                     AppTopBar(
-                        title = MainResStrings.post_detail_destination_title,
+                        title = stringResource(Res.string.post_detail_destination_title),
                         startIcon = FeatherIcons.ArrowLeft,
                         onStartClick = { navController.navigateUp() }
                     )

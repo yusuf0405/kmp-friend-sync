@@ -12,7 +12,10 @@ import org.joseph.friendsync.core.ui.common.communication.NavigationRouteFlowCom
 import org.joseph.friendsync.core.ui.common.communication.navigationParams
 import org.joseph.friendsync.core.ui.snackbar.FriendSyncSnackbar
 import org.joseph.friendsync.core.ui.snackbar.SnackbarDisplayer
-import org.joseph.friendsync.core.ui.strings.MainResStrings
+import kmp_friend_sync.core_ui.generated.resources.Res
+import kmp_friend_sync.core_ui.generated.resources.default_error_message
+import kmp_friend_sync.core_ui.generated.resources.function_is_temporarily_unavailable
+import org.jetbrains.compose.resources.getString
 import org.joseph.friendsync.domain.UserDataStore
 import org.joseph.friendsync.domain.markers.post.PostMarksManager
 import org.joseph.friendsync.domain.post.PostsObserveType
@@ -50,12 +53,16 @@ internal class CurrentUserViewModel(
 
     val postsUiStateFlow = postsStateCommunication.observe()
 
-    private val defaultErrorMessage = MainResStrings.default_error_message
+    private val defaultErrorMessage = Res.string.default_error_message
     private var currentUserId: Int = UNKNOWN_USER_ID
 
     init {
         viewModelScope.launchSafe(
-            onError = { postsStateCommunication.emit(Error(defaultErrorMessage)) }
+            onError = {
+                viewModelScope.launchSafe {
+                    postsStateCommunication.emit(Error(getString(defaultErrorMessage)))
+                }
+            }
         ) {
             mutableState.tryEmit(CurrentUserUiState.Loading)
             currentUserId = userDataStore.fetchCurrentUser().id
@@ -80,11 +87,7 @@ internal class CurrentUserViewModel(
     fun onEvent(event: CurrentUserEvent) {
         when (event) {
             is CurrentUserEvent.OnEditProfile -> navigateEditProfileScreen()
-            is CurrentUserEvent.OnEditBackgroundImage -> {
-                val message = MainResStrings.function_is_temporarily_unavailable
-                snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Sample(message))
-            }
-
+            is CurrentUserEvent.OnEditBackgroundImage -> doOnEditBackgroundChange()
             is CurrentUserEvent.OnCommentClick -> navigatePostScreen(event.postId, true)
             is CurrentUserEvent.OnLikeClick -> doLikeButtonClick(event)
             is CurrentUserEvent.OnProfileClick -> navigateProfileScreen(event.userId)
@@ -105,7 +108,6 @@ internal class CurrentUserViewModel(
         }
     }
 
-
     private fun navigatePostScreen(postId: Int, shouldShowAddCommentDialog: Boolean = false) {
         val route = featureDependencies.getPostRoute(postId, shouldShowAddCommentDialog)
         navigationCommunication.emit(navigationParams(route))
@@ -118,5 +120,12 @@ internal class CurrentUserViewModel(
 
     private fun navigateEditProfileScreen() {
         navigationCommunication.emit(navigationParams(EditProfileFeatureImpl.profileRoute))
+    }
+
+    private fun doOnEditBackgroundChange() {
+        viewModelScope.launchSafe {
+            val message = Res.string.function_is_temporarily_unavailable
+            snackbarDisplayer.showSnackbar(FriendSyncSnackbar.Sample(getString(message)))
+        }
     }
 }

@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.friendsync.android.library)
+    alias(libs.plugins.friendsync.library.api)
 }
 
 kotlin {
@@ -14,6 +14,8 @@ kotlin {
             implementation(libs.ktor.content.negotiation)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
+            implementation(libs.paging.compose.common)
+            implementation(libs.paging.common)
             api(libs.koin.core)
         }
 
