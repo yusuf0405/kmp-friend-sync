@@ -22,7 +22,7 @@ val sampleUsers = listOf(
         id = 2,
         name = "John",
         lastName = "Cena",
-        profileUrl = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        profileUrl = "https://stihi.ru/pics/2016/10/13/9056.jpg",
     ),
     FollowsUser(
         id = 3,

@@ -1,5 +1,6 @@
 package org.joseph.friendsync.search.impl.post
 
+import org.joseph.friendsync.search.impl.ErrorMessage
 import org.joseph.friendsync.ui.components.models.PostMark
 
 sealed class PostUiState {
@@ -11,7 +12,7 @@ sealed class PostUiState {
     data object Empty : PostUiState()
 
     data class Error(
-        val message: String
+        val message: ErrorMessage
     ) : PostUiState()
 
     data class Loaded(

@@ -13,7 +13,7 @@ data class Chat(
 
 val sampleAvatars = listOf(
     "https://clipart-library.com/images/pTqre6K8c.jpg",
-    "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+    "https://stihi.ru/pics/2016/10/13/9056.jpg",
     "https://clipart-library.com/images/pTqre6K8c.jpg",
     "https://clipart-library.com/images/pTqre6K8c.jpg",
 )
@@ -28,7 +28,7 @@ val sampleChats = listOf(
     ),
     Chat(
         userId = "1",
-        userImage = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        userImage = "https://stihi.ru/pics/2016/10/13/9056.jpg",
         userName = "Kat Williams",
         lastMessage = "OMG! OMG! OMG!",
         lastMessageSendDate = "1h ago"
@@ -49,28 +49,28 @@ val sampleChats = listOf(
     ),
     Chat(
         userId = "2",
-        userImage = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        userImage = "https://stihi.ru/pics/2016/10/13/9056.jpg",
         userName = "Tony Monta",
         lastMessage = "How’s Alicia doing? Ask her to give m...",
         lastMessageSendDate = "6h ago"
     ),
     Chat(
         userId = "2",
-        userImage = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        userImage = "https://stihi.ru/pics/2016/10/13/9056.jpg",
         userName = "Tony Monta",
         lastMessage = "How’s Alicia doing? Ask her to give m...",
         lastMessageSendDate = "6h ago"
     ),
     Chat(
         userId = "2",
-        userImage = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        userImage = "https://stihi.ru/pics/2016/10/13/9056.jpg",
         userName = "Tony Monta",
         lastMessage = "How’s Alicia doing? Ask her to give m...",
         lastMessageSendDate = "6h ago"
     ),
     Chat(
         userId = "2",
-        userImage = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        userImage = "https://stihi.ru/pics/2016/10/13/9056.jpg",
         userName = "Tony Monta",
         lastMessage = "How’s Alicia doing? Ask her to give m...",
         lastMessageSendDate = "6h ago"

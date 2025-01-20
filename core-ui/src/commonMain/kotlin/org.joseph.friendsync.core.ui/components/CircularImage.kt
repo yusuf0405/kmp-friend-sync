@@ -12,7 +12,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
 import org.joseph.friendsync.core.ui.theme.FriendSyncTheme
 import org.joseph.friendsync.core.ui.theme.colors.Blue
@@ -24,7 +23,6 @@ import org.joseph.friendsync.core.ui.theme.colors.MediumBlue
 import org.joseph.friendsync.core.ui.theme.dimens.SmallSpacing
 
 @Composable
-@OptIn(ExperimentalCoilApi::class)
 fun CircularImage(
     imageUrl: String?,
     modifier: Modifier = Modifier,

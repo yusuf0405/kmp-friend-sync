@@ -24,7 +24,7 @@ val fakeStories = listOf(
     Stories(
         imageUrl = "https://wallpapers.com/images/hd/summer-pictures-qydy6wrbphuvuntc.jpg",
         userId = "1",
-        userImage = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        userImage = "https://stihi.ru/pics/2016/10/13/9056.jpg",
         isViewed = false,
         userName = "Joseph",
         releasedDate = "35m ago"
@@ -48,7 +48,7 @@ val fakeStories = listOf(
     Stories(
         imageUrl = "https://wpapers.ru/wallpapers/nature/13908/download/1920x1536_Зелёное-поле.jpg",
         userId = "2",
-        userImage = "https://avatars.mds.yandex.net/i?id=943da35c25955953cfeae1282e5856fd313be325-7543369-images-thumbs&n=13",
+        userImage = "https://stihi.ru/pics/2016/10/13/9056.jpg",
         isViewed = false,
         userName = "Joseph",
         releasedDate = "35m ago"

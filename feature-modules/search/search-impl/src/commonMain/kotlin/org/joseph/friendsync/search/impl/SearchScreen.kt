@@ -61,10 +61,12 @@ internal fun SearchScreen(
 
     when (uiState) {
         is SearchUiState.Initial -> Unit
-        is SearchUiState.Error -> ErrorScreen(
-            errorMessage = (uiState as SearchUiState.Error).message,
-            onClick = { viewModel.onEvent(SearchScreenEvent.RefreshAllData) }
-        )
+        is SearchUiState.Error -> {
+            ErrorScreen(
+                errorMessage = (uiState as SearchUiState.Error).message.get(),
+                onClick = { viewModel.onEvent(SearchScreenEvent.RefreshAllData) }
+            )
+        }
 
         is SearchUiState.Loading, is SearchUiState.Loaded -> SearchScreenContent(
             uiState = uiState,
@@ -155,7 +157,7 @@ private fun LazyListScope.showUsersContent(
         }
 
         is UsersUiState.Error -> item {
-            ErrorScreen(userUiState.message, onClick = {})
+            ErrorScreen(userUiState.message.get(), onClick = {})
         }
 
         is UsersUiState.Loaded -> {
@@ -233,7 +235,7 @@ private fun LazyListScope.showPostsContent(
         is PostUiState.Empty -> item { EmptyScreen() }
 
         is PostUiState.Error -> item {
-            ErrorScreen(postUiState.message, onClick = {})
+            ErrorScreen(postUiState.message.get(), onClick = {})
         }
 
         is PostUiState.Loaded -> {

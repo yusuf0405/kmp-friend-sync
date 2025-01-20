@@ -43,12 +43,12 @@ internal class PostReadLocalDataSourceImpl(
 
     override fun observePost(postId: Int): Flow<PostData> = postDao
         .observePost(postId)
-        .flowOn(dispatcherProvider.io)
         .map { it!! }
         .map(postLocalToDataMapper::map)
         .catch {
             throw IllegalStateException("Failed to observe post from cache", it)
-        }
+        }.flowOn(dispatcherProvider.io)
+
 
     override fun observeUserPosts(userId: Int): Flow<List<PostData>> = postDao
         .observeUserPosts(userId)

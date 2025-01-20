@@ -62,7 +62,6 @@ kotlin {
             implementation(projects.featureModules.addPost.addPostImpl)
 
             implementation(libs.composeIcons.featherIcons)
-            implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.navigation.compose)
 
             implementation(libs.coil.compose.core)
@@ -74,6 +73,8 @@ kotlin {
             // Coil
             implementation(libs.coil.compose.core)
             implementation(libs.coil.compose)
+            implementation(libs.coil.mp)
+            implementation(libs.coil.network.ktor)
 
             // Koin
             implementation(libs.koin.core)

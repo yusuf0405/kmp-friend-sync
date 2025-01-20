@@ -3,8 +3,7 @@ package org.joseph.friendsync.data.cloud.source.category
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import org.joseph.friendsync.core.DispatcherProvider
-import org.joseph.friendsync.core.Mapper
-import org.joseph.friendsync.data.cloud.models.CategoryCloud
+import org.joseph.friendsync.data.cloud.mappers.CategoryCloudToCategoryDataMapper
 import org.joseph.friendsync.data.cloud.service.category.CategoryService
 import org.joseph.friendsync.data.cloud.service.category.DeletedCategoryId
 import org.joseph.friendsync.data.models.CategoryData
@@ -12,7 +11,7 @@ import org.joseph.friendsync.data.models.CategoryData
 internal class CategoryCloudDataSourceImpl(
     private val categoryService: CategoryService,
     private val dispatcherProvider: DispatcherProvider,
-    private val categoryCloudToCategoryDataMapper: Mapper<CategoryCloud, CategoryData>,
+    private val categoryCloudToCategoryDataMapper: CategoryCloudToCategoryDataMapper
 ) : CategoryCloudDataSource {
 
     override suspend fun addNewCategory(categoryName: String): CategoryData {

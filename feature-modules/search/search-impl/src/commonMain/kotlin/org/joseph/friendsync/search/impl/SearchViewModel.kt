@@ -48,8 +48,6 @@ import org.joseph.friendsync.search.impl.user.UsersUiState
 import org.joseph.friendsync.ui.components.mappers.CategoryDomainToCategoryMapper
 import org.joseph.friendsync.ui.components.mappers.PostMarkDomainToUiMapper
 import org.joseph.friendsync.ui.components.mappers.UserInfoDomainToUserInfoMapper
-import org.joseph.friendsync.ui.components.mappers.UserInfoToDomainMapper
-import org.joseph.friendsync.ui.components.mappers.UserMarkDomainToUiMapper
 import org.joseph.friendsync.ui.components.models.Category
 import org.joseph.friendsync.ui.components.models.Post
 import org.joseph.friendsync.ui.components.models.PostMark
@@ -101,7 +99,7 @@ internal class SearchViewModel(
 
     private var allDataJob: Job? = null
     private var searchDataJob: Job? = null
-    private val defaultErrorMessage = Res.string.default_error_message.toString()
+    private val defaultErrorMessage = ErrorMessage.Resource(Res.string.default_error_message)
     private var currentUser: UserPreferences = UserPreferences.unknown
 
     init {
@@ -163,7 +161,7 @@ internal class SearchViewModel(
     }
 
     private fun loadAllData(): Job = viewModelScope.launchSafe(
-        onError = { setUiStateToError(Res.string.default_error_message.toString()) }
+        onError = { setUiStateToError(null) }
     ) {
         fetchCurrentUser()
         mutableState.tryEmit(SearchUiState.Loading)
@@ -201,7 +199,12 @@ internal class SearchViewModel(
     private suspend fun searchPostsByQuery(query: String) {
         val response = searchPostsByQueryUseCase(query, PAGE, PAGE_SIZE)
         if (response.isError()) {
-            val message = response.message ?: defaultErrorMessage
+            val errorMessage = response.message
+            val message = if (errorMessage == null) {
+                defaultErrorMessage
+            } else {
+                ErrorMessage.String(errorMessage)
+            }
             postUiStateCommunication.emit(PostUiState.Error(message))
         }
     }
@@ -214,7 +217,12 @@ internal class SearchViewModel(
             }
 
             is Result.Error -> {
-                val message = response.message ?: defaultErrorMessage
+                val errorMessage = response.message
+                val message = if (errorMessage == null) {
+                    defaultErrorMessage
+                } else {
+                    ErrorMessage.String(errorMessage)
+                }
                 userUiStateCommunication.emit(UsersUiState.Error(message))
             }
         }
@@ -319,7 +327,11 @@ internal class SearchViewModel(
     }
 
     private fun setUiStateToError(message: String?) {
-        val errorMessage = message ?: Res.string.default_error_message.toString()
+        val errorMessage = if (message == null) {
+            defaultErrorMessage
+        } else {
+            ErrorMessage.String(message)
+        }
         mutableState.tryEmit(SearchUiState.Error(errorMessage))
     }
 

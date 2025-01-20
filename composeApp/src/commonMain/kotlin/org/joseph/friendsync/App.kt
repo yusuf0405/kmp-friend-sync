@@ -17,7 +17,6 @@ import org.joseph.friendsync.providers.ImageLoaderConfigurator
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 internal fun App(navController: NavHostController = rememberNavController()) = FriendSyncTheme {
     KoinContext {

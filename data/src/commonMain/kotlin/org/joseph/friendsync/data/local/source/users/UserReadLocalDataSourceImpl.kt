@@ -7,15 +7,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.joseph.friendsync.core.DispatcherProvider
-import org.joseph.friendsync.core.Mapper
 import org.joseph.friendsync.data.local.dao.user.UserDao
-import org.joseph.friendsync.data.local.models.UserDetailLocal
+import org.joseph.friendsync.data.local.mappers.UserDetailLocalToDataMapper
 import org.joseph.friendsync.data.models.UserDetailData
 
 internal class UserReadLocalDataSourceImpl(
     private val userDao: UserDao,
     private val dispatcherProvider: DispatcherProvider,
-    private val userDetailLocalToUserDetailDataMapper: Mapper<UserDetailLocal, UserDetailData>
+    private val userDetailLocalToUserDetailDataMapper: UserDetailLocalToDataMapper
 ) : UserReadLocalDataSource {
 
     override fun observeAllUsers(): Flow<List<UserDetailData>> = userDao

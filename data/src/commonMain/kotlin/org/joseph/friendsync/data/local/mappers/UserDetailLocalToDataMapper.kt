@@ -3,7 +3,6 @@ package org.joseph.friendsync.data.local.mappers
 import org.joseph.friendsync.core.Mapper
 import org.joseph.friendsync.data.local.models.UserDetailLocal
 import org.joseph.friendsync.data.models.UserDetailData
-import kotlin.jvm.JvmSuppressWildcards
 
 class UserDetailLocalToDataMapper : Mapper<UserDetailLocal, UserDetailData> {
 
